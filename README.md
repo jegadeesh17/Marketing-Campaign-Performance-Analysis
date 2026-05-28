@@ -127,7 +127,21 @@ Create a PostgreSQL database named `marketing_campaigns` and ensure your databas
 ### **2. Install Dependencies**
 
 ```bash
-pip install pandas numpy streamlit psycopg2 sqlalchemy scikit-learn plotly matplotlib seaborn
+pip install pandas numpy streamlit psycopg2 sqlalchemy scikit-learn plotly matplotlib seaborn python-dotenv
+```
+
+---
+
+### **3. Configure Environment Variables**
+
+Create a `.env` file in the root of the project folder:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=marketing_campaigns
+DB_USER=postgres
+DB_PASSWORD=your_postgres_password
 ```
 
 ---
