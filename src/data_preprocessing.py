@@ -1,10 +1,9 @@
 import pandas as pd
 import numpy as np
-from sqlalchemy import create_engine
+from db_config import get_engine
 
 def load_and_clean_data():
-    db_url = "postgresql://postgres:jaundice@localhost:5432/marketing_campaign"
-    engine = create_engine(db_url)
+    engine = get_engine()
     df = pd.read_sql("SELECT * FROM raw_campaign_data", engine)
     
     # 1. Deduplication

@@ -1,12 +1,13 @@
 import os
 import pandas as pd
 from sqlalchemy import create_engine, text
+from db_config import get_engine, get_db_url
 
 def create_db_if_not_exists():
     target_db = 'marketing_campaign'
     # Try connecting to the target database directly first
     try:
-        engine = create_engine(f"postgresql://postgres:jaundice@localhost:5432/{target_db}")
+        engine = get_engine(target_db)
         with engine.connect() as conn:
             # If this succeeds, the database already exists
             return
@@ -17,7 +18,7 @@ def create_db_if_not_exists():
     default_dbs = ['Quandao', 'postgres', 'template1']
     for db in default_dbs:
         try:
-            temp_db_url = f"postgresql://postgres:jaundice@localhost:5432/{db}"
+            temp_db_url = get_db_url(db)
             temp_engine = create_engine(temp_db_url)
             with temp_engine.connect() as conn:
                 conn = conn.execution_options(isolation_level="AUTOCOMMIT")
@@ -37,8 +38,7 @@ def ingest_data():
     
     # 1. Database Connection URL (Adjust with your PostgreSQL credentials)
     # Format: postgresql://username:password@localhost:5432/database_name
-    db_url = "postgresql://postgres:jaundice@localhost:5432/marketing_campaign"
-    engine = create_engine(db_url)
+    engine = get_engine()
     
     # 2. File maps with respective brand names
     base_dir = os.path.dirname(os.path.abspath(__file__))
