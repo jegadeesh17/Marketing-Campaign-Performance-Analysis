@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from sqlalchemy import create_engine, text
-from db_config import get_engine, get_db_url
+from src.db_config import get_engine, get_db_url
 
 def create_db_if_not_exists():
     target_db = 'marketing_campaign'

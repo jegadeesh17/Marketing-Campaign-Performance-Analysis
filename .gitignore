@@ -22,3 +22,11 @@ ENV/
 .env
 .env.local
 .env.*
+# Logs
+logs-*.txt
+
+# Documents
+*.docx
+*.pdf
+*.doc
+*.wpf

@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from db_config import get_engine
+from src.db_config import get_engine
 
 def load_and_clean_data():
     engine = get_engine()

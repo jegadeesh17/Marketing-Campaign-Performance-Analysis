@@ -9,7 +9,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, classification_report
-from data_preprocessing import load_and_clean_data
+from src.data_preprocessing import load_and_clean_data
 
 def train_pipelines():
     df = load_and_clean_data()
