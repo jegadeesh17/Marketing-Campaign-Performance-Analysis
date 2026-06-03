@@ -1,199 +1,33 @@
-# Marketing Campaign Performance Analysis
-
----
-
-### **Project Overview**
-
-Marketing campaigns generate vast streams of transactional, behavioral, and performance data. Optimizing marketing spend requires analyzing historical performance, cleaning inconsistent records, and building predictive analytics models. This project builds a **Marketing Campaign Performance Analysis** platform to inspect, clean, store, and analyze marketing campaign results.
-
-The system ingests multi-source campaign data (e.g. Nykaa, Purplle, Tira), saves it to a central PostgreSQL database, runs predictive models to assess campaign success, and provides interactive trends via a Streamlit analytics dashboard.
-
----
-
-### **Key Features**
-
-* **Multi-Source Ingestion Pipeline:** Streams raw CSV records from different cosmetics platforms into a PostgreSQL database.
-* **Intelligent Data Preprocessing:** Cleans null values, standardizes acquisition columns, and formats campaign dates.
-* **Predictive Performance Modeling:** Trains models to forecast campaign success and revenue metrics.
-* **Interactive Streamlit Dashboard:** Visualizes ROI, customer acquisition cost, conversion rates, and channel effectiveness.
-* **PostgreSQL Schema Optimization:** Employs relational mapping to track impressions, clicks, conversions, and spend.
-
----
-
-### **Dataset**
-
-* **Source:** Multi-Platform Cosmetics Marketing Campaigns
-* **Coverage:** Nykaa, Purplle, and Tira performance logs
-* **Data Type:** High-dimensional relational campaign tables
-
-#### **Included Files**
-
-* `nykaa_campaign_data_with_nulls.csv`
-* `purplle_campaign_data_with_nulls.csv`
-* `tira_campaign_data_with_nulls.csv`
-
----
-
-### **Project Structure**
-
-```bash
-Marketing-Campaign-Performance/
-│
-├── data/                         # Multi-source campaign CSV files
-│
-├── src/
-│   ├── data_ingestion.py         # PostgreSQL ingestion pipeline
-│   ├── data_preprocessing.py     # Preprocessing and standardizing script
-│   └── train_models.py           # ML training pipeline for campaign ROI
-│
-├── app/
-│   └── app.py                    # Streamlit analytics dashboard
-│
-├── models/                       # Saved trained model artifacts
-│
-├── .gitignore
-└── README.md
-```
-
----
-
-### **How It Works**
-
-### **1. Data Ingestion & Preprocessing**
-
-* **`data_ingestion.py`**: Reads raw CSV datasets, standardizes headers, and loads records into target database tables.
-* **`data_preprocessing.py`**: Handles missing values (e.g. imputing average click-through rates), cleans outliers, and formats column datatypes.
-
----
-
-### **2. Predictive ML Pipeline**
-
-Runs regression models to predict campaign performance indicators:
-
-```python
-# From src/train_models.py
-from sklearn.ensemble import RandomForestRegressor
-
-# Example training script logic
-model = RandomForestRegressor(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
-```
-
----
-
-### **Database Configuration**
-
-Ensure database connection configurations are configured appropriately to point to your PostgreSQL setup:
-* **Database Name:** `marketing_campaigns`
-* **Username:** `postgres`
-* **Password:** `jaundice`
-* **Port:** `5432`
-
----
-
-### **Interactive Application Deployment**
-
-The project features a **Streamlit Web Application** displaying real-time metrics, conversion funnel trends, and channel performance comparisons.
-
-#### **To Launch the Platform Locally:**
-```powershell
-python -m streamlit run ".\Marketing Campaign Performance Analysis\app\app.py"
-```
-
----
-
-### **Technology Stack**
-
-| Category             | Tools                                         |
-| -------------------- | --------------------------------------------- |
-| Programming          | Python                                        |
-| Database Engine      | PostgreSQL                                    |
-| Database Connection  | SQLAlchemy, Psycopg2                          |
-| Data Processing      | Pandas, NumPy                                 |
-| Machine Learning     | Scikit-learn                                  |
-| Web Framework        | Streamlit                                     |
-| Visualization        | Matplotlib, Seaborn, Plotly                   |
-
----
-
-### **Getting Started**
-
-### **1. Setup Database**
-
-Create a PostgreSQL database named `marketing_campaigns` and ensure your database server is running.
-
----
-
-### **2. Install Dependencies**
-
-```bash
-pip install pandas numpy streamlit psycopg2 sqlalchemy scikit-learn plotly matplotlib seaborn python-dotenv
-```
-
----
-
-### **3. Configure Environment Variables**
-
-Create a `.env` file in the root of the project folder:
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=marketing_campaigns
-DB_USER=postgres
-DB_PASSWORD=your_postgres_password
-```
-
----
-
-### **3. Run Processing & Training Pipelines**
-
-```bash
-# Ingest data to PostgreSQL
-python src/data_ingestion.py
-
-# Clean data
-python src/data_preprocessing.py
-
-# Train ML models
-python src/train_models.py
-```
-
----
-
-### **4. Launch the Dashboard**
-
-Start the Streamlit application server:
-
-```bash
-streamlit run app/app.py
-```
-
----
-
-### **Example Use Case**
-
-Marketing managers can use the system to:
-1. Compare performance trends across Nykaa, Purplle, and Tira channels.
-2. View predicted conversion numbers before starting a campaign.
-3. Optimize marketing budgets by allocating spend to channels with higher historical conversion rates.
-
----
-
-### **Future Improvements**
-
-* Integration with real-time marketing APIs (Google Ads, Meta Ads APIs).
-* Advanced NLP sentiment analysis on campaign feedback comments.
-* Multi-touch attribution modeling.
-
----
-
-### **Contributors**
-
-* **Jegadeesh D** — Database pipeline construction, machine learning model development, preprocessing scripts, and dashboard visualization
-
----
-
-### **License**
-
-MIT License
+# 🎯 Multi-Brand Marketing Campaign Performance Analysis
+
+An end-to-end machine learning and analytics platform designed to clean multi-brand marketing campaign datasets, train predictive models, and deploy them to forecast campaign revenue and profitability before capital is deployed.
+
+## 📖 Project Overview
+Marketing campaigns generate massive streams of performance indicators (impressions, clicks, conversions, spend). Modeling this data often suffers from multi-source inconsistencies, complex categorical features (like multi-channel tags), and risks of target leakage.
+
+This project builds a complete pipeline from raw ingestion (PostgreSQL) to an active web prediction dashboard (Streamlit). We successfully achieved a **96.98% classification accuracy** for predicting campaign profitability.
+
+## 🏗️ Architecture & Pipeline
+
+1. **Data Ingestion & Preprocessing**: An ingestion pipeline using SQLAlchemy to load raw CSVs from Nykaa, Purplle, and Tira into a central PostgreSQL database. Missing values are handled via mode imputation (categorical) and median imputation (numerical) to resist outliers.
+2. **Advanced Feature Engineering**: 
+   - **Cyclical Time Encoding**: Sine/Cosine transformations on the month feature to preserve seasonality.
+   - **Advanced Ratios**: Calculation of Click-Through Rate (CTR), Conversion Rate, and Cost Per Lead (CPL).
+   - **Multi-Label Parsing**: Binary feature extraction for multi-channel arrays (YouTube, Instagram, Email, etc.).
+3. **Machine Learning Pipelines**: 
+   - **Revenue Regression**: An XGBoost Regressor pipeline to forecast exact campaign revenue (R² Score: ~0.72).
+   - **Profit Classification**: An XGBoost Classifier utilizing SMOTETomek to perfectly balance classes, achieving >96% accuracy and 96% recall in identifying unprofitable campaigns.
+4. **Dashboard Deployment**: An interactive Streamlit application that provides real-time revenue and profit forecasts for marketing managers using a clean, 3-column "floating island" UI.
+
+## 🚀 How to Run
+
+1. **Verify Database Configuration**: Ensure PostgreSQL contains the `marketing_campaign` database.
+2. **Execute Ingestion & ML Pipeline**:
+   ```bash
+   python src/data_ingestion.py
+   python src/train_models.py
+   ```
+3. **Run the Streamlit Dashboard**:
+   ```bash
+   streamlit run app/app.py
+   ```

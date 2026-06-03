@@ -32,6 +32,15 @@ def load_and_clean_data():
     df['date_parsed'] = pd.to_datetime(df['date_str'], format='%d-%m-%Y', errors='coerce')
     df['month'] = df['date_parsed'].dt.month.fillna(1)
     
+    # Cyclical Encoding for month
+    df['month_sin'] = np.sin(2 * np.pi * df['month'] / 12)
+    df['month_cos'] = np.cos(2 * np.pi * df['month'] / 12)
+    
+    # 7. Feature Engineering (Derived Metrics)
+    df['ctr'] = np.where(df['impressions'] > 0, df['clicks'] / df['impressions'], 0)
+    df['conversion_rate'] = np.where(df['clicks'] > 0, df['conversions'] / df['clicks'], 0)
+    df['cpl'] = np.where(df['leads'] > 0, df['acquisition_cost'] / df['leads'], 0)
+    
     return df
 
 if __name__ == "__main__":
