@@ -29,7 +29,7 @@ def load_and_clean_data():
     df['profit_flag'] = (df['roi'] > 0).astype(int)
     
     # 6. Parse Date column
-    df['date_parsed'] = pd.to_datetime(df['date_str'], format='%d-%m-%Y', errors='coerce')
+    df['date_parsed'] = pd.to_datetime(df['date_str'], format='%d-%m-%Y', errors='coerce') 
     df['month'] = df['date_parsed'].dt.month.fillna(1)
     
     # Cyclical Encoding for month

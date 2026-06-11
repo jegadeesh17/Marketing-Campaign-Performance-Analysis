@@ -52,8 +52,8 @@ def train_pipelines():
     
     reg_pipeline.fit(X_train_r, y_train_r)
     preds_r = reg_pipeline.predict(X_test_r)
-    print(f"Regression R² Score: {r2_score(y_test_r, preds_r):.4f}")
-    print(f"Regression RMSE: {math.sqrt(mean_squared_error(y_test_r, preds_r)):.2f}")
+    print(f"Regression R² Score: {r2_score(y_test_r, preds_r):.4f}") 
+    print(f"Regression RMSE: {math.sqrt(mean_squared_error(y_test_r, preds_r)):.2f}") # heavily penalizes outliers
     
     # --- MODEL 2: CLASSIFICATION (Predicting Profit Flag - No Data Leakage) ---
     print("\n--- Training Profit Classifier ---")
