@@ -50,21 +50,29 @@ def ingest_data():
         'tira': os.path.join(data_dir, 'tira_campaign_data_with_nulls.csv')
     }
     
+    dfs = []
     for brand, file_path in files.items():
-        print(f"Ingesting data for brand: {brand}...")
-        df = pd.read_csv(file_path)
-        
-        # Standardize column naming to lowercase matching SQL
-        df.columns = [col.lower() for col in df.columns]
-        if 'date' in df.columns:
-            df = df.rename(columns={'date': 'date_str'})
+        print(f"Reading data for brand: {brand}...")
+        if os.path.exists(file_path):
+            df = pd.read_csv(file_path)
+            # Standardize column naming to lowercase matching SQL
+            df.columns = [col.lower() for col in df.columns]
+            if 'date' in df.columns:
+                df = df.rename(columns={'date': 'date_str'})
+                
+            # Insert the metadata column
+            df['brand'] = brand
+            dfs.append(df)
+        else:
+            print(f"File not found: {file_path}")
             
-        # Insert the metadata column
-        df['brand'] = brand
-        
+    if dfs:
+        raw_df = pd.concat(dfs, ignore_index=True)
         # Stream data directly into PostgreSQL
-        df.to_sql('raw_campaign_data', engine, if_exists='append', index=False)
-        print(f"Successfully loaded {len(df)} rows for {brand}.")
+        raw_df.to_sql('raw_campaign_data', engine, if_exists='replace', index=False)
+        print(f"Successfully loaded {len(raw_df)} rows in total.")
+    else:
+        print("No data found to ingest.")
 
 if __name__ == "__main__":
     ingest_data()

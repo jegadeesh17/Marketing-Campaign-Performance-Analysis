@@ -5,12 +5,10 @@ import math
 import joblib
 import pandas as pd
 from sklearn.base import clone
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline as SklearnPipeline
-from imblearn.pipeline import Pipeline as ImbPipeline
-from imblearn.combine import SMOTETomek
 from xgboost import XGBRegressor, XGBClassifier
 from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, classification_report
 from src.data_preprocessing import load_and_clean_data
@@ -50,8 +48,18 @@ def train_pipelines():
         ('regressor', XGBRegressor(n_estimators=150, max_depth=6, learning_rate=0.1, random_state=42, n_jobs=-1))
     ])
     
-    reg_pipeline.fit(X_train_r, y_train_r)
-    preds_r = reg_pipeline.predict(X_test_r)
+    param_grid = {
+        'regressor__max_depth': [3, 6],
+        'regressor__learning_rate': [0.05, 0.1]
+    }
+    print("Starting Grid Search for Regression Model...")
+    grid_search = GridSearchCV(reg_pipeline, param_grid, cv=2, scoring='r2', n_jobs=-1)
+    grid_search.fit(X_train_r, y_train_r)
+    
+    best_reg_pipeline = grid_search.best_estimator_
+    print(f"Best Parameters: {grid_search.best_params_}")
+    
+    preds_r = best_reg_pipeline.predict(X_test_r)
     print(f"Regression R² Score: {r2_score(y_test_r, preds_r):.4f}") 
     print(f"Regression RMSE: {math.sqrt(mean_squared_error(y_test_r, preds_r)):.2f}") # heavily penalizes outliers
     
@@ -63,10 +71,14 @@ def train_pipelines():
     
     X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(X_cls, y_cls, test_size=0.2, random_state=42)
     
-    cls_pipeline = ImbPipeline(steps=[
+    # Calculate class imbalance ratio dynamically to pass to XGBoost
+    positive_cases = sum(y_train_c == 1)
+    negative_cases = sum(y_train_c == 0)
+    scale_pos_weight = negative_cases / max(1, positive_cases)
+    
+    cls_pipeline = SklearnPipeline(steps=[
         ('preprocessor', clone(preprocessor_cls)),
-        ('smotetomek', SMOTETomek(random_state=42)),
-        ('classifier', XGBClassifier(n_estimators=500, max_depth=15, learning_rate=0.05, random_state=42, n_jobs=-1))
+        ('classifier', XGBClassifier(n_estimators=500, max_depth=15, learning_rate=0.05, random_state=42, n_jobs=-1, scale_pos_weight=scale_pos_weight))
     ])
     
     cls_pipeline.fit(X_train_c, y_train_c)
@@ -76,7 +88,7 @@ def train_pipelines():
     
     # Save artifacts safely
     os.makedirs('models', exist_ok=True)
-    joblib.dump(reg_pipeline, 'models/revenue_regressor.joblib')
+    joblib.dump(best_reg_pipeline, 'models/revenue_regressor.joblib')
     joblib.dump(cls_pipeline, 'models/profit_classifier.joblib')
     print("Saved pipeline models to disk!")
 
