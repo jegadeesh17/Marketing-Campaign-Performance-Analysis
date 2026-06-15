@@ -79,6 +79,15 @@ Marketing-Campaign-Performance-Analysis/
 | Duplicate Removal   | Drops repeated records                       |
 | Type Standardization| Enforces consistent dtypes across brands     |
 
+#### **Exploratory Data Analysis (EDA)**
+
+The project includes rich visual analysis to uncover trends in campaign performance:
+* **ROI Distributions:** Histograms and KDE plots showing the spread of return on investment.
+* **Correlation Heatmaps:** Uncovering relationships between impressions, clicks, conversions, and revenue.
+* **ROI by Campaign Type:** Boxplots identifying typical performance and massive "viral" outliers for each channel.
+* **Revenue vs. Acquisition Cost:** Scatterplots visualizing the efficiency of ad spend across campaigns.
+* **Total Revenue by Brand:** Bar charts summarizing top-line performance.
+
 ---
 
 ### **2. Advanced Feature Engineering**
