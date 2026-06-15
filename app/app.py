@@ -65,7 +65,6 @@ with col1:
     language = st.selectbox("Content Language Context", ["English", "Hindi", "Tamil", "Bengali"])
 
 with col2:
-    duration = st.slider("Active Window (Days)", 1, 30, 14)
     month = st.slider("Execution Month", 1, 12, 5)
     impressions = st.number_input("Expected Impressions", min_value=0, value=50000)
     clicks = st.number_input("Expected Click volume", min_value=0, value=4000)
@@ -92,7 +91,6 @@ input_data = {
     'language': language,
     'customer_segment': customer_segment,
     'brand': brand,
-    'duration': float(duration),
     'impressions': float(impressions),
     'clicks': float(clicks),
     'leads': float(leads),

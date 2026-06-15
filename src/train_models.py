@@ -18,7 +18,7 @@ def train_pipelines():
     
     # Define features based on types
     cat_features = ['campaign_type', 'target_audience', 'language', 'customer_segment', 'brand']
-    num_features_base = ['duration', 'impressions', 'clicks', 'leads', 'conversions', 'engagement_score', 'month_sin', 'month_cos', 'ctr', 'conversion_rate', 'cpl']
+    num_features_base = ['impressions', 'clicks', 'leads', 'conversions', 'engagement_score', 'month_sin', 'month_cos', 'ctr', 'conversion_rate', 'cpl']
     channel_features = [col for col in df.columns if col.startswith('channel_') and col != 'channel_used']
     
     # Preprocessor for categorical and numerical variables

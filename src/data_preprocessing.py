@@ -15,7 +15,7 @@ def load_and_clean_data():
         df[col] = df[col].fillna(df[col].mode()[0] if not df[col].mode().empty else 'Unknown')
         
     # 3. Impute Numerical Columns
-    numerical_cols = ['duration', 'impressions', 'clicks', 'leads', 'conversions', 'revenue', 'acquisition_cost', 'engagement_score', 'roi']
+    numerical_cols = ['impressions', 'clicks', 'leads', 'conversions', 'revenue', 'acquisition_cost', 'engagement_score', 'roi']
     for col in numerical_cols:
         df[col] = df[col].fillna(df[col].median())
         
