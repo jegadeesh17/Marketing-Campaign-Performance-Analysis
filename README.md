@@ -42,23 +42,16 @@ The system achieves a **96.98% classification accuracy** for predicting campaign
 ### **Project Structure**
 
 ```bash
-Marketing-Campaign-Performance-Analysis/
+MarketingCampaignAnalysis/
 │
-├── data/                         # Raw campaign CSV datasets
-│
-├── models/                       # Saved trained ML models
-│
-├── app/
-│   └── app.py                    # Streamlit prediction dashboard
-│
-├── src/
-│   ├── db_config.py              # Database connection configuration
-│   ├── data_ingestion.py         # CSV-to-PostgreSQL ingestion pipeline
-│   ├── data_preprocessing.py     # Feature engineering and preprocessing
-│   └── train_models.py           # XGBoost regression and classification pipelines
-│
-├── project_presentation.ipynb   # Project summary notebook
-├── requirements.txt             # Python dependencies
+├── app/                          # Streamlit application files
+│   └── app.py                    # Main Streamlit dashboard
+├── data/                         # Project datasets
+├── docs/                         # Documentation and visualizations
+├── models/                       # Saved trained models
+├── notebooks/                    # Jupyter notebooks (Source of Truth)
+├── src/                          # Core Python logic and scripts
+├── requirements.txt              # Python dependencies
 └── README.md
 ```
 
@@ -170,7 +163,7 @@ streamlit run app/app.py
 ```bash
 git clone https://github.com/jegadeesh17/Marketing-Campaign-Performance-Analysis.git
 
-cd Marketing-Campaign-Performance-Analysis
+cd MarketingCampaignAnalysis
 ```
 
 ---
