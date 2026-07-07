@@ -1,0 +1,11 @@
+{
+  "regression": {
+    "r2": 0.7189,
+    "rmse": 252360.02
+  },
+  "classification": {
+    "accuracy": 0.9686,
+    "weighted_f1": 0.9689
+  },
+  "split": "80/20 holdout"
+}

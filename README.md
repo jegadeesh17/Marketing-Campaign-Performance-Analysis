@@ -1,12 +1,25 @@
 # Multi-Brand Marketing Campaign Performance Analysis
 
+Marketing campaign intelligence for Nykaa, Purplle, and Tira — revenue forecasting, profitability classification, FastAPI endpoints, and a Streamlit dashboard.
+
+## Quickstart
+
+```bash
+pip install -r requirements.txt
+python src/train_models.py
+pytest tests/ -q
+uvicorn api.main:app --reload --port 8000
+```
+
+Models are saved to `models/` after training (not committed). See `reports/evaluation.md` for holdout metrics and `docs/DEMO.md` for interview walkthrough.
+
 ---
 
 ### **Project Overview**
 
 Marketing campaigns generate massive streams of performance indicators — impressions, clicks, conversions, and spend — across multiple brands and channels. This project builds an end-to-end machine learning and analytics platform to clean multi-brand datasets, engineer advanced features, train predictive models, and deploy a real-time forecasting dashboard.
 
-The system achieves a **96.98% classification accuracy** for predicting campaign profitability and forecasts campaign revenue using XGBoost regression, enabling marketing managers to optimize budget allocation before capital is deployed.
+The system forecasts campaign revenue (XGBoost regression, R² ≈ 0.72 on holdout) and predicts profitability (XGBoost classifier with class-weight balancing). **Interview framing:** cite weighted F1 and per-class recall from `reports/evaluation.md`, not headline accuracy alone.
 
 ---
 
@@ -15,8 +28,7 @@ The system achieves a **96.98% classification accuracy** for predicting campaign
 * **Multi-Brand Data Ingestion:** Loads raw campaign CSVs from Nykaa, Purplle, and Tira into a central PostgreSQL database.
 * **Advanced Feature Engineering:** Cyclical time encoding, CTR/conversion/CPL ratio generation, and multi-label channel parsing.
 * **Revenue Regression:** XGBoost Regressor pipeline forecasting exact campaign revenue (R² ≈ 0.72).
-* **Profit Classification:** XGBoost Classifier with SMOTETomek oversampling achieving >96% accuracy.
-* **Imbalanced Class Handling:** SMOTETomek balancing for perfectly resolving unprofitable campaign detection.
+* **Profit Classification:** XGBoost Classifier with `scale_pos_weight` for imbalanced profit/loss classes.
 * **Interactive Streamlit Dashboard:** Real-time revenue and profit forecasts through a 3-column floating island UI.
 * **Leakage-Safe Pipeline:** Strict train/test isolation and target leakage prevention throughout preprocessing.
 * **Modular ML Architecture:** Separate ingestion, preprocessing, and training scripts for clean pipeline separation.
@@ -123,11 +135,24 @@ classifier.fit(X_res, y_res)
 
 ### **Model Performance**
 
+See `reports/evaluation.md` (auto-generated after training). Latest holdout results:
+
 | Metric                           | Score   |
 | -------------------------------- | ------- |
-| Profit Classification Accuracy   | 96.98%  |
-| Profit Classification Recall     | 96%     |
-| Revenue Regression R² Score      | ~0.72   |
+| Revenue Regression R²            | 0.7189  |
+| Revenue Regression RMSE          | 252,360 |
+| Profit Classification Accuracy   | 0.9686  |
+| Profit Classification Weighted F1| 0.9689  |
+
+Unprofitable class (label 0) recall is lower than profitable class — discuss trade-offs in interviews.
+
+### **REST API**
+
+| Endpoint | Method | Description |
+| -------- | ------ | ----------- |
+| `/health` | GET | Service and model artifact status |
+| `/forecast_revenue` | POST | Revenue forecast from campaign features |
+| `/predict_profitability` | POST | Profit/loss prediction using forecasted revenue |
 
 ---
 
@@ -189,12 +214,14 @@ pip install -r requirements.txt
 
 ---
 
-### **4. Run Ingestion & Training**
+### **4. Run Training & Tests**
 
 ```bash
-python src/data_ingestion.py
 python src/train_models.py
+pytest tests/ -q
 ```
+
+CSV fallback works without PostgreSQL. For DB ingestion: `python src/data_ingestion.py`
 
 ---
 
@@ -219,8 +246,6 @@ A marketing analytics team can use this platform to:
 
 ### **Future Improvements**
 
-* Real-time campaign performance API integration
-* Multi-objective optimization for spend vs. revenue tradeoffs
 * SHAP-based model explainability dashboard
 * Automated campaign performance alerting system
 

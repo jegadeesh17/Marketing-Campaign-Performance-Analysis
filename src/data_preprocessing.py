@@ -1,10 +1,43 @@
+import os
 import pandas as pd
 import numpy as np
 from src.db_config import get_engine
 
+DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
+
+
+def _normalize_csv_frame(df: pd.DataFrame, filename: str) -> pd.DataFrame:
+    df = df.copy()
+    df.columns = [col.lower() for col in df.columns]
+    if "date" in df.columns:
+        df = df.rename(columns={"date": "date_str"})
+    if "brand" not in df.columns:
+        for brand in ("nykaa", "purplle", "tira"):
+            if brand in filename.lower():
+                df["brand"] = brand
+                break
+        else:
+            df["brand"] = "unknown"
+    return df
+
+
+def _load_raw_dataframe() -> pd.DataFrame:
+    try:
+        engine = get_engine()
+        return pd.read_sql("SELECT * FROM raw_campaign_data", engine)
+    except Exception:
+        frames = []
+        for name in os.listdir(DATA_DIR):
+            if name.endswith(".csv") and "campaign" in name:
+                raw = pd.read_csv(os.path.join(DATA_DIR, name))
+                frames.append(_normalize_csv_frame(raw, name))
+        if not frames:
+            raise FileNotFoundError("No campaign CSV files found in data/")
+        return pd.concat(frames, ignore_index=True)
+
+
 def load_and_clean_data():
-    engine = get_engine()
-    df = pd.read_sql("SELECT * FROM raw_campaign_data", engine)
+    df = _load_raw_dataframe()
     
     # 1. Deduplication
     df = df.drop_duplicates()

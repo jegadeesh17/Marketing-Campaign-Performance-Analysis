@@ -91,6 +91,13 @@ def train_pipelines():
     joblib.dump(best_reg_pipeline, 'models/revenue_regressor.joblib')
     joblib.dump(cls_pipeline, 'models/profit_classifier.joblib')
     print("Saved pipeline models to disk!")
+    try:
+        from scripts.export_evaluation import main as export_main
+        from scripts.generate_eda import main as eda_main
+        export_main()
+        eda_main()
+    except Exception as exc:
+        print(f"Post-train reports skipped: {exc}")
 
 if __name__ == "__main__":
     train_pipelines()
