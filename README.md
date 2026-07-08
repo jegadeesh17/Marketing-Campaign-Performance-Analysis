@@ -1,25 +1,13 @@
 # Multi-Brand Marketing Campaign Performance Analysis
-
-Marketing campaign intelligence for Nykaa, Purplle, and Tira — revenue forecasting, profitability classification, FastAPI endpoints, and a Streamlit dashboard.
-
-## Quickstart
-
-```bash
-pip install -r requirements.txt
-python src/train_models.py
-pytest tests/ -q
-uvicorn api.main:app --reload --port 8000
-```
-
-Models are saved to `models/` after training (not committed). See `reports/evaluation.md` for holdout metrics and `docs/DEMO.md` for interview walkthrough.
-
 ---
-
 ### **Project Overview**
 
 Marketing campaigns generate massive streams of performance indicators — impressions, clicks, conversions, and spend — across multiple brands and channels. This project builds an end-to-end machine learning and analytics platform to clean multi-brand datasets, engineer advanced features, train predictive models, and deploy a real-time forecasting dashboard.
 
 The system forecasts campaign revenue (XGBoost regression, R² ≈ 0.72 on holdout) and predicts profitability (XGBoost classifier with class-weight balancing). **Interview framing:** cite weighted F1 and per-class recall from `reports/evaluation.md`, not headline accuracy alone.
+
+**Repository:** [github.com/jegadeesh17/Marketing-Campaign-Performance-Analysis](https://github.com/jegadeesh17/Marketing-Campaign-Performance-Analysis)  
+**Full specification:** [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md)
 
 ---
 
@@ -160,10 +148,12 @@ Unprofitable class (label 0) recall is lower than profitable class — discuss t
 
 The project features an interactive **Streamlit Web Application** with a clean 3-column floating island UI, enabling marketing managers to input campaign parameters and receive real-time revenue and profitability forecasts.
 
-#### **To Launch the Platform Locally:**
 ```powershell
 streamlit run app/app.py
+uvicorn api.main:app --reload --port 8000
 ```
+
+Models are saved to `models/` after training (not committed). See `reports/evaluation.md` and `docs/DEMO.md`.
 
 ---
 
@@ -214,7 +204,13 @@ pip install -r requirements.txt
 
 ---
 
-### **4. Run Training & Tests**
+### **4. Launch Notebook**
+
+```bash
+jupyter notebook "notebooks/Marketing Campaign Performance Analysis.ipynb"
+```
+
+### **5. Run Training & Tests**
 
 ```bash
 python src/train_models.py
@@ -223,9 +219,7 @@ pytest tests/ -q
 
 CSV fallback works without PostgreSQL. For DB ingestion: `python src/data_ingestion.py`
 
----
-
-### **5. Launch Dashboard**
+### **6. Launch Dashboard**
 
 ```bash
 streamlit run app/app.py
