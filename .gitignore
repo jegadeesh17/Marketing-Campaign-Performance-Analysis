@@ -3,11 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Models and pickles
-*.pkl
-*.h5
-*.h5py
-models/
+# Models (LFS-tracked app artifacts only)
+models/*
+!models/revenue_regressor.joblib
+!models/profit_classifier.joblib
+
+# Large campaign CSVs (samples committed)
+data/*_campaign_data_with_nulls.csv
+!data/*_campaign_data_sample.csv
 
 # OS metadata
 .DS_Store

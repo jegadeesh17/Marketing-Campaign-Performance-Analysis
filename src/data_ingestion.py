@@ -44,10 +44,21 @@ def ingest_data():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(base_dir, "..", "data")
     
+    def _brand_csv(brand: str) -> str:
+        data_dir = os.path.join(base_dir, "..", "data")
+        for name in (
+            f'{brand}_campaign_data_with_nulls.csv',
+            f'{brand}_campaign_data_sample.csv',
+        ):
+            path = os.path.join(data_dir, name)
+            if os.path.exists(path):
+                return path
+        return os.path.join(data_dir, f'{brand}_campaign_data_sample.csv')
+
     files = {
-        'nykaa': os.path.join(data_dir, 'nykaa_campaign_data_with_nulls.csv'),
-        'purplle': os.path.join(data_dir, 'purplle_campaign_data_with_nulls.csv'),
-        'tira': os.path.join(data_dir, 'tira_campaign_data_with_nulls.csv')
+        'nykaa': _brand_csv('nykaa'),
+        'purplle': _brand_csv('purplle'),
+        'tira': _brand_csv('tira'),
     }
     
     dfs = []
