@@ -26,6 +26,8 @@ The system forecasts campaign revenue (XGBoost regression, R² ≈ 0.72 on holdo
 ### **Dataset**
 
 * **Source:** Multi-brand marketing campaign records (Nykaa, Purplle, Tira)
+* **In repo:** `*_campaign_data_sample.csv` per brand
+* **Full data:** Place `nykaa_campaign_data.csv`, `purplle_campaign_data.csv`, `tira_campaign_data.csv` in `data/` — see [data/DATA_SETUP.md](data/DATA_SETUP.md)
 * **Coverage:** Multi-channel performance data with impressions, clicks, spend, revenue
 * **Format:** Raw CSVs ingested into PostgreSQL
 
