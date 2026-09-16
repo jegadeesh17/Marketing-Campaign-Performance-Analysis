@@ -3,6 +3,13 @@ import pandas as pd
 import joblib
 import numpy as np
 
+# Ensure backwards compatibility for models pickled in scikit-learn 1.6
+import sklearn.compose._column_transformer as _ct
+if not hasattr(_ct, '_RemainderColsList'):
+    class _RemainderColsList(list):
+        pass
+    _ct._RemainderColsList = _RemainderColsList
+
 st.set_page_config(page_title="Marketing Engine", page_icon="🎯", layout="wide")
 
 st.markdown("""
