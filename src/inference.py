@@ -3,11 +3,37 @@
 from __future__ import annotations
 
 import math
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
 CHANNELS = ["YouTube", "Instagram", "Google", "WhatsApp", "Email", "Facebook"]
+
+ORDERED_COLUMNS = [
+    "campaign_type",
+    "target_audience",
+    "language",
+    "customer_segment",
+    "brand",
+    "impressions",
+    "clicks",
+    "leads",
+    "conversions",
+    "engagement_score",
+    "month_sin",
+    "month_cos",
+    "ctr",
+    "conversion_rate",
+    "cpl",
+    "channel_youtube",
+    "channel_instagram",
+    "channel_google",
+    "channel_whatsapp",
+    "channel_email",
+    "channel_facebook",
+    "acquisition_cost",
+]
 
 
 def build_campaign_row(payload: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -59,5 +85,91 @@ def build_campaign_row(payload: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFr
 
     df_reg = pd.DataFrame([row])
     df_reg["acquisition_cost"] = acquisition_cost
+    df_cls = df_reg.copy()
+    return df_reg, df_cls
+
+
+def build_batch_campaign_rows(payloads: list[dict[str, Any]]) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Construct vectorized multi-row regression and classification DataFrames for batch inference."""
+    if not payloads:
+        df_empty = pd.DataFrame(columns=ORDERED_COLUMNS)
+        return df_empty, df_empty.copy()
+
+    df = pd.DataFrame(payloads).copy()
+
+    # Categorical fields imputation and normalization
+    for col, default_val in [
+        ("campaign_type", "Paid Ads"),
+        ("target_audience", "Youth"),
+        ("language", "English"),
+        ("customer_segment", "Premium Shoppers"),
+    ]:
+        if col not in df.columns:
+            df[col] = default_val
+        else:
+            df[col] = df[col].fillna(default_val).replace("", default_val).astype(str)
+
+    if "brand" not in df.columns:
+        df["brand"] = "nykaa"
+    else:
+        df["brand"] = df["brand"].fillna("nykaa").replace("", "nykaa").astype(str).str.strip().str.lower()
+        df["brand"] = df["brand"].replace("", "nykaa")
+
+    # Numerical fields imputation and casting
+    for col, default_val in [
+        ("impressions", 50000.0),
+        ("clicks", 4000.0),
+        ("leads", 1500.0),
+        ("conversions", 500.0),
+        ("engagement_score", 15.0),
+        ("acquisition_cost", 250.0),
+    ]:
+        if col not in df.columns:
+            df[col] = default_val
+        else:
+            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(default_val).astype(float)
+
+    if "month" not in df.columns:
+        month_series = pd.Series(5.0, index=df.index)
+    else:
+        month_series = pd.to_numeric(df["month"], errors="coerce").fillna(5.0).astype(float)
+
+    # Cyclical month sin/cos encodings
+    df["month_sin"] = np.sin(2.0 * np.pi * month_series / 12.0)
+    df["month_cos"] = np.cos(2.0 * np.pi * month_series / 12.0)
+
+    # Vectorized zero-safe ratio derivations
+    impressions = df["impressions"].to_numpy(dtype=float)
+    clicks = df["clicks"].to_numpy(dtype=float)
+    leads = df["leads"].to_numpy(dtype=float)
+    conversions = df["conversions"].to_numpy(dtype=float)
+    acquisition_cost = df["acquisition_cost"].to_numpy(dtype=float)
+
+    ctr = np.zeros(len(df), dtype=float)
+    np.divide(clicks, impressions, out=ctr, where=(impressions > 0))
+    df["ctr"] = np.nan_to_num(ctr, nan=0.0, posinf=0.0, neginf=0.0)
+
+    conversion_rate = np.zeros(len(df), dtype=float)
+    np.divide(conversions, clicks, out=conversion_rate, where=(clicks > 0))
+    df["conversion_rate"] = np.nan_to_num(conversion_rate, nan=0.0, posinf=0.0, neginf=0.0)
+
+    cpl = np.zeros(len(df), dtype=float)
+    np.divide(acquisition_cost, leads, out=cpl, where=(leads > 0))
+    df["cpl"] = np.nan_to_num(cpl, nan=0.0, posinf=0.0, neginf=0.0)
+
+    # Vectorized multi-channel one-hot flags
+    channels = df["channels"].copy() if "channels" in df.columns else pd.Series(index=df.index, dtype=object)
+    empty_mask = channels.isna() | (channels.str.len() == 0)
+    channels = channels.where(~empty_mask, pd.Series([["Instagram", "Google"]] * len(df), index=df.index))
+    exploded = channels.explode().astype(str).str.strip().str.lower()
+
+    for ch in CHANNELS:
+        col = f"channel_{ch.lower()}"
+        df[col] = 0
+        matched_idx = exploded[exploded == ch.lower()].index.unique()
+        df.loc[matched_idx, col] = 1
+        df[col] = df[col].astype(int)
+
+    df_reg = df[ORDERED_COLUMNS].copy()
     df_cls = df_reg.copy()
     return df_reg, df_cls

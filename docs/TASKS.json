@@ -40,7 +40,7 @@
             "tests/test_inference.py"
           ],
           "acceptance_criteria": "Satisfies SPEC AC-BATCH-01, AC-ERR-08, AC-ERR-09, AC-ERR-10, RC-04, RC-06. Verified by running 'pytest -q tests/test_inference.py', verifying that build_batch_campaign_rows returns matching feature schemas, identical calculations to single-row helper, and passes all existing unit tests.",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "M1-TASK-04",
