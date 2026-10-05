@@ -16,15 +16,15 @@ def client():
     clf = MagicMock()
     clf.predict.return_value = [1]
 
-    def _mock_load(path: str):
-        if "profit" in path:
-            return clf
-        return reg
+    from api.main import app
 
-    with patch("api.main._load_model", side_effect=_mock_load):
-        from api.main import app
-
-        yield TestClient(app)
+    app.state.models = {
+        "revenue_regressor": reg,
+        "profit_classifier": clf,
+    }
+    yield TestClient(app)
+    if hasattr(app.state, "models") and isinstance(app.state.models, dict):
+        app.state.models.clear()
 
 
 def test_health(client):
@@ -180,4 +180,84 @@ def test_campaign_input_direct_model_validation():
         CampaignInput(engagement_score=-0.5)
     with pytest.raises(ValidationError):
         CampaignInput(acquisition_cost=-10.0)
+
+
+def test_lifespan_in_memory_models_and_zero_disk_reads():
+    from api.main import app
+
+    with TestClient(app) as test_client:
+        assert hasattr(app.state, "models")
+        assert "revenue_regressor" in app.state.models
+        assert "profit_classifier" in app.state.models
+        assert app.state.models["revenue_regressor"] is not None
+        assert app.state.models["profit_classifier"] is not None
+
+        # Verify zero disk reads during request processing
+        with patch("joblib.load", side_effect=RuntimeError("Disk read attempted during inference!")):
+            rev_res = test_client.post("/forecast_revenue", json={"brand": "nykaa"})
+            assert rev_res.status_code == 200
+            assert "forecasted_revenue" in rev_res.json()
+            assert isinstance(rev_res.json()["forecasted_revenue"], float)
+
+            prof_res = test_client.post("/predict_profitability", json={"brand": "nykaa"})
+            assert prof_res.status_code == 200
+            assert "forecasted_revenue" in prof_res.json()
+            assert "profitable" in prof_res.json()
+            assert prof_res.json()["status"] in ("PROFITABLE", "LOSS")
+
+    # Verify shutdown cleaned up app.state.models
+    assert len(app.state.models) == 0
+
+
+def test_endpoints_return_503_when_models_unloaded():
+    from api.main import app
+
+    original_models = getattr(app.state, "models", {})
+    try:
+        app.state.models = {}
+        test_client = TestClient(app)
+
+        res_rev = test_client.post("/forecast_revenue", json={"brand": "nykaa"})
+        assert res_rev.status_code == 503
+        assert "Revenue regressor model not loaded" in res_rev.json()["detail"]
+
+        res_prof = test_client.post("/predict_profitability", json={"brand": "nykaa"})
+        assert res_prof.status_code == 503
+        assert "Models not loaded" in res_prof.json()["detail"]
+    finally:
+        app.state.models = original_models
+
+
+def test_partial_models_loaded_return_503():
+    from api.main import app
+
+    original_models = getattr(app.state, "models", {})
+    try:
+        # Only revenue model present
+        mock_reg = MagicMock()
+        mock_reg.predict.return_value = [100000.0]
+        app.state.models = {"revenue_regressor": mock_reg}
+        test_client = TestClient(app)
+
+        res_rev = test_client.post("/forecast_revenue", json={"brand": "nykaa"})
+        assert res_rev.status_code == 200
+
+        res_prof = test_client.post("/predict_profitability", json={"brand": "nykaa"})
+        assert res_prof.status_code == 503
+        assert "Models not loaded in app.state.models" in res_prof.json()["detail"]
+
+        # Only profit model present
+        mock_clf = MagicMock()
+        mock_clf.predict.return_value = [1]
+        app.state.models = {"profit_classifier": mock_clf}
+
+        res_rev2 = test_client.post("/forecast_revenue", json={"brand": "nykaa"})
+        assert res_rev2.status_code == 503
+        assert "Revenue regressor model not loaded" in res_rev2.json()["detail"]
+
+        res_prof2 = test_client.post("/predict_profitability", json={"brand": "nykaa"})
+        assert res_prof2.status_code == 503
+    finally:
+        app.state.models = original_models
+
 

@@ -28,7 +28,7 @@
             "tests/test_api.py"
           ],
           "acceptance_criteria": "Satisfies SPEC AC-LIFE-01, RC-01, RC-02, RC-06. Verified by running 'pytest -q tests/test_api.py', verifying that /forecast_revenue and /predict_profitability execute successfully using app.state.models with zero disk reads, and all baseline API tests pass.",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "M1-TASK-03",

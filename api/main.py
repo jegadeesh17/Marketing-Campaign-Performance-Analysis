@@ -5,7 +5,8 @@ from __future__ import annotations
 import os
 import sys
 
-from typing import Literal
+from contextlib import asynccontextmanager
+from typing import Any, AsyncIterator, Literal
 
 import joblib
 from fastapi import FastAPI, HTTPException
@@ -17,7 +18,50 @@ if ROOT not in sys.path:
 
 from src.inference import build_campaign_row
 
-app = FastAPI(title="Marketing Campaign Intelligence API", version="1.0.0")
+# Ensure backwards compatibility for models pickled in scikit-learn 1.6
+try:
+    import sklearn.compose._column_transformer as _ct
+
+    if not hasattr(_ct, "_RemainderColsList"):
+
+        class _RemainderColsList(list):
+            def __setstate__(self, state):
+                if isinstance(state, dict):
+                    if "data" in state:
+                        self.extend(state["data"])
+                    self.__dict__.update(state)
+                elif isinstance(state, (list, tuple)):
+                    self.extend(state)
+
+        _ct._RemainderColsList = _RemainderColsList
+except Exception:
+    pass
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Load XGBoost models into app.state.models on startup; clear cache on shutdown."""
+    models: dict[str, Any] = {}
+    revenue_model_path = os.path.join(ROOT, "models", "revenue_regressor.joblib")
+    profit_model_path = os.path.join(ROOT, "models", "profit_classifier.joblib")
+
+    if os.path.exists(revenue_model_path):
+        models["revenue_regressor"] = joblib.load(revenue_model_path)
+    if os.path.exists(profit_model_path):
+        models["profit_classifier"] = joblib.load(profit_model_path)
+
+    app.state.models = models
+    yield
+    if hasattr(app.state, "models") and isinstance(app.state.models, dict):
+        app.state.models.clear()
+
+
+app = FastAPI(
+    title="Marketing Campaign Intelligence API",
+    version="1.0.0",
+    lifespan=lifespan,
+)
+app.state.models = {}
 
 BrandType = Literal["nykaa", "purplle", "tira"]
 CampaignType = Literal["Social Media", "Paid Ads", "Influencer", "Email", "SEO"]
@@ -79,32 +123,41 @@ def _load_model(path: str):
 
 @app.get("/health")
 def health() -> dict:
+    models = getattr(app.state, "models", {})
+    revenue_loaded = bool(models.get("revenue_regressor") or models.get("revenue"))
+    profit_loaded = bool(models.get("profit_classifier") or models.get("profit"))
     return {
         "status": "ok",
-        "revenue_model": os.path.exists(os.path.join(ROOT, "models", "revenue_regressor.joblib")),
-        "profit_model": os.path.exists(os.path.join(ROOT, "models", "profit_classifier.joblib")),
+        "revenue_model": revenue_loaded or os.path.exists(os.path.join(ROOT, "models", "revenue_regressor.joblib")),
+        "profit_model": profit_loaded or os.path.exists(os.path.join(ROOT, "models", "profit_classifier.joblib")),
     }
 
 
 @app.post("/forecast_revenue")
 def forecast_revenue(campaign: CampaignInput) -> dict:
+    models = getattr(app.state, "models", {})
+    model = models.get("revenue_regressor") or models.get("revenue")
+    if model is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Revenue regressor model not loaded in app.state.models",
+        )
     df_reg, _ = build_campaign_row(campaign.model_dump())
-    try:
-        model = _load_model(os.path.join(ROOT, "models", "revenue_regressor.joblib"))
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
     revenue = float(model.predict(df_reg)[0])
     return {"forecasted_revenue": revenue}
 
 
 @app.post("/predict_profitability")
 def predict_profitability(campaign: CampaignInput) -> dict:
+    models = getattr(app.state, "models", {})
+    reg = models.get("revenue_regressor") or models.get("revenue")
+    clf = models.get("profit_classifier") or models.get("profit")
+    if reg is None or clf is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Models not loaded in app.state.models",
+        )
     df_reg, df_cls = build_campaign_row(campaign.model_dump())
-    try:
-        reg = _load_model(os.path.join(ROOT, "models", "revenue_regressor.joblib"))
-        clf = _load_model(os.path.join(ROOT, "models", "profit_classifier.joblib"))
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
     revenue = float(reg.predict(df_reg)[0])
     df_cls["revenue"] = revenue
     profit_flag = int(clf.predict(df_cls)[0])
