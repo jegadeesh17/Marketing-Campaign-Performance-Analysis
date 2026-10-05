@@ -101,7 +101,7 @@
           ],
           "files_to_modify": [],
           "acceptance_criteria": "Satisfies SPEC Journey 3 (Step 1), ADR-0007, and ARCHITECTURE Section 6.3 & Section 7. Verified by running 'docker compose config' to validate single-container service topology without errors, and verifying Dockerfile syntax and non-root security configuration.",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "M2-TASK-04",

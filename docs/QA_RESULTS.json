@@ -46,7 +46,16 @@
     "exit_code": 0,
     "summary": "81 passed",
     "failure_output": ""
+  },
+  {
+    "task_id": "M2-TASK-03",
+    "attempt": 1,
+    "command": "python -m pytest -q -m \"not slow\"",
+    "exit_code": 0,
+    "summary": "92 passed",
+    "failure_output": ""
   }
 ]
+
 
 

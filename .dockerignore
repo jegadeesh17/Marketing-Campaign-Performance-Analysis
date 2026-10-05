@@ -1,0 +1,48 @@
+# Git and Version Control
+.git
+.github
+
+# Python Caches and Bytecode
+__pycache__
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.coverage
+htmlcov/
+.mypy_cache
+.ruff_cache
+.cache
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment Configurations
+.env
+.env.*
+!.env.example
+
+# Notebooks and Exploration
+notebooks/
+
+# Documentation and Reports
+docs/
+reports/
+
+# Test Suite
+tests/
+
+# Legacy app directory
+app/
+
+# Large Datasets (sample CSVs are committed and retained)
+data/*_campaign_data_with_nulls.csv
+
+# OS Metadata
+.DS_Store
+Thumbs.db
