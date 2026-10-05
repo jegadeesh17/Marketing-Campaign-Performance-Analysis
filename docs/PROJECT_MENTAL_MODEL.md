@@ -26,9 +26,10 @@ Upgrade the Marketing Campaign Performance Analysis platform from a prototype da
   - Expose `/forecast_revenue/batch` and `/predict_profitability/batch` endpoints for high-throughput campaign evaluation.
   - Expand pytest unit and API test coverage for boundary values and error handling.
 - **M2: Production Containerization, Glassmorphic UI & Cloud Deployment Configuration**
-  - Author production multi-stage `Dockerfile` and `docker-compose.yml` orchestrating FastAPI and Streamlit with health checks.
-  - Upgrade Streamlit dashboard (`app/app.py`) with a magical glassmorphic UI design (frosted-glass cards with `backdrop-filter: blur()`, glowing gradient borders, modern typography, and refined KPI scorecards).
-  - Integrate Pydantic `BaseSettings` for robust environment variable management.
+  - Eliminate Streamlit and implement a custom, high-performance glassmorphic web application (`api/index.html`) served directly by FastAPI at `/app`, matching `FinancialIntelligenceCopilot` and `CustomerSupportAnalytics`.
+  - Feature frosted-glass cards with `backdrop-filter: blur(16px)`, radial gradients, glowing accents, interactive sliders, dynamic KPI scorecards (INR formatted revenue, profitability badges), and client-side REST invocation.
+  - Author a unified, single-process multi-stage `Dockerfile` and `docker-compose.yml` for FastAPI.
+  - Integrate Pydantic `BaseSettings` for environment variable management.
   - Establish automated GitHub Actions CI workflow (`.github/workflows/ci.yml`) enforcing linting, type-checking, pytest verification, and Cloud Run deployment staging.
 - **M3: Live Cloud Deployment, Observability & Verification**
   - Deploy service live to GCP Cloud Run (`asia-south1.run.app`) matching existing portfolio deployments.
@@ -43,7 +44,7 @@ Upgrade the Marketing Campaign Performance Analysis platform from a prototype da
 ### 1. Primary Journey & Demonstration Narrative
 - **Purpose:** Showcase an enterprise-grade ML forecasting and analytics system for multi-brand e-commerce marketing (Nykaa, Purplle, Tira), deployed live on GCP Cloud Run.
 - **Entry Points:**
-  - **Interactive Dashboard (Streamlit):** Stakeholders and interviewers interact with a 3-column forecasting simulator adjusting ad spend, impressions, clicks, channel mix, and target segments to visualize forecasted revenue, profitability status, and historical ROI benchmarks.
+  - **Interactive Glassmorphic Dashboard (`/app`):** Stakeholders and interviewers interact with a dark-mode, glassmorphic single-page web app served directly by FastAPI at `/app` (matching `FinancialIntelligenceCopilot` and `CustomerSupportAnalytics`), adjusting ad spend, impressions, clicks, channel mix, and target segments to visualize forecasted revenue, profitability status, and historical ROI benchmarks via client-side REST calls.
   - **Production REST API (FastAPI):**
     - `POST /forecast_revenue` & `POST /predict_profitability`: Low-latency single-campaign evaluation powered by in-memory model singletons.
     - `POST /forecast_revenue/batch` & `POST /predict_profitability/batch`: High-throughput batch inference endpoint accepting a list of campaign records, returning structured predictions.

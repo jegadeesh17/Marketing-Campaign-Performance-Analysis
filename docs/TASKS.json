@@ -1,0 +1,165 @@
+{
+  "milestones": [
+    {
+      "milestone_id": "M1",
+      "name": "MVP Vertical Slice: In-Memory Lifespan Serving & API Hardening",
+      "tasks": [
+        {
+          "id": "M1-TASK-01",
+          "title": "Strict Pydantic v2 Invariant Boundary Validation & Zero-Safe Feature Derivation",
+          "description": "Upgrade CampaignInput in api/main.py with Pydantic v2 validation: enforce non-negative constraints (impressions, clicks, leads, conversions, engagement_score, acquisition_cost >= 0.0), month integer range (1-12), case-insensitive brand normalization to lowercase against allowed brands ('nykaa', 'purplle', 'tira') with clear 422 error on invalid brands, and cross-field model_validator enforcing clicks <= impressions, conversions <= clicks, and leads <= clicks. Ensure src/inference.py zero-safe calculations (CTR, conversion_rate, CPL) return 0.0 without ZeroDivisionError or NaN when zero values are provided. Add unit and API tests in tests/test_inference.py and tests/test_api.py.",
+          "files_to_create": [],
+          "files_to_modify": [
+            "api/main.py",
+            "src/inference.py",
+            "tests/test_api.py",
+            "tests/test_inference.py"
+          ],
+          "acceptance_criteria": "Satisfies SPEC AC-ERR-01, AC-ERR-02, AC-ERR-03, AC-ERR-04, AC-ERR-05, AC-ERR-06, AC-ERR-07, AC-ERR-08, AC-ERR-09, AC-ERR-10, RC-01, RC-02, RC-04, RC-05, RC-06. Verified by running 'pytest -q tests/test_api.py tests/test_inference.py', asserting HTTP 422 for negative values, clicks > impressions, conversions > clicks, leads > clicks, invalid month, invalid brand, HTTP 200 for uppercase brand 'Nykaa', and 0.0 metrics for zero-input campaigns.",
+          "status": "pending"
+        },
+        {
+          "id": "M1-TASK-02",
+          "title": "FastAPI Lifespan In-Memory Model Management & Fixture Decoupling",
+          "description": "Refactor api/main.py to manage model singletons via FastAPI's async lifespan context manager. On startup, load models/revenue_regressor.joblib and models/profit_classifier.joblib into app.state.models using the scikit-learn _RemainderColsList compatibility shim, eliminating per-request disk reads. On shutdown, clean up resources in app.state.models. Refactor /forecast_revenue and /predict_profitability to read directly from app.state.models. Update tests/test_api.py client fixture to inject mock models into app.state.models or manage lifespan context cleanly, removing brittle _load_model patching.",
+          "files_to_create": [],
+          "files_to_modify": [
+            "api/main.py",
+            "tests/test_api.py"
+          ],
+          "acceptance_criteria": "Satisfies SPEC AC-LIFE-01, RC-01, RC-02, RC-06. Verified by running 'pytest -q tests/test_api.py', verifying that /forecast_revenue and /predict_profitability execute successfully using app.state.models with zero disk reads, and all baseline API tests pass.",
+          "status": "pending"
+        },
+        {
+          "id": "M1-TASK-03",
+          "title": "Vectorized Batch Campaign Feature Construction in Inference Engine",
+          "description": "Implement build_batch_campaign_rows(payloads: list[dict[str, Any]]) -> tuple[pd.DataFrame, pd.DataFrame] in src/inference.py to transform a batch of campaign payloads into vectorized regression and classification DataFrames. Compute zero-safe derived ratios (ctr, conversion_rate, cpl), cyclical month sin/cos encodings, and all 6 one-hot channel columns using vectorized Pandas/NumPy operations without per-row Python loops. Maintain existing build_campaign_row(payload) function for backward compatibility. Add unit tests in tests/test_inference.py testing batch shapes, channel flags, cyclical bounds, and zero-safe ratios on multi-row inputs.",
+          "files_to_create": [],
+          "files_to_modify": [
+            "src/inference.py",
+            "tests/test_inference.py"
+          ],
+          "acceptance_criteria": "Satisfies SPEC AC-BATCH-01, AC-ERR-08, AC-ERR-09, AC-ERR-10, RC-04, RC-06. Verified by running 'pytest -q tests/test_inference.py', verifying that build_batch_campaign_rows returns matching feature schemas, identical calculations to single-row helper, and passes all existing unit tests.",
+          "status": "pending"
+        },
+        {
+          "id": "M1-TASK-04",
+          "title": "High-Throughput Batch Prediction Endpoints (/forecast_revenue/batch & /predict_profitability/batch)",
+          "description": "Define Pydantic batch schemas in api/main.py: BatchCampaignInput (with items list bounded between 1 and 500 items), BatchRevenueResponse, and BatchProfitabilityResponse. Implement POST /forecast_revenue/batch to predict revenues across a batch using the in-memory revenue regressor and return predicted revenue list with total_items and latency_ms. Implement POST /predict_profitability/batch to predict revenues and classify campaign profitability across a batch using in-memory model singletons. Reject empty batches and payloads > 500 items with HTTP 422. Add integration tests in tests/test_api.py for batch requests of 5 valid items, 3 valid items, empty array, > 500 items, and invariant violations within a batch.",
+          "files_to_create": [],
+          "files_to_modify": [
+            "api/main.py",
+            "tests/test_api.py"
+          ],
+          "acceptance_criteria": "Satisfies SPEC AC-BATCH-01, AC-BATCH-02, AC-BATCH-03, AC-BATCH-04, AC-BATCH-05, RC-01, RC-02, RC-06. Verified by running 'pytest -q tests/test_api.py', confirming HTTP 200 with matching predictions for batch items, HTTP 422 for empty array, HTTP 422 for item with clicks > impressions, and HTTP 422 for batches > 500 items.",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "milestone_id": "M2",
+      "name": "Core Flows: Dark-Mode Glassmorphic Web App, Environment Config, Single-Container Docker & CI",
+      "tasks": [
+        {
+          "id": "M2-TASK-01",
+          "title": "Centralized Environment Configuration via Pydantic BaseSettings & Dependency Cleanup",
+          "description": "Update requirements.txt to eliminate streamlit and add pydantic-settings. Create src/config.py defining a Settings class inheriting from pydantic_settings.BaseSettings with fields: app_env, api_host, api_port, port, log_level, model_dir, db_host, db_port, db_name, db_user, db_password, configured to load from .env with fallback defaults. Provide a cached get_settings() helper. Update src/db_config.py to read settings from src/config.py. Update api/main.py to reference settings for model directories and host/port. Update .env.example with documented configuration keys.",
+          "files_to_create": [
+            "src/config.py"
+          ],
+          "files_to_modify": [
+            "requirements.txt",
+            "src/db_config.py",
+            "api/main.py",
+            ".env.example"
+          ],
+          "acceptance_criteria": "Satisfies ARCHITECTURE Section 8 configuration specification and ADR-0007. Verified by running 'python -c \"from src.config import get_settings; s = get_settings(); print(s.api_port)\"', confirming requirements.txt contains no streamlit reference, and running 'pytest -q tests/test_api.py' to confirm existing endpoints function with default settings.",
+          "status": "pending"
+        },
+        {
+          "id": "M2-TASK-02",
+          "title": "Dark-Mode Glassmorphic Single-Page Web App (api/index.html) & FastAPI Route Serving",
+          "description": "Create api/index.html as a self-contained, responsive, dark-mode glassmorphic single-page web application featuring: frosted-glass containers (backdrop-filter: blur(16px), -webkit-backdrop-filter, rgba(255, 255, 255, 0.05) borders and backgrounds, radial gradient glows), brand selection buttons for Nykaa, Purplle, and Tira, 3-column input configuration grid (strategy, audience, segment, language, month slider 1-12, impressions, clicks, leads, conversions, engagement score, CPA, multi-channel checkboxes), dynamic instant client-side validation, and '🚀 Run Campaign Forecast' action dispatching asynchronous fetch() calls to /forecast_revenue and /predict_profitability. Display live dynamic KPI cards for Forecasted Revenue in INR (₹xx,xxx.xx), Profitability badge (emerald glass for PROFITABLE CAMPAIGN and ruby glass for NET OPERATIONAL LOSS), and efficiency scorecards (CTR %, Conversion Rate %, Cost Per Lead ₹), plus a live service status pill checking /health. In api/main.py, mount endpoint GET /app (and /app/) returning FileResponse('api/index.html') and redirect GET / to /app with HTTP 307. Add integration tests in tests/test_api.py verifying GET /app returns 200 with text/html containing glassmorphic markup, and GET / redirects to /app.",
+          "files_to_create": [
+            "api/index.html"
+          ],
+          "files_to_modify": [
+            "api/main.py",
+            "tests/test_api.py"
+          ],
+          "acceptance_criteria": "Satisfies SPEC Journey 2, AC-UI-01, AC-UI-02, AC-UI-03, AC-UI-04, AC-UI-05, and ADR-0007. Verified by running 'pytest -q tests/test_api.py -k test_app_ui' checking HTTP 200 for GET /app, HTML content-type, presence of 'backdrop-filter: blur(16px)', 'Forecasted Revenue', INR currency formatting, and HTTP 307 redirect from GET / to /app.",
+          "status": "pending"
+        },
+        {
+          "id": "M2-TASK-03",
+          "title": "Unified Single-Container Multi-Stage Dockerfile & Docker Compose Topology",
+          "description": "Author a production multi-stage Dockerfile: builder stage installs dependencies from requirements.txt into a virtual environment or wheel cache, runtime stage uses python:3.11-slim (or 3.12/3.13-slim), creates a non-root security user, copies dependencies and source code (api/, src/, models/, data/), sets working directory, and defines single Uvicorn ASGI server entrypoint: ['uvicorn', 'api.main:app', '--host', '0.0.0.0', '--port', '8000']. Create .dockerignore excluding .git, __pycache__, .pytest_cache, .venv, notebooks/, .env, and local caches. Create docker-compose.yml defining a single unified 'api' service (mapping port 8000:8000, setting environment variables, with healthcheck querying http://localhost:8000/health) and optional 'db' service (PostgreSQL). Eliminate any Streamlit container or dual-port configuration according to ADR-0007.",
+          "files_to_create": [
+            "Dockerfile",
+            "docker-compose.yml",
+            ".dockerignore"
+          ],
+          "files_to_modify": [],
+          "acceptance_criteria": "Satisfies SPEC Journey 3 (Step 1), ADR-0007, and ARCHITECTURE Section 6.3 & Section 7. Verified by running 'docker compose config' to validate single-container service topology without errors, and verifying Dockerfile syntax and non-root security configuration.",
+          "status": "pending"
+        },
+        {
+          "id": "M2-TASK-04",
+          "title": "Pytest Configuration & Automated GitHub Actions CI Pipeline",
+          "description": "Update pytest.ini to register the 'slow' marker with description 'marks tests as slow (deselect with -m \"not slow\")'. Create .github/workflows/ci.yml with automated CI workflow running on push and pull_request to main and feature/* branches. Include job steps for Python setup, dependency installation from requirements.txt, fast test execution (pytest -q -m \"not slow\"), full test execution (pytest -q), and lint/syntax compilation checks across api/, src/, tests/, and scripts/ (strictly omitting any app/ or streamlit references).",
+          "files_to_create": [
+            ".github/workflows/ci.yml"
+          ],
+          "files_to_modify": [
+            "pytest.ini"
+          ],
+          "acceptance_criteria": "Satisfies ARCHITECTURE Section 3 test commands (pytest -q -m \"not slow\") and SPEC RC-06. Verified by executing 'pytest -q -m \"not slow\"' and validating .github/workflows/ci.yml syntax with python yaml parser.",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "milestone_id": "M3",
+      "name": "Polish and Edge Cases: Operational Observability, Probes, Smoke Verification & Docs",
+      "tasks": [
+        {
+          "id": "M3-TASK-01",
+          "title": "Operational Health and Readiness Probes Separation (/health & /ready)",
+          "description": "Update api/main.py to separate liveness and readiness probes according to ADR-0005. Enhance GET /health to return HealthResponse: {status: 'ok', version: '1.0.0', revenue_model: bool, profit_model: bool, uptime_seconds: float} tracking process uptime since startup. Implement GET /ready to inspect app.state.models and return HTTP 200 ReadinessResponse: {status: 'ready', models_loaded: true} when models are initialized in memory, or HTTP 503 {status: 'unready', models_loaded: false, detail: '...'} when uninitialized or missing. Add tests in tests/test_api.py verifying /health uptime and /ready 200/503 response contracts.",
+          "files_to_create": [],
+          "files_to_modify": [
+            "api/main.py",
+            "tests/test_api.py"
+          ],
+          "acceptance_criteria": "Satisfies SPEC AC-PROBE-01, AC-PROBE-02, AC-PROBE-03, RC-03. Verified by running 'pytest -q tests/test_api.py', verifying GET /health returns version and uptime_seconds, and GET /ready returns 200 when models are loaded and 503 when models are absent.",
+          "status": "pending"
+        },
+        {
+          "id": "M3-TASK-02",
+          "title": "Structured JSON Logging & Request Latency Middleware",
+          "description": "Implement structured JSON logging middleware in api/main.py. For every incoming HTTP request, measure processing duration in milliseconds and emit a structured JSON log entry containing: timestamp (ISO 8601), method, path, status_code, and latency_ms. Ensure log output does not log sensitive campaign inputs or payload bodies. Add test in tests/test_api.py verifying that middleware intercepts requests and emits valid JSON log records without crashing or blocking endpoint responses.",
+          "files_to_create": [],
+          "files_to_modify": [
+            "api/main.py",
+            "tests/test_api.py"
+          ],
+          "acceptance_criteria": "Satisfies SPEC AC-OBS-01. Verified by running 'pytest -q tests/test_api.py', capturing log output or checking response completion, verifying method, path, status_code, and latency_ms are recorded.",
+          "status": "pending"
+        },
+        {
+          "id": "M3-TASK-03",
+          "title": "End-to-End Smoke Verification Script & Demo Documentation Alignment",
+          "description": "Create scripts/smoke_test.py as an automated verification script that tests a live running instance of the unified FastAPI service: checks /health, /ready, GET /app (HTML 200), single /forecast_revenue, single /predict_profitability, batch /forecast_revenue/batch, batch /predict_profitability/batch, and boundary invariant rejections (clicks > impressions returning 422). Update docs/DEMO.md with the 5-minute showcase narrative covering single and batch prediction curl commands, dark-mode glassmorphic web app (/app) walkthrough, probe inspection, and single-container docker-compose deployment commands.",
+          "files_to_create": [
+            "scripts/smoke_test.py"
+          ],
+          "files_to_modify": [
+            "docs/DEMO.md"
+          ],
+          "acceptance_criteria": "Verified by running 'python scripts/smoke_test.py --mock' or running against running FastAPI app, confirming all assertions pass including /app check, and checking that docs/DEMO.md includes updated curl examples, single-port container steps, and probe inspection steps without any Streamlit references.",
+          "status": "pending"
+        }
+      ]
+    }
+  ]
+}
