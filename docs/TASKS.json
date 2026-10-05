@@ -52,7 +52,7 @@
             "tests/test_api.py"
           ],
           "acceptance_criteria": "Satisfies SPEC AC-BATCH-01, AC-BATCH-02, AC-BATCH-03, AC-BATCH-04, AC-BATCH-05, RC-01, RC-02, RC-06. Verified by running 'pytest -q tests/test_api.py', confirming HTTP 200 with matching predictions for batch items, HTTP 422 for empty array, HTTP 422 for item with clicks > impressions, and HTTP 422 for batches > 500 items.",
-          "status": "pending"
+          "status": "completed"
         }
       ]
     },

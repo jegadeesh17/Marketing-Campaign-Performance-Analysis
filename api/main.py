@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import sys
+import time
 
 from contextlib import asynccontextmanager
 from typing import Any, AsyncIterator, Literal
@@ -16,7 +17,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from src.inference import build_campaign_row
+from src.inference import build_batch_campaign_rows, build_campaign_row
 
 # Ensure backwards compatibility for models pickled in scikit-learn 1.6
 try:
@@ -115,6 +116,46 @@ class CampaignInput(BaseModel):
         return self
 
 
+class BatchCampaignInput(BaseModel):
+    items: list[CampaignInput] = Field(
+        ...,
+        min_length=1,
+        max_length=500,
+        description="List of campaign records for bulk evaluation (1 to 500 items)",
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def check_list_or_dict(cls, data: Any) -> Any:
+        if isinstance(data, list):
+            return {"items": data}
+        return data
+
+
+class RevenuePredictionResponse(BaseModel):
+    forecasted_revenue: float = Field(..., description="Projected gross revenue in INR")
+
+
+class BatchRevenueResponse(BaseModel):
+    predictions: list[float] = Field(..., description="Ordered list of predicted revenues in INR")
+    total_items: int = Field(..., description="Total records evaluated in the batch")
+    latency_ms: float = Field(..., description="Batch inference processing latency in milliseconds")
+
+
+class ProfitabilityPredictionResponse(BaseModel):
+    forecasted_revenue: float = Field(..., description="Projected gross revenue in INR")
+    profitable: bool = Field(..., description="Binary classification flag indicating profitability")
+    status: Literal["PROFITABLE", "LOSS"] = Field(..., description="Human-readable business outcome")
+
+
+class BatchProfitabilityResponse(BaseModel):
+    predictions: list[ProfitabilityPredictionResponse] = Field(
+        ..., description="Ordered list of profitability predictions"
+    )
+    total_items: int = Field(..., description="Total records evaluated in the batch")
+    latency_ms: float = Field(..., description="Batch inference processing latency in milliseconds")
+
+
 def _load_model(path: str):
     if not os.path.exists(path):
         raise FileNotFoundError(f"Missing model: {path}. Run python src/train_models.py")
@@ -133,7 +174,7 @@ def health() -> dict:
     }
 
 
-@app.post("/forecast_revenue")
+@app.post("/forecast_revenue", response_model=RevenuePredictionResponse)
 def forecast_revenue(campaign: CampaignInput) -> dict:
     models = getattr(app.state, "models", {})
     model = models.get("revenue_regressor") or models.get("revenue")
@@ -147,7 +188,7 @@ def forecast_revenue(campaign: CampaignInput) -> dict:
     return {"forecasted_revenue": revenue}
 
 
-@app.post("/predict_profitability")
+@app.post("/predict_profitability", response_model=ProfitabilityPredictionResponse)
 def predict_profitability(campaign: CampaignInput) -> dict:
     models = getattr(app.state, "models", {})
     reg = models.get("revenue_regressor") or models.get("revenue")
@@ -166,3 +207,59 @@ def predict_profitability(campaign: CampaignInput) -> dict:
         "profitable": profit_flag == 1,
         "status": "PROFITABLE" if profit_flag == 1 else "LOSS",
     }
+
+
+@app.post("/forecast_revenue/batch", response_model=BatchRevenueResponse)
+def forecast_revenue_batch(batch: BatchCampaignInput) -> BatchRevenueResponse:
+    start_time = time.perf_counter()
+    models = getattr(app.state, "models", {})
+    model = models.get("revenue_regressor") or models.get("revenue")
+    if model is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Revenue regressor model not loaded in app.state.models",
+        )
+    payloads = [item.model_dump() for item in batch.items]
+    df_reg, _ = build_batch_campaign_rows(payloads)
+    predictions = [float(val) for val in model.predict(df_reg)]
+    latency_ms = round((time.perf_counter() - start_time) * 1000.0, 2)
+    return BatchRevenueResponse(
+        predictions=predictions,
+        total_items=len(predictions),
+        latency_ms=latency_ms,
+    )
+
+
+@app.post("/predict_profitability/batch", response_model=BatchProfitabilityResponse)
+def predict_profitability_batch(batch: BatchCampaignInput) -> BatchProfitabilityResponse:
+    start_time = time.perf_counter()
+    models = getattr(app.state, "models", {})
+    reg = models.get("revenue_regressor") or models.get("revenue")
+    clf = models.get("profit_classifier") or models.get("profit")
+    if reg is None or clf is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Models not loaded in app.state.models",
+        )
+    payloads = [item.model_dump() for item in batch.items]
+    df_reg, df_cls = build_batch_campaign_rows(payloads)
+    pred_revenues = [float(val) for val in reg.predict(df_reg)]
+    df_cls["revenue"] = pred_revenues
+    pred_flags = clf.predict(df_cls)
+
+    predictions: list[ProfitabilityPredictionResponse] = []
+    for rev, flag in zip(pred_revenues, pred_flags):
+        is_profitable = int(flag) == 1
+        predictions.append(
+            ProfitabilityPredictionResponse(
+                forecasted_revenue=rev,
+                profitable=is_profitable,
+                status="PROFITABLE" if is_profitable else "LOSS",
+            )
+        )
+    latency_ms = round((time.perf_counter() - start_time) * 1000.0, 2)
+    return BatchProfitabilityResponse(
+        predictions=predictions,
+        total_items=len(predictions),
+        latency_ms=latency_ms,
+    )
