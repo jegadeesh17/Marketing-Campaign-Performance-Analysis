@@ -16,7 +16,7 @@
             "tests/test_inference.py"
           ],
           "acceptance_criteria": "Satisfies SPEC AC-ERR-01, AC-ERR-02, AC-ERR-03, AC-ERR-04, AC-ERR-05, AC-ERR-06, AC-ERR-07, AC-ERR-08, AC-ERR-09, AC-ERR-10, RC-01, RC-02, RC-04, RC-05, RC-06. Verified by running 'pytest -q tests/test_api.py tests/test_inference.py', asserting HTTP 422 for negative values, clicks > impressions, conversions > clicks, leads > clicks, invalid month, invalid brand, HTTP 200 for uppercase brand 'Nykaa', and 0.0 metrics for zero-input campaigns.",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "M1-TASK-02",

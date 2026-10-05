@@ -1,0 +1,10 @@
+[
+  {
+    "task_id": "M1-TASK-01",
+    "attempt": 1,
+    "command": "python -m pytest -q -m \"not slow\"",
+    "exit_code": 0,
+    "summary": "33 passed",
+    "failure_output": ""
+  }
+]

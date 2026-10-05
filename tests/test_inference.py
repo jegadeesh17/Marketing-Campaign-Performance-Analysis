@@ -63,3 +63,28 @@ def test_classifier_row_is_copy():
     df_cls["revenue"] = 99999.0
     assert "revenue" not in df_reg.columns
     assert df_cls["revenue"].iloc[0] == 99999.0
+
+
+def test_zero_safe_ctr_ac_err_08():
+    df_reg, _ = build_campaign_row({"impressions": 0, "clicks": 0})
+    assert df_reg["ctr"].iloc[0] == 0.0
+    assert not pd.isna(df_reg["ctr"].iloc[0])
+
+
+def test_zero_safe_conversion_rate_ac_err_09():
+    df_reg, _ = build_campaign_row({"clicks": 0, "conversions": 0})
+    assert df_reg["conversion_rate"].iloc[0] == 0.0
+    assert not pd.isna(df_reg["conversion_rate"].iloc[0])
+
+
+def test_zero_safe_cpl_ac_err_10():
+    df_reg, _ = build_campaign_row({"leads": 0, "acquisition_cost": 250.0})
+    assert df_reg["cpl"].iloc[0] == 0.0
+    assert not pd.isna(df_reg["cpl"].iloc[0])
+
+
+def test_brand_normalization_in_inference():
+    df_reg, _ = build_campaign_row({"brand": "Nykaa"})
+    assert df_reg["brand"].iloc[0] == "nykaa"
+    df_reg2, _ = build_campaign_row({"brand": "  PURPLLE  "})
+    assert df_reg2["brand"].iloc[0] == "purplle"
