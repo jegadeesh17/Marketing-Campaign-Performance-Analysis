@@ -13,13 +13,14 @@ def get_db_url(dbname: str | None = None) -> str:
     """
     settings = get_settings()
     db_user = settings.db_user
+    db_user_encoded = quote_plus(db_user) if db_user else ""
     db_password = settings.db_password
     db_password_encoded = f":{quote_plus(db_password)}" if db_password else ""
     db_host = settings.db_host
     db_port = settings.db_port
     effective_dbname = dbname if dbname is not None else settings.db_name
 
-    return f"postgresql://{db_user}{db_password_encoded}@{db_host}:{db_port}/{effective_dbname}"
+    return f"postgresql://{db_user_encoded}{db_password_encoded}@{db_host}:{db_port}/{effective_dbname}"
 
 
 def get_engine(dbname: str | None = None):

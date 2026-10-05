@@ -3,7 +3,9 @@
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field
+from typing import Any
+
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
@@ -63,6 +65,18 @@ class Settings(BaseSettings):
         extra="ignore",
         protected_namespaces=(),
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def empty_strings_to_default(cls, data: Any) -> Any:
+        """Normalize empty string or whitespace-only inputs so fields fall back to defaults."""
+        if isinstance(data, dict):
+            return {
+                k: v
+                for k, v in data.items()
+                if v is not None and not (isinstance(v, str) and v.strip() == "")
+            }
+        return data
 
 
 @lru_cache

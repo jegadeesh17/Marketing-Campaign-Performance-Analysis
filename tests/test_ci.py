@@ -18,6 +18,14 @@ def test_pytest_ini_exists_and_parses():
     assert config["pytest"]["pythonpath"] == "."
 
 
+def test_pytest_ini_asyncio_configuration():
+    """Verify pytest.ini defines asyncio mode and fixture loop scope."""
+    config = configparser.ConfigParser()
+    config.read(PYTEST_INI_PATH)
+    assert config["pytest"].get("asyncio_mode") == "auto"
+    assert config["pytest"].get("asyncio_default_fixture_loop_scope") == "function"
+
+
 def test_pytest_ini_registers_slow_marker(pytestconfig):
     markers = pytestconfig.getini("markers")
     slow_markers = [m for m in markers if m.startswith("slow")]

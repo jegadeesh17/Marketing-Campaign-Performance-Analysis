@@ -69,6 +69,34 @@ def test_settings_environment_variable_override(monkeypatch):
     assert custom_settings.db_password == "custom_password"
 
 
+def test_settings_empty_string_env_vars_fallback_to_defaults(monkeypatch):
+    """Verify that empty string or whitespace environment variables fall back to default settings."""
+    monkeypatch.setenv("APP_ENV", "")
+    monkeypatch.setenv("API_HOST", "   ")
+    monkeypatch.setenv("API_PORT", "")
+    monkeypatch.setenv("PORT", "")
+    monkeypatch.setenv("LOG_LEVEL", "")
+    monkeypatch.setenv("MODEL_DIR", "")
+    monkeypatch.setenv("DB_HOST", "")
+    monkeypatch.setenv("DB_PORT", "")
+    monkeypatch.setenv("DB_NAME", "")
+    monkeypatch.setenv("DB_USER", "")
+    monkeypatch.setenv("DB_PASSWORD", "")
+
+    settings = Settings(_env_file=None)
+    assert settings.app_env == "production"
+    assert settings.api_host == "0.0.0.0"
+    assert settings.api_port == 8000
+    assert settings.port == 8000
+    assert settings.log_level == "INFO"
+    assert settings.model_dir == "models"
+    assert settings.db_host == "localhost"
+    assert settings.db_port == 5432
+    assert settings.db_name == "marketing_campaign"
+    assert settings.db_user == "postgres"
+    assert settings.db_password == ""
+
+
 @pytest.mark.parametrize(
     "invalid_field,invalid_val",
     [
@@ -93,6 +121,9 @@ def test_requirements_file_dependency_cleanup():
 
     assert not any("streamlit" in line for line in lines), "requirements.txt must not contain streamlit"
     assert any("pydantic-settings" in line for line in lines), "requirements.txt must contain pydantic-settings"
+    assert any("pyyaml" in line for line in lines), "requirements.txt must contain pyyaml"
+    assert any("sqlalchemy" in line for line in lines), "requirements.txt must contain sqlalchemy"
+    assert any("httpx" in line for line in lines), "requirements.txt must contain httpx"
 
 
 def test_env_example_documented_keys():
@@ -152,6 +183,22 @@ def test_db_config_get_db_url_override_and_password_encoding():
         # Confirm password was encoded
         assert "%40" in url or "@" in url
         assert "%23" in url or "#" in url
+
+
+def test_db_config_get_db_url_user_encoding():
+    """Verify get_db_url properly URL-encodes usernames containing special characters."""
+    mock_settings = Settings(
+        _env_file=None,
+        db_user="cloud_user@project.iam",
+        db_password="secretpassword",
+        db_host="localhost",
+        db_port=5432,
+        db_name="marketing_campaign",
+    )
+    with patch("src.db_config.get_settings", return_value=mock_settings):
+        url = get_db_url()
+        assert "cloud_user%40project.iam" in url
+        assert "cloud_user@project.iam" not in url
 
 
 def test_db_config_get_engine_returns_engine():

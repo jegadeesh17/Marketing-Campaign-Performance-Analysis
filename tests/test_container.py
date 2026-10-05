@@ -138,13 +138,13 @@ def test_dockerfile_non_root_security_user():
 
 
 def test_dockerfile_entrypoint_and_port():
-    """Verify Dockerfile exposes port 8000 and defines single Uvicorn entrypoint."""
+    """Verify Dockerfile exposes port 8000 and defines Uvicorn entrypoint respecting dynamic Cloud Run PORT."""
     content = DOCKERFILE_PATH.read_text(encoding="utf-8")
 
     assert "EXPOSE 8000" in content
-    assert 'ENTRYPOINT ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]' in content
+    assert 'ENTRYPOINT ["sh", "-c", "exec uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]' in content
     assert "HEALTHCHECK" in content
-    assert "http://localhost:8000/health" in content
+    assert "http://localhost:${PORT:-8000}/health" in content
 
 
 def test_dockerfile_required_directories_copied():
