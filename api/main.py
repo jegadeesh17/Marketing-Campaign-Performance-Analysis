@@ -17,6 +17,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
+from src.config import get_settings
 from src.inference import build_batch_campaign_rows, build_campaign_row
 
 # Ensure backwards compatibility for models pickled in scikit-learn 1.6
@@ -42,9 +43,15 @@ except Exception:
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Load XGBoost models into app.state.models on startup; clear cache on shutdown."""
+    settings = get_settings()
     models: dict[str, Any] = {}
-    revenue_model_path = os.path.join(ROOT, "models", "revenue_regressor.joblib")
-    profit_model_path = os.path.join(ROOT, "models", "profit_classifier.joblib")
+    model_dir = (
+        settings.model_dir
+        if os.path.isabs(settings.model_dir)
+        else os.path.join(ROOT, settings.model_dir)
+    )
+    revenue_model_path = os.path.join(model_dir, "revenue_regressor.joblib")
+    profit_model_path = os.path.join(model_dir, "profit_classifier.joblib")
 
     if os.path.exists(revenue_model_path):
         models["revenue_regressor"] = joblib.load(revenue_model_path)
@@ -63,6 +70,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 app.state.models = {}
+app.state.settings = get_settings()
 
 BrandType = Literal["nykaa", "purplle", "tira"]
 CampaignType = Literal["Social Media", "Paid Ads", "Influencer", "Email", "SEO"]
@@ -158,19 +166,35 @@ class BatchProfitabilityResponse(BaseModel):
 
 def _load_model(path: str):
     if not os.path.exists(path):
-        raise FileNotFoundError(f"Missing model: {path}. Run python src/train_models.py")
+        settings = get_settings()
+        model_dir = (
+            settings.model_dir
+            if os.path.isabs(settings.model_dir)
+            else os.path.join(ROOT, settings.model_dir)
+        )
+        alt_path = os.path.join(model_dir, os.path.basename(path))
+        if os.path.exists(alt_path):
+            path = alt_path
+        else:
+            raise FileNotFoundError(f"Missing model: {path}. Run python src/train_models.py")
     return joblib.load(path)
 
 
 @app.get("/health")
 def health() -> dict:
+    settings = get_settings()
+    model_dir = (
+        settings.model_dir
+        if os.path.isabs(settings.model_dir)
+        else os.path.join(ROOT, settings.model_dir)
+    )
     models = getattr(app.state, "models", {})
     revenue_loaded = bool(models.get("revenue_regressor") or models.get("revenue"))
     profit_loaded = bool(models.get("profit_classifier") or models.get("profit"))
     return {
         "status": "ok",
-        "revenue_model": revenue_loaded or os.path.exists(os.path.join(ROOT, "models", "revenue_regressor.joblib")),
-        "profit_model": profit_loaded or os.path.exists(os.path.join(ROOT, "models", "profit_classifier.joblib")),
+        "revenue_model": revenue_loaded or os.path.exists(os.path.join(model_dir, "revenue_regressor.joblib")),
+        "profit_model": profit_loaded or os.path.exists(os.path.join(model_dir, "profit_classifier.joblib")),
     }
 
 
@@ -263,3 +287,17 @@ def predict_profitability_batch(batch: BatchCampaignInput) -> BatchProfitability
         total_items=len(predictions),
         latency_ms=latency_ms,
     )
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    settings = get_settings()
+    effective_port = settings.port if settings.port != 8000 else settings.api_port
+    uvicorn.run(
+        "api.main:app",
+        host=settings.api_host,
+        port=effective_port,
+        reload=(settings.app_env == "development"),
+    )
+

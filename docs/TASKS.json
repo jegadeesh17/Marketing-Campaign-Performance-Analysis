@@ -74,7 +74,7 @@
             ".env.example"
           ],
           "acceptance_criteria": "Satisfies ARCHITECTURE Section 8 configuration specification and ADR-0007. Verified by running 'python -c \"from src.config import get_settings; s = get_settings(); print(s.api_port)\"', confirming requirements.txt contains no streamlit reference, and running 'pytest -q tests/test_api.py' to confirm existing endpoints function with default settings.",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "M2-TASK-02",
