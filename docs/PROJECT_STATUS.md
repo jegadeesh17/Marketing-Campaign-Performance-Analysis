@@ -1,7 +1,7 @@
 # Project Status
 
 - [x] Phase 0: Scoping (posture and milestones agreed), repository initialized, and for an existing project the working branch created and the codebase mapped, docs index created
-- [ ] Phase 1: Spec interview and user approval
+- [x] Phase 1: Spec interview and user approval
 - [ ] Phase 2.1: docs/SPEC.md
 - [ ] Phase 2.2: docs/ARCHITECTURE.md and docs/DECISIONS.md
 - [ ] Phase 2.3: docs/TASKS.json
