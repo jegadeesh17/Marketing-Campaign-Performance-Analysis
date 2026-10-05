@@ -494,3 +494,158 @@ def test_batch_pydantic_schemas_direct():
     assert prof_resp.predictions[0].status == "PROFITABLE"
 
 
+def test_app_ui_serving_and_markup(client):
+    res = client.get("/app")
+    assert res.status_code == 200
+    assert "text/html" in res.headers["content-type"]
+    html_text = res.text
+    assert "backdrop-filter: blur(16px)" in html_text
+    assert "-webkit-backdrop-filter: blur(16px)" in html_text
+    assert "Forecasted Revenue" in html_text
+    assert "₹" in html_text
+    assert "Nykaa" in html_text
+    assert "Purplle" in html_text
+    assert "Tira" in html_text
+    assert "📈 Forecasted Status: PROFITABLE CAMPAIGN" in html_text
+    assert "📉 Forecasted Status: NET OPERATIONAL LOSS" in html_text
+    assert "Run Campaign Forecast" in html_text
+
+
+def test_app_ui_trailing_slash_route(client):
+    res = client.get("/app/")
+    assert res.status_code == 200
+    assert "text/html" in res.headers["content-type"]
+    assert "Forecasted Revenue" in res.text
+
+
+def test_app_ui_root_redirect_307(client):
+    res = client.get("/", follow_redirects=False)
+    assert res.status_code == 307
+    assert res.headers["location"] == "/app"
+
+
+def test_app_ui_root_redirect_follow(client):
+    res = client.get("/", follow_redirects=True)
+    assert res.status_code == 200
+    assert "text/html" in res.headers["content-type"]
+    assert "Forecasted Revenue" in res.text
+
+
+def test_app_ui_missing_file_returns_404(client):
+    with patch("api.main.INDEX_HTML_PATH", "/non/existent/path/index.html"):
+        res = client.get("/app")
+        assert res.status_code == 404
+        assert "Single-page application not found" in res.json()["detail"]
+
+
+def test_app_ui_ac_ui_01_glassmorphic_styling(client):
+    res = client.get("/app")
+    assert res.status_code == 200
+    html = res.text
+    # Frosted-glass containers
+    assert "backdrop-filter: blur(16px)" in html
+    assert "-webkit-backdrop-filter: blur(16px)" in html
+    # Semi-transparent backgrounds
+    assert "rgba(17, 24, 39" in html or "rgba(255, 255, 255, 0.04)" in html
+    # Radial glowing gradients
+    assert "radial-gradient" in html
+    # Rounded corner borders >= 12px
+    assert "border-radius: 12px" in html or "border-radius: 16px" in html or "border-radius: 18px" in html
+
+
+def test_app_ui_ac_ui_02_async_fetch_and_inr_formatting(client):
+    res = client.get("/app")
+    assert res.status_code == 200
+    html = res.text
+    # Asynchronous fetch calls
+    assert "fetch('/forecast_revenue'" in html
+    assert "fetch('/predict_profitability'" in html
+    # INR currency formatting and KPI elements
+    assert "currency: 'INR'" in html
+    assert "en-IN" in html
+    assert "₹" in html
+    assert 'id="res-revenue"' in html
+    assert "Run Campaign Forecast" in html
+
+
+def test_app_ui_ac_ui_03_profitable_emerald_badge(client):
+    res = client.get("/app")
+    assert res.status_code == 200
+    html = res.text
+    assert "📈 Forecasted Status: PROFITABLE CAMPAIGN" in html
+    assert ".profit-badge.emerald-glass" in html
+    assert "emerald-glass" in html
+
+
+def test_app_ui_ac_ui_04_unprofitable_ruby_badge(client):
+    res = client.get("/app")
+    assert res.status_code == 200
+    html = res.text
+    assert "📉 Forecasted Status: NET OPERATIONAL LOSS" in html
+    assert ".profit-badge.ruby-glass" in html
+    assert "ruby-glass" in html
+
+
+def test_app_ui_form_elements_and_brands(client):
+    res = client.get("/app")
+    assert res.status_code == 200
+    html = res.text
+    # Brand selection buttons
+    for brand in ["Nykaa", "Purplle", "Tira"]:
+        assert brand in html
+    # Form input fields in 3-column layout
+    for field_id in [
+        "campaign_type",
+        "target_audience",
+        "customer_segment",
+        "language",
+        "month",
+        "impressions",
+        "clicks",
+        "leads",
+        "conversions",
+        "engagement_score",
+        "acquisition_cost",
+    ]:
+        assert f'id="{field_id}"' in html
+    # Multi-channel checkboxes
+    for channel in ["YouTube", "Instagram", "Google", "WhatsApp", "Email", "Facebook"]:
+        assert channel in html
+
+
+def test_app_ui_client_side_validation_logic(client):
+    res = client.get("/app")
+    assert res.status_code == 200
+    html = res.text
+    # Validation function and invariants
+    assert "validateInvariants" in html
+    assert "clicks > impressions" in html
+    assert "conversions > clicks" in html
+    assert "leads > clicks" in html
+    assert "month < 1 || month > 12" in html
+    assert "channels.length === 0" in html
+
+
+def test_app_ui_service_health_pill(client):
+    res = client.get("/app")
+    assert res.status_code == 200
+    html = res.text
+    # Service health checking
+    assert "fetch('/health'" in html
+    assert "status-pill" in html
+    assert "status-dot" in html
+    assert "status-text" in html
+
+
+def test_app_ui_invalid_methods(client):
+    # GET and HEAD are permitted; other methods return 405 Method Not Allowed
+    res_post = client.post("/app")
+    assert res_post.status_code == 405
+    res_put = client.put("/app")
+    assert res_put.status_code == 405
+    res_delete = client.delete("/app")
+    assert res_delete.status_code == 405
+
+
+
+

@@ -11,6 +11,7 @@ from typing import Any, AsyncIterator, Literal
 
 import joblib
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -178,6 +179,24 @@ def _load_model(path: str):
         else:
             raise FileNotFoundError(f"Missing model: {path}. Run python src/train_models.py")
     return joblib.load(path)
+
+
+INDEX_HTML_PATH = os.path.join(ROOT, "api", "index.html")
+
+
+@app.get("/", include_in_schema=False)
+def root_redirect() -> RedirectResponse:
+    """Redirect root traffic to the interactive web application."""
+    return RedirectResponse(url="/app", status_code=307)
+
+
+@app.get("/app", include_in_schema=False)
+@app.get("/app/", include_in_schema=False)
+def serve_app() -> FileResponse:
+    """Serve the dark-mode glassmorphic single-page web app."""
+    if not os.path.exists(INDEX_HTML_PATH):
+        raise HTTPException(status_code=404, detail="Single-page application not found")
+    return FileResponse(INDEX_HTML_PATH, media_type="text/html")
 
 
 @app.get("/health")

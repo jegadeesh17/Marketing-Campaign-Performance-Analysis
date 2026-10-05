@@ -88,7 +88,7 @@
             "tests/test_api.py"
           ],
           "acceptance_criteria": "Satisfies SPEC Journey 2, AC-UI-01, AC-UI-02, AC-UI-03, AC-UI-04, AC-UI-05, and ADR-0007. Verified by running 'pytest -q tests/test_api.py -k test_app_ui' checking HTTP 200 for GET /app, HTML content-type, presence of 'backdrop-filter: blur(16px)', 'Forecasted Revenue', INR currency formatting, and HTTP 307 redirect from GET / to /app.",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "M2-TASK-03",
