@@ -132,7 +132,7 @@
             "tests/test_api.py"
           ],
           "acceptance_criteria": "Satisfies SPEC AC-PROBE-01, AC-PROBE-02, AC-PROBE-03, RC-03. Verified by running 'pytest -q tests/test_api.py', verifying GET /health returns version and uptime_seconds, and GET /ready returns 200 when models are loaded and 503 when models are absent.",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "M3-TASK-02",

@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 from typing import Any, AsyncIterator, Literal
 
 import joblib
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -41,9 +41,14 @@ except Exception:
     pass
 
 
+START_TIME = time.time()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Load XGBoost models into app.state.models on startup; clear cache on shutdown."""
+    if not hasattr(app.state, "start_time") or app.state.start_time is None:
+        app.state.start_time = START_TIME
     settings = get_settings()
     models: dict[str, Any] = {}
     model_dir = (
@@ -72,6 +77,7 @@ app = FastAPI(
 )
 app.state.models = {}
 app.state.settings = get_settings()
+app.state.start_time = START_TIME
 
 BrandType = Literal["nykaa", "purplle", "tira"]
 CampaignType = Literal["Social Media", "Paid Ads", "Influencer", "Email", "SEO"]
@@ -165,6 +171,20 @@ class BatchProfitabilityResponse(BaseModel):
     latency_ms: float = Field(..., description="Batch inference processing latency in milliseconds")
 
 
+class HealthResponse(BaseModel):
+    status: str = Field(default="ok", description="Operational status flag")
+    version: str = Field(default="1.0.0", description="Semantic microservice version")
+    revenue_model: bool = Field(..., description="Indicates if revenue regressor is loaded in memory")
+    profit_model: bool = Field(..., description="Indicates if profit classifier is loaded in memory")
+    uptime_seconds: float = Field(..., description="Microservice continuous runtime in seconds")
+
+
+class ReadinessResponse(BaseModel):
+    status: Literal["ready", "unready"] = Field(..., description="Readiness status for ingress traffic")
+    models_loaded: bool = Field(..., description="True if both inference models are pre-loaded")
+    detail: str | None = Field(default=None, description="Diagnostic error detail if unready")
+
+
 def _load_model(path: str):
     if not os.path.exists(path):
         settings = get_settings()
@@ -199,22 +219,55 @@ def serve_app() -> FileResponse:
     return FileResponse(INDEX_HTML_PATH, media_type="text/html")
 
 
-@app.get("/health")
-def health() -> dict:
-    settings = get_settings()
-    model_dir = (
-        settings.model_dir
-        if os.path.isabs(settings.model_dir)
-        else os.path.join(ROOT, settings.model_dir)
-    )
-    models = getattr(app.state, "models", {})
+@app.get("/health", response_model=HealthResponse)
+def health() -> HealthResponse:
+    """Liveness check reporting process uptime, version, and model flags."""
+    models = getattr(app.state, "models", None) or {}
     revenue_loaded = bool(models.get("revenue_regressor") or models.get("revenue"))
     profit_loaded = bool(models.get("profit_classifier") or models.get("profit"))
-    return {
-        "status": "ok",
-        "revenue_model": revenue_loaded or os.path.exists(os.path.join(model_dir, "revenue_regressor.joblib")),
-        "profit_model": profit_loaded or os.path.exists(os.path.join(model_dir, "profit_classifier.joblib")),
-    }
+    start_time = getattr(app.state, "start_time", None) or START_TIME
+    uptime_seconds = round(max(0.0, time.time() - start_time), 2)
+    return HealthResponse(
+        status="ok",
+        version="1.0.0",
+        revenue_model=revenue_loaded,
+        profit_model=profit_loaded,
+        uptime_seconds=uptime_seconds,
+    )
+
+
+@app.get(
+    "/ready",
+    response_model=ReadinessResponse,
+    response_model_exclude_none=True,
+    responses={
+        200: {"model": ReadinessResponse, "description": "Service is ready to handle traffic"},
+        503: {"model": ReadinessResponse, "description": "Service is unready; models not loaded in memory"},
+    },
+)
+def ready(response: Response) -> ReadinessResponse:
+    """Readiness check verifying models are loaded in app.state.models."""
+    models = getattr(app.state, "models", None) or {}
+    revenue_loaded = bool(models.get("revenue_regressor") or models.get("revenue"))
+    profit_loaded = bool(models.get("profit_classifier") or models.get("profit"))
+
+    if not (revenue_loaded and profit_loaded):
+        response.status_code = 503
+        missing: list[str] = []
+        if not revenue_loaded:
+            missing.append("revenue_regressor")
+        if not profit_loaded:
+            missing.append("profit_classifier")
+        return ReadinessResponse(
+            status="unready",
+            models_loaded=False,
+            detail=f"Inference models missing or not loaded in app.state.models: {', '.join(missing)}",
+        )
+
+    return ReadinessResponse(
+        status="ready",
+        models_loaded=True,
+    )
 
 
 @app.post("/forecast_revenue", response_model=RevenuePredictionResponse)

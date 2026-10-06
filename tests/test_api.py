@@ -28,7 +28,15 @@ def client():
 
 
 def test_health(client):
-    assert client.get("/health").status_code == 200
+    res = client.get("/health")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "ok"
+    assert data["version"] == "1.0.0"
+    assert data["revenue_model"] is True
+    assert data["profit_model"] is True
+    assert isinstance(data["uptime_seconds"], (int, float))
+    assert data["uptime_seconds"] >= 0.0
 
 
 def test_forecast_revenue(client):
@@ -645,6 +653,211 @@ def test_app_ui_invalid_methods(client):
     assert res_put.status_code == 405
     res_delete = client.delete("/app")
     assert res_delete.status_code == 405
+
+
+def test_health_uptime_increases(client):
+    import time
+
+    res1 = client.get("/health")
+    assert res1.status_code == 200
+    time.sleep(0.02)
+    res2 = client.get("/health")
+    assert res2.status_code == 200
+    assert res2.json()["uptime_seconds"] >= res1.json()["uptime_seconds"]
+
+
+def test_health_unloaded_models():
+    from api.main import app
+
+    original_models = getattr(app.state, "models", {})
+    try:
+        app.state.models = {}
+        test_client = TestClient(app)
+        res = test_client.get("/health")
+        assert res.status_code == 200
+        data = res.json()
+        assert data["status"] == "ok"
+        assert data["version"] == "1.0.0"
+        assert data["revenue_model"] is False
+        assert data["profit_model"] is False
+        assert data["uptime_seconds"] >= 0.0
+    finally:
+        app.state.models = original_models
+
+
+def test_health_response_schema_direct():
+    from api.main import HealthResponse
+
+    hr = HealthResponse(
+        status="ok",
+        version="1.0.0",
+        revenue_model=True,
+        profit_model=True,
+        uptime_seconds=12.34,
+    )
+    assert hr.status == "ok"
+    assert hr.version == "1.0.0"
+    assert hr.revenue_model is True
+    assert hr.profit_model is True
+    assert hr.uptime_seconds == 12.34
+
+
+def test_ready_success_when_models_loaded_ac_probe_01(client):
+    res = client.get("/ready")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "ready"
+    assert data["models_loaded"] is True
+    assert "detail" not in data or data["detail"] is None
+
+
+def test_ready_failure_when_models_unloaded_ac_probe_02():
+    from api.main import app
+
+    original_models = getattr(app.state, "models", {})
+    try:
+        app.state.models = {}
+        test_client = TestClient(app)
+        res = test_client.get("/ready")
+        assert res.status_code == 503
+        data = res.json()
+        assert data["status"] == "unready"
+        assert data["models_loaded"] is False
+        assert "revenue_regressor" in data["detail"]
+        assert "profit_classifier" in data["detail"]
+    finally:
+        app.state.models = original_models
+
+
+def test_ready_failure_when_partial_models_loaded():
+    from api.main import app
+
+    original_models = getattr(app.state, "models", {})
+    try:
+        mock_reg = MagicMock()
+        app.state.models = {"revenue_regressor": mock_reg}
+        test_client = TestClient(app)
+
+        res = test_client.get("/ready")
+        assert res.status_code == 503
+        data = res.json()
+        assert data["status"] == "unready"
+        assert data["models_loaded"] is False
+        assert "profit_classifier" in data["detail"]
+
+        mock_clf = MagicMock()
+        app.state.models = {"profit_classifier": mock_clf}
+        res2 = test_client.get("/ready")
+        assert res2.status_code == 503
+        data2 = res2.json()
+        assert data2["status"] == "unready"
+        assert data2["models_loaded"] is False
+        assert "revenue_regressor" in data2["detail"]
+    finally:
+        app.state.models = original_models
+
+
+def test_ready_and_health_with_lifespan():
+    from api.main import app
+
+    with TestClient(app) as test_client:
+        res_ready = test_client.get("/ready")
+        assert res_ready.status_code == 200
+        assert res_ready.json() == {"status": "ready", "models_loaded": True}
+
+        res_health = test_client.get("/health")
+        assert res_health.status_code == 200
+        health_data = res_health.json()
+        assert health_data["status"] == "ok"
+        assert health_data["version"] == "1.0.0"
+        assert health_data["revenue_model"] is True
+        assert health_data["profit_model"] is True
+        assert health_data["uptime_seconds"] >= 0.0
+
+
+def test_readiness_response_schema_direct():
+    from api.main import ReadinessResponse
+
+    r_ready = ReadinessResponse(status="ready", models_loaded=True)
+    assert r_ready.status == "ready"
+    assert r_ready.models_loaded is True
+    assert r_ready.detail is None
+
+    r_unready = ReadinessResponse(
+        status="unready",
+        models_loaded=False,
+        detail="Missing revenue_regressor",
+    )
+    assert r_unready.status == "unready"
+    assert r_unready.models_loaded is False
+    assert r_unready.detail == "Missing revenue_regressor"
+
+
+def test_probes_invalid_http_methods(client):
+    # Probes only accept GET/HEAD; any mutating method should return 405 Method Not Allowed
+    for method in ["post", "put", "delete", "patch"]:
+        res_health = client.request(method, "/health")
+        assert res_health.status_code == 405, f"Expected 405 for {method.upper()} /health, got {res_health.status_code}"
+
+        res_ready = client.request(method, "/ready")
+        assert res_ready.status_code == 405, f"Expected 405 for {method.upper()} /ready, got {res_ready.status_code}"
+
+
+def test_ready_and_health_with_corrupt_or_none_models_state():
+    from api.main import app
+
+    original_models = getattr(app.state, "models", {})
+    try:
+        # Test app.state.models set to None
+        app.state.models = None
+        test_client = TestClient(app)
+
+        res_health = test_client.get("/health")
+        assert res_health.status_code == 200
+        health_data = res_health.json()
+        assert health_data["status"] == "ok"
+        assert health_data["revenue_model"] is False
+        assert health_data["profit_model"] is False
+
+        res_ready = test_client.get("/ready")
+        assert res_ready.status_code == 503
+        ready_data = res_ready.json()
+        assert ready_data["status"] == "unready"
+        assert ready_data["models_loaded"] is False
+
+        # Test app.state.models with explicit None values
+        app.state.models = {"revenue_regressor": None, "profit_classifier": None}
+        res_ready_none = test_client.get("/ready")
+        assert res_ready_none.status_code == 503
+        assert res_ready_none.json()["models_loaded"] is False
+    finally:
+        app.state.models = original_models
+
+
+def test_readiness_response_schema_invalid_status_rejection():
+    from pydantic import ValidationError
+    from api.main import ReadinessResponse
+
+    # Invalid status not in Literal["ready", "unready"]
+    with pytest.raises(ValidationError):
+        ReadinessResponse(status="degraded", models_loaded=True)
+
+    with pytest.raises(ValidationError):
+        ReadinessResponse(status="ok", models_loaded=True)
+
+
+def test_health_response_schema_missing_fields_rejection():
+    from pydantic import ValidationError
+    from api.main import HealthResponse
+
+    # Missing mandatory boolean and uptime fields
+    with pytest.raises(ValidationError):
+        HealthResponse(status="ok")
+
+    with pytest.raises(ValidationError):
+        HealthResponse(status="ok", version="1.0.0", revenue_model=True)
+
+
 
 
 
