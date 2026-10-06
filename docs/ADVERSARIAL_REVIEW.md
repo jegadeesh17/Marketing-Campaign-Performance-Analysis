@@ -38,4 +38,17 @@ None
 - `Dockerfile:58`: The `RUN chown -R appuser:appgroup /app` layer adds a small additional image layer on top of `COPY --chown=appuser:appgroup` directives (lines 52–55). While completely safe and functional, future image size optimization could consolidate ownership assignment during initial file creation.
 - `docker-compose.yml:44`: The `depends_on` condition for the optional `db` service uses `required: false`, which is supported in Docker Compose v2.20+. Ensure CI or target deployment runner environments use modern Compose specifications when spinning up the multi-container stack.
 
+---
 
+## Milestone M3 Review
+**Verdict:** APPROVED  
+**Date:** 2026-10-06  
+**Test Command:** `python -m pytest -q` -> exit code 0 (131 passed)  
+**Base Commit:** `c0c4220ea1ede5968d7369dd6fda558928f6f897`
+
+### Critical Defects (must fix; any defect means REJECTED)
+None
+
+### Recommendations (non-blocking)
+- `scripts/smoke_test.py:22`: Add `warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")` at the top of the smoke test CLI script to suppress non-fatal `InconsistentVersionWarning` notices when loading pre-trained pipelines across differing scikit-learn minor versions.
+- `api/main.py:27`: In `structured_logging_middleware`, if deployed behind log collectors like Google Cloud Logging or Datadog that parse JSON payloads from standard streams, configuring a dedicated JSON log formatter or ensuring the root logger does not prepend standard prefix stamps (`INFO:api.main:...`) will ensure pure JSON logs on stdout.

@@ -8,6 +8,6 @@
 - [x] Phase 2.4: Setup (tools checked, credentials listed, user confirmed)
 - [x] Phase 3.1: M1 built, verified and committed per task, reviewed, CHANGELOG updated
 - [x] Phase 3.2: M2 built, verified and committed per task, reviewed, CHANGELOG updated
-- [ ] Phase 3.3: M3 built, verified and committed per task, reviewed, CHANGELOG updated
+- [x] Phase 3.3: M3 built, verified and committed per task, reviewed, CHANGELOG updated
 - [ ] Phase 4: Final test run, README, and handover
 
