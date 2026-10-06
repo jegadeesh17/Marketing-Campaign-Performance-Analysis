@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Reactive Auto-Forecast debouncing (320ms) and dynamic synchronization indicator (`.sync-pill`) in workstation UI (`api/index.html`).
+- Scenario Delta Tracking (`#res-revenue-delta`) displaying comparative variance (`+₹... (+...% vs last run)`) on the revenue KPI banner.
+- Inline input error states (`.input-error`) and dynamic error highlighting for perimeter invariant violations.
+- Deep-linking URL parameter synchronization (`window.history.replaceState`) and executive "Copy Brief" clipboard action.
 - Operational Readiness Probe endpoint (`GET /ready`) returning HTTP 200/503 based on in-memory model initialization status (`M3-TASK-01`).
 - Structured JSON logging middleware in `api/main.py` recording ISO-8601 timestamps, HTTP method, path, status code, and execution latency without leaking request bodies (`M3-TASK-02`).
 - Automated end-to-end smoke verification script (`scripts/smoke_test.py`) with live server testing and offline in-process `--mock` execution, alongside integration test coverage in `tests/test_smoke.py` (`M3-TASK-03`).
