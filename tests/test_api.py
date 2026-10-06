@@ -643,6 +643,27 @@ def test_app_ui_service_health_pill(client):
     assert "status-text" in html
 
 
+def test_app_ui_reactive_and_comparison_features(client):
+    res = client.get("/app")
+    assert res.status_code == 200
+    html = res.text
+    # Reactive debouncing & sync status
+    assert "scheduleAutoForecast" in html
+    assert "sync-pill" in html
+    assert "sync-status-text" in html
+    # Scenario delta tracking
+    assert 'id="res-revenue-delta"' in html
+    assert "kpi-delta-badge" in html
+    # Inline validation highlighting
+    assert "input.input-error" in html
+    assert "clearInputErrors" in html
+    # Brief export & URL deep-linking
+    assert 'id="copy-brief-btn"' in html
+    assert "copyScenarioBrief" in html
+    assert "syncURLParams" in html
+    assert "initURLParams" in html
+
+
 def test_app_ui_invalid_methods(client):
     # GET and HEAD are permitted; other methods return 405 Method Not Allowed
     res_post = client.post("/app")

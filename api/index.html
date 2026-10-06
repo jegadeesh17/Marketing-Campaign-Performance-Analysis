@@ -369,6 +369,11 @@
             font-variant-numeric: tabular-nums;
         }
 
+        input.input-error {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+        }
+
         input:focus-visible,
         select:focus-visible {
             outline: none;
@@ -540,11 +545,44 @@
             display: flex;
         }
 
-        /* Submit */
+        /* Submit & Sync Status */
         .submit-area {
             display: flex;
             flex-direction: column;
             gap: var(--space-1);
+        }
+
+        .submit-status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--fs-meta);
+        }
+
+        .sync-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            font-size: var(--fs-meta);
+        }
+
+        .sync-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10b981;
+            transition: background-color 0.2s ease;
+        }
+
+        .sync-pill.syncing .sync-dot {
+            background: #0066ff;
+            animation: pulse-sync 0.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse-sync {
+            from { opacity: 0.3; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1.15); }
         }
 
         .stale-note {
@@ -617,6 +655,58 @@
             letter-spacing: 0.06em;
             color: var(--text-muted);
             font-weight: 600;
+        }
+
+        .kpi-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .copy-brief-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 8px;
+            border-radius: var(--radius-control);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-hairline);
+            color: var(--text-muted);
+            font-size: var(--fs-meta);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .copy-brief-btn:hover {
+            color: var(--text-heading);
+            border-color: var(--border-strong);
+            background: var(--bg-segment);
+        }
+
+        .kpi-delta-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: var(--fs-meta);
+            font-family: var(--font-mono);
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+        }
+
+        .kpi-delta-badge.emerald-delta {
+            background: var(--emerald-bg);
+            border: 1px solid var(--emerald-border);
+            color: var(--emerald-text);
+        }
+
+        .kpi-delta-badge.ruby-delta {
+            background: var(--ruby-bg);
+            border: 1px solid var(--ruby-border);
+            color: var(--ruby-text);
         }
 
         .hero-row {
@@ -1252,7 +1342,13 @@
 
                     <!-- Submit -->
                     <div class="submit-area">
-                        <p class="stale-note" id="stale-note" hidden>Inputs changed. Run forecast to update the model output.</p>
+                        <div class="submit-status-row">
+                            <div class="sync-pill" id="sync-pill">
+                                <span class="sync-dot"></span>
+                                <span id="sync-status-text">Synced</span>
+                            </div>
+                            <p class="stale-note" id="stale-note" hidden>Inputs changed. Run forecast to update the model output.</p>
+                        </div>
                         <button type="submit" id="forecast-btn" class="submit-btn">
                             <span>Run forecast</span>
                             <div class="spinner" id="forecast-spinner"></div>
@@ -1265,9 +1361,16 @@
             <main class="intelligence-column">
                 <!-- Result band -->
                 <section class="kpi-banner-card" id="results-display" aria-label="Forecast result">
-                    <div class="kpi-col-label">Forecasted Revenue</div>
+                    <div class="kpi-header-row">
+                        <div class="kpi-col-label">Forecasted Revenue</div>
+                        <button type="button" id="copy-brief-btn" class="copy-brief-btn" onclick="copyScenarioBrief()" title="Copy scenario brief to clipboard">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span id="copy-brief-label">Copy Brief</span>
+                        </button>
+                    </div>
                     <div class="hero-row">
                         <div class="kpi-revenue-val" id="res-revenue">₹1,25,000.00</div>
+                        <span id="res-revenue-delta" class="kpi-delta-badge" hidden></span>
                         <div id="res-profit-badge" class="profit-badge emerald-glass"><span>Profitable</span></div>
                     </div>
                     <div class="hero-sub">
@@ -1478,7 +1581,9 @@
     ];
 
     let currentForecastedRevenue = 125000.0;
+    let previousForecastedRevenue = null;
     let currentIsProfitable = true;
+    let autoForecastTimer = null;
     // Signature of the inputs behind the model output currently on screen
     let lastForecastSig = null;
 
@@ -1577,7 +1682,15 @@
         if (showCurve) updateSensitivityCurve(currentForecastedRevenue, currentIsProfitable);
     }
 
+    function clearInputErrors() {
+        ['impressions', 'clicks', 'leads', 'conversions', 'acquisition_cost', 'month'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('input-error');
+        });
+    }
+
     function validateInvariants() {
+        clearInputErrors();
         const impressions = parseFloat(document.getElementById('impressions').value) || 0;
         const clicks = parseFloat(document.getElementById('clicks').value) || 0;
         const leads = parseFloat(document.getElementById('leads').value) || 0;
@@ -1591,6 +1704,7 @@
         const submitBtn = document.getElementById('forecast-btn');
 
         if (clicks > impressions) {
+            document.getElementById('clicks').classList.add('input-error');
             banner.classList.add('show');
             msg.textContent = `Invariant Violated: Clicks (${clicks.toLocaleString()}) cannot exceed impressions (${impressions.toLocaleString()}).`;
             submitBtn.disabled = true;
@@ -1598,6 +1712,7 @@
         }
 
         if (conversions > clicks) {
+            document.getElementById('conversions').classList.add('input-error');
             banner.classList.add('show');
             msg.textContent = `Invariant Violated: Conversions (${conversions.toLocaleString()}) cannot exceed clicks (${clicks.toLocaleString()}).`;
             submitBtn.disabled = true;
@@ -1605,6 +1720,7 @@
         }
 
         if (leads > clicks) {
+            document.getElementById('leads').classList.add('input-error');
             banner.classList.add('show');
             msg.textContent = `Invariant Violated: Leads (${leads.toLocaleString()}) cannot exceed clicks (${clicks.toLocaleString()}).`;
             submitBtn.disabled = true;
@@ -1612,6 +1728,11 @@
         }
 
         if (impressions < 0 || clicks < 0 || leads < 0 || conversions < 0 || acquisitionCost < 0) {
+            if (impressions < 0) document.getElementById('impressions').classList.add('input-error');
+            if (clicks < 0) document.getElementById('clicks').classList.add('input-error');
+            if (leads < 0) document.getElementById('leads').classList.add('input-error');
+            if (conversions < 0) document.getElementById('conversions').classList.add('input-error');
+            if (acquisitionCost < 0) document.getElementById('acquisition_cost').classList.add('input-error');
             banner.classList.add('show');
             msg.textContent = 'Invariant Violated: Funnel metrics and costs cannot be negative.';
             submitBtn.disabled = true;
@@ -1619,6 +1740,7 @@
         }
 
         if (month < 1 || month > 12) {
+            document.getElementById('month').classList.add('input-error');
             banner.classList.add('show');
             msg.textContent = 'Execution month must be between 1 and 12.';
             submitBtn.disabled = true;
@@ -1880,9 +2002,28 @@
         updateFunnelChart();
         updateSensitivityCurve(currentForecastedRevenue, currentIsProfitable);
 
-        // Ratios above are live; the model output only changes on Run forecast
+        // Ratios above are live; the model output updates reactively via debouncing or on Run forecast
+        const isDirty = formSignature() !== lastForecastSig;
         const staleNote = document.getElementById('stale-note');
-        if (staleNote) staleNote.hidden = formSignature() === lastForecastSig;
+        if (staleNote) staleNote.hidden = !isDirty;
+
+        syncURLParams();
+
+        if (isValid && isDirty) {
+            scheduleAutoForecast();
+        }
+    }
+
+    function scheduleAutoForecast() {
+        clearTimeout(autoForecastTimer);
+        const syncPill = document.getElementById('sync-pill');
+        const syncText = document.getElementById('sync-status-text');
+        if (syncPill) syncPill.classList.add('syncing');
+        if (syncText) syncText.textContent = 'Updating…';
+
+        autoForecastTimer = setTimeout(() => {
+            runForecast(true);
+        }, 320);
     }
 
     async function checkServiceHealth() {
@@ -1926,17 +2067,22 @@
         return JSON.stringify(collectPayload());
     }
 
-    async function handleForecastSubmit(e) {
-        e.preventDefault();
+    async function runForecast(isAuto = false) {
         if (!validateInvariants()) return;
 
         const submitBtn = document.getElementById('forecast-btn');
         const spinner = document.getElementById('forecast-spinner');
-        submitBtn.disabled = true;
-        spinner.style.display = 'inline-block';
+        const syncPill = document.getElementById('sync-pill');
+        const syncText = document.getElementById('sync-status-text');
+
+        if (!isAuto) {
+            submitBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+        }
+        if (syncPill) syncPill.classList.add('syncing');
+        if (syncText) syncText.textContent = 'Updating…';
 
         const startTime = performance.now();
-
         const payload = collectPayload();
 
         try {
@@ -1956,7 +2102,7 @@
             if (!revRes.ok || !profRes.ok) {
                 const errData = await (revRes.ok ? profRes.json() : revRes.json());
                 const detail = errData.detail ? (typeof errData.detail === 'string' ? errData.detail : JSON.stringify(errData.detail)) : 'Prediction failed';
-                alert('API Error: ' + detail);
+                if (!isAuto) alert('API Error: ' + detail);
                 return;
             }
 
@@ -1967,6 +2113,21 @@
             // Update Forecasted Revenue KPI
             const revenueVal = revData.forecasted_revenue;
             document.getElementById('res-revenue').textContent = formatINR(revenueVal);
+
+            // Delta Tracking vs Last Run
+            const deltaEl = document.getElementById('res-revenue-delta');
+            if (deltaEl) {
+                if (previousForecastedRevenue !== null && previousForecastedRevenue > 0 && Math.abs(revenueVal - previousForecastedRevenue) > 1) {
+                    const diff = revenueVal - previousForecastedRevenue;
+                    const pct = (diff / previousForecastedRevenue) * 100;
+                    const isPos = diff >= 0;
+                    deltaEl.hidden = false;
+                    deltaEl.className = `kpi-delta-badge ${isPos ? 'emerald-delta' : 'ruby-delta'}`;
+                    deltaEl.textContent = `${isPos ? '+' : '-'}${formatCompactINR(Math.abs(diff))} (${isPos ? '+' : ''}${pct.toFixed(1)}% vs last)`;
+                } else {
+                    deltaEl.hidden = true;
+                }
+            }
 
             // Update Profitability Status Badge
             const badge = document.getElementById('res-profit-badge');
@@ -1985,16 +2146,129 @@
             document.getElementById('telemetry-latency').textContent = `Forecast took ${elapsed} ms`;
             document.getElementById('telemetry-timestamp').textContent = `Run at ${new Date().toLocaleTimeString()}`;
 
+            previousForecastedRevenue = currentForecastedRevenue;
             currentForecastedRevenue = revenueVal;
             currentIsProfitable = profData.profitable;
             lastForecastSig = JSON.stringify(payload);
-            triggerLivePreview();
+
+            const staleNote = document.getElementById('stale-note');
+            if (staleNote) staleNote.hidden = true;
+
+            // Redraw sensitivity curve with new forecast
+            updateSensitivityCurve(currentForecastedRevenue, currentIsProfitable);
         } catch (err) {
-            alert('Network or server connection failed: ' + err.message);
+            if (!isAuto) alert('Network or server connection failed: ' + err.message);
         } finally {
             submitBtn.disabled = false;
             spinner.style.display = 'none';
+            if (syncPill) syncPill.classList.remove('syncing');
+            if (syncText) syncText.textContent = 'Synced';
         }
+    }
+
+    async function handleForecastSubmit(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        clearTimeout(autoForecastTimer);
+        await runForecast(false);
+    }
+
+    async function copyScenarioBrief() {
+        const payload = collectPayload();
+        const brandTitle = payload.brand.charAt(0).toUpperCase() + payload.brand.slice(1);
+        const revText = document.getElementById('res-revenue').textContent;
+        const profitBadge = document.getElementById('res-profit-badge');
+        const profitStatus = profitBadge ? profitBadge.textContent.trim() : (currentIsProfitable ? 'Profitable' : 'Not profitable');
+        const ctr = document.getElementById('res-ctr').textContent;
+        const cr = document.getElementById('res-cr').textContent;
+        const cpl = document.getElementById('res-cpl').textContent;
+        const monthLabel = MONTH_NAMES[payload.month] || `Month ${payload.month}`;
+
+        const brief = [
+            `Marketing Intelligence Forecast: ${brandTitle}`,
+            `• Strategy: ${payload.campaign_type} (${monthLabel}) | Channels: ${payload.channels.join(', ')}`,
+            `• Forecasted Revenue: ${revText} [${profitStatus}]`,
+            `• Funnel: ${Math.round(payload.impressions).toLocaleString()} Imp → ${Math.round(payload.clicks).toLocaleString()} Clicks (${ctr} CTR) → ${Math.round(payload.conversions).toLocaleString()} Conv (${cr} CR)`,
+            `• Unit Economics: CPA ₹${payload.acquisition_cost.toFixed(2)} | CPL ${cpl}`,
+            `• Audience: ${payload.target_audience} · ${payload.customer_segment} (${payload.language})`
+        ].join('\n');
+
+        const btn = document.getElementById('copy-brief-btn');
+        const label = document.getElementById('copy-brief-label');
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(brief);
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = brief;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+            if (label) {
+                const orig = label.textContent;
+                label.textContent = 'Copied!';
+                if (btn) {
+                    btn.style.borderColor = 'var(--emerald-border)';
+                    btn.style.color = 'var(--emerald-text)';
+                }
+                setTimeout(() => {
+                    label.textContent = orig;
+                    if (btn) {
+                        btn.style.borderColor = '';
+                        btn.style.color = '';
+                    }
+                }, 2000);
+            }
+        } catch (err) {
+            console.error('Failed to copy brief:', err);
+        }
+    }
+
+    function syncURLParams() {
+        try {
+            const payload = collectPayload();
+            const params = new URLSearchParams();
+            params.set('brand', payload.brand);
+            params.set('strategy', payload.campaign_type);
+            params.set('month', payload.month);
+            params.set('imp', payload.impressions);
+            params.set('clicks', payload.clicks);
+            params.set('leads', payload.leads);
+            params.set('conv', payload.conversions);
+            params.set('cpa', payload.acquisition_cost);
+            params.set('channels', payload.channels.join(','));
+            const newUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
+            window.history.replaceState(null, '', newUrl);
+        } catch (e) {}
+    }
+
+    function initURLParams() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            if (!params.has('brand') && !params.has('imp')) return;
+
+            if (params.has('brand')) selectBrand(params.get('brand'));
+            if (params.has('strategy')) document.getElementById('campaign_type').value = params.get('strategy');
+            if (params.has('month')) {
+                const m = parseInt(params.get('month'), 10);
+                if (m >= 1 && m <= 12) {
+                    document.getElementById('month').value = m;
+                    updateMonthDisplay(m);
+                }
+            }
+            if (params.has('imp')) document.getElementById('impressions').value = params.get('imp');
+            if (params.has('clicks')) document.getElementById('clicks').value = params.get('clicks');
+            if (params.has('leads')) document.getElementById('leads').value = params.get('leads');
+            if (params.has('conv')) document.getElementById('conversions').value = params.get('conv');
+            if (params.has('cpa')) document.getElementById('acquisition_cost').value = params.get('cpa');
+            if (params.has('channels')) {
+                const list = params.get('channels').split(',').map(s => s.trim()).filter(Boolean);
+                if (list.length > 0) setChannels(list);
+            }
+        } catch (e) {}
     }
 
     function applyPreset(name) {
@@ -2096,6 +2370,7 @@
     });
 
     // Startup Invocation
+    initURLParams();
     lastForecastSig = formSignature();
     checkServiceHealth();
     triggerLivePreview();
