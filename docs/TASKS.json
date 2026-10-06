@@ -144,7 +144,7 @@
             "tests/test_api.py"
           ],
           "acceptance_criteria": "Satisfies SPEC AC-OBS-01. Verified by running 'pytest -q tests/test_api.py', capturing log output or checking response completion, verifying method, path, status_code, and latency_ms are recorded.",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "M3-TASK-03",

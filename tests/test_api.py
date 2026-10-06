@@ -1,3 +1,6 @@
+from datetime import datetime
+import json
+import logging
 import os
 import sys
 from unittest.mock import MagicMock, patch
@@ -856,6 +859,272 @@ def test_health_response_schema_missing_fields_rejection():
 
     with pytest.raises(ValidationError):
         HealthResponse(status="ok", version="1.0.0", revenue_model=True)
+
+
+# ============================================================================
+# M3-TASK-02: Structured JSON Logging & Latency Middleware Tests (AC-OBS-01)
+# ============================================================================
+
+
+def test_structured_logging_middleware_records_valid_json(client, caplog):
+    """AC-OBS-01: Verify structured JSON log entry contains timestamp, method, path, status_code, latency_ms."""
+    with caplog.at_level(logging.INFO, logger="api.main"):
+        caplog.clear()
+        response = client.get("/health")
+        assert response.status_code == 200
+
+        # Find matching log record from api.main
+        api_records = [r for r in caplog.records if r.name == "api.main"]
+        assert len(api_records) >= 1
+
+        record = api_records[-1]
+        log_data = json.loads(record.message)
+
+        assert "timestamp" in log_data
+        assert "method" in log_data
+        assert "path" in log_data
+        assert "status_code" in log_data
+        assert "latency_ms" in log_data
+
+        assert log_data["method"] == "GET"
+        assert log_data["path"] == "/health"
+        assert log_data["status_code"] == 200
+        assert isinstance(log_data["latency_ms"], (int, float))
+        assert log_data["latency_ms"] >= 0.0
+
+        # Verify timestamp is valid ISO 8601 format
+        parsed_time = datetime.fromisoformat(log_data["timestamp"])
+        assert parsed_time is not None
+
+
+def test_structured_logging_middleware_does_not_log_sensitive_payloads(client, caplog):
+    """Verify log records never include sensitive campaign inputs, spend, or request bodies."""
+    sensitive_payload = {
+        "brand": "nykaa",
+        "campaign_type": "Paid Ads",
+        "target_audience": "Youth",
+        "language": "English",
+        "customer_segment": "Premium Shoppers",
+        "month": 6,
+        "impressions": 99999.0,
+        "clicks": 8888.0,
+        "leads": 2222.0,
+        "conversions": 1111.0,
+        "engagement_score": 25.0,
+        "acquisition_cost": 499.0,
+        "channels": ["Instagram", "Google"],
+    }
+
+    with caplog.at_level(logging.INFO, logger="api.main"):
+        caplog.clear()
+        res = client.post("/forecast_revenue", json=sensitive_payload)
+        assert res.status_code == 200
+
+        api_records = [r for r in caplog.records if r.name == "api.main"]
+        assert len(api_records) >= 1
+
+        record = api_records[-1]
+        log_data = json.loads(record.message)
+
+        # Expected keys only
+        assert set(log_data.keys()) == {
+            "timestamp",
+            "method",
+            "path",
+            "status_code",
+            "latency_ms",
+        }
+        assert log_data["method"] == "POST"
+        assert log_data["path"] == "/forecast_revenue"
+        assert log_data["status_code"] == 200
+
+        # Raw log message must not leak any campaign inputs or numbers
+        raw_msg = record.message
+        assert "99999" not in raw_msg
+        assert "8888" not in raw_msg
+        assert "2222" not in raw_msg
+        assert "1111" not in raw_msg
+        assert "499" not in raw_msg
+        assert "impressions" not in raw_msg
+        assert "clicks" not in raw_msg
+        assert "acquisition_cost" not in raw_msg
+        assert "Premium Shoppers" not in raw_msg
+
+
+def test_structured_logging_middleware_captures_client_validation_error_422(client, caplog):
+    """Verify middleware records 422 Unprocessable Entity on invariant violation without leaking inputs."""
+    with caplog.at_level(logging.INFO, logger="api.main"):
+        caplog.clear()
+        res = client.post(
+            "/forecast_revenue",
+            json={"impressions": 100.0, "clicks": 200.0},
+        )
+        assert res.status_code == 422
+
+        api_records = [r for r in caplog.records if r.name == "api.main"]
+        assert len(api_records) >= 1
+
+        record = api_records[-1]
+        log_data = json.loads(record.message)
+
+        assert log_data["method"] == "POST"
+        assert log_data["path"] == "/forecast_revenue"
+        assert log_data["status_code"] == 422
+        assert isinstance(log_data["latency_ms"], (int, float))
+        assert log_data["latency_ms"] >= 0.0
+
+
+def test_structured_logging_middleware_batch_endpoints(client, caplog):
+    """Verify batch inference endpoints emit valid structured JSON logs."""
+    batch_payload = [
+        {"brand": "nykaa", "month": 5, "impressions": 50000.0, "clicks": 4000.0},
+        {"brand": "purplle", "month": 6, "impressions": 60000.0, "clicks": 5000.0},
+    ]
+
+    with caplog.at_level(logging.INFO, logger="api.main"):
+        caplog.clear()
+        res_rev = client.post("/forecast_revenue/batch", json=batch_payload)
+        assert res_rev.status_code == 200
+
+        rev_record = [r for r in caplog.records if r.name == "api.main"][-1]
+        rev_log = json.loads(rev_record.message)
+        assert rev_log["method"] == "POST"
+        assert rev_log["path"] == "/forecast_revenue/batch"
+        assert rev_log["status_code"] == 200
+        assert rev_log["latency_ms"] >= 0.0
+
+        caplog.clear()
+        res_prof = client.post("/predict_profitability/batch", json=batch_payload)
+        assert res_prof.status_code == 200
+
+        prof_record = [r for r in caplog.records if r.name == "api.main"][-1]
+        prof_log = json.loads(prof_record.message)
+        assert prof_log["method"] == "POST"
+        assert prof_log["path"] == "/predict_profitability/batch"
+        assert prof_log["status_code"] == 200
+        assert prof_log["latency_ms"] >= 0.0
+
+
+def test_structured_logging_middleware_probes_and_redirect(client, caplog):
+    """Verify middleware intercepts /ready, /, and /app accurately."""
+    with caplog.at_level(logging.INFO, logger="api.main"):
+        # Test /ready 200
+        caplog.clear()
+        res_ready = client.get("/ready")
+        assert res_ready.status_code == 200
+        ready_log = json.loads([r for r in caplog.records if r.name == "api.main"][-1].message)
+        assert ready_log["method"] == "GET"
+        assert ready_log["path"] == "/ready"
+        assert ready_log["status_code"] == 200
+
+        # Test redirect / -> /app (307)
+        caplog.clear()
+        res_redir = client.get("/", follow_redirects=False)
+        assert res_redir.status_code == 307
+        redir_log = json.loads([r for r in caplog.records if r.name == "api.main"][-1].message)
+        assert redir_log["method"] == "GET"
+        assert redir_log["path"] == "/"
+        assert redir_log["status_code"] == 307
+
+        # Test /app (200)
+        caplog.clear()
+        res_app = client.get("/app")
+        assert res_app.status_code == 200
+        app_log = json.loads([r for r in caplog.records if r.name == "api.main"][-1].message)
+        assert app_log["method"] == "GET"
+        assert app_log["path"] == "/app"
+        assert app_log["status_code"] == 200
+
+
+def test_structured_logging_middleware_readiness_503(client, caplog):
+    """Verify middleware records 503 status code when service is unready."""
+    from api.main import app
+
+    saved_models = app.state.models
+    try:
+        app.state.models = {}
+        with caplog.at_level(logging.INFO, logger="api.main"):
+            caplog.clear()
+            res = client.get("/ready")
+            assert res.status_code == 503
+
+            records = [r for r in caplog.records if r.name == "api.main"]
+            assert len(records) >= 1
+            log_data = json.loads(records[-1].message)
+            assert log_data["method"] == "GET"
+            assert log_data["path"] == "/ready"
+            assert log_data["status_code"] == 503
+            assert log_data["latency_ms"] >= 0.0
+    finally:
+        app.state.models = saved_models
+
+
+def test_structured_logging_middleware_unhandled_exception(caplog):
+    """Verify middleware logs status 500 and re-raises on unhandled endpoint exception."""
+    from api.main import app
+
+    # Temporarily add a failing route to test unhandled exception handling
+    @app.get("/test_crash_route")
+    def crash_route():
+        raise RuntimeError("simulated server crash")
+
+    try:
+        test_client = TestClient(app, raise_server_exceptions=False)
+        with caplog.at_level(logging.INFO, logger="api.main"):
+            caplog.clear()
+            res = test_client.get("/test_crash_route")
+            assert res.status_code == 500
+
+            records = [r for r in caplog.records if r.name == "api.main"]
+            assert len(records) >= 1
+            log_data = json.loads(records[-1].message)
+            assert log_data["method"] == "GET"
+            assert log_data["path"] == "/test_crash_route"
+            assert log_data["status_code"] == 500
+            assert log_data["latency_ms"] >= 0.0
+    finally:
+        # Clean up route from app
+        app.router.routes = [r for r in app.router.routes if getattr(r, "path", None) != "/test_crash_route"]
+
+
+def test_structured_logging_middleware_captures_404_not_found(client, caplog):
+    """Verify middleware intercepts non-existent route and logs 404 status code."""
+    with caplog.at_level(logging.INFO, logger="api.main"):
+        caplog.clear()
+        res = client.get("/non_existent_endpoint")
+        assert res.status_code == 404
+
+        records = [r for r in caplog.records if r.name == "api.main"]
+        assert len(records) >= 1
+        log_data = json.loads(records[-1].message)
+        assert log_data["method"] == "GET"
+        assert log_data["path"] == "/non_existent_endpoint"
+        assert log_data["status_code"] == 404
+        assert isinstance(log_data["latency_ms"], (int, float))
+        assert log_data["latency_ms"] >= 0.0
+
+
+def test_structured_logging_middleware_malformed_json_body(client, caplog):
+    """Verify middleware logs 422 on completely malformed JSON payload."""
+    with caplog.at_level(logging.INFO, logger="api.main"):
+        caplog.clear()
+        res = client.post(
+            "/forecast_revenue",
+            content=b"not valid json {{{",
+            headers={"Content-Type": "application/json"},
+        )
+        assert res.status_code == 422
+
+        records = [r for r in caplog.records if r.name == "api.main"]
+        assert len(records) >= 1
+        log_data = json.loads(records[-1].message)
+        assert log_data["method"] == "POST"
+        assert log_data["path"] == "/forecast_revenue"
+        assert log_data["status_code"] == 422
+        assert isinstance(log_data["latency_ms"], (int, float))
+        assert log_data["latency_ms"] >= 0.0
+
+
 
 
 

@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+import json
+import logging
 import os
 import sys
 import time
@@ -10,7 +13,7 @@ from contextlib import asynccontextmanager
 from typing import Any, AsyncIterator, Literal
 
 import joblib
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -20,6 +23,10 @@ if ROOT not in sys.path:
 
 from src.config import get_settings
 from src.inference import build_batch_campaign_rows, build_campaign_row
+
+logger = logging.getLogger("api.main")
+_initial_settings = get_settings()
+logger.setLevel(getattr(logging, _initial_settings.log_level.upper(), logging.INFO))
 
 # Ensure backwards compatibility for models pickled in scikit-learn 1.6
 try:
@@ -50,6 +57,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     if not hasattr(app.state, "start_time") or app.state.start_time is None:
         app.state.start_time = START_TIME
     settings = get_settings()
+    log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
+    logger.setLevel(log_level)
     models: dict[str, Any] = {}
     model_dir = (
         settings.model_dir
@@ -78,6 +87,29 @@ app = FastAPI(
 app.state.models = {}
 app.state.settings = get_settings()
 app.state.start_time = START_TIME
+
+
+@app.middleware("http")
+async def structured_logging_middleware(
+    request: Request, call_next: Any
+) -> Response:
+    """Measure request latency and emit structured JSON access logs without leaking payloads."""
+    start_time = time.perf_counter()
+    status_code = 500
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        return response
+    finally:
+        latency_ms = round((time.perf_counter() - start_time) * 1000.0, 2)
+        log_entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "method": request.method,
+            "path": request.url.path,
+            "status_code": status_code,
+            "latency_ms": latency_ms,
+        }
+        logger.info(json.dumps(log_entry))
 
 BrandType = Literal["nykaa", "purplle", "tira"]
 CampaignType = Literal["Social Media", "Paid Ads", "Influencer", "Email", "SEO"]
