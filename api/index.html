@@ -3,45 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Marketing Campaign Intelligence - Multi-brand revenue forecasting and operational profitability simulation for Nykaa, Purplle, and Tira.">
-    <title>Marketing Campaign Intelligence | Portfolio Workstation</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Crect%20width%3D%2732%27%20height%3D%2732%27%20rx%3D%276%27%20fill%3D%27%230f172a%27%2F%3E%3Cpath%20d%3D%27M6%2022L12%2014L18%2018L26%209%27%20stroke%3D%27%2338bdf8%27%20stroke-width%3D%272.5%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20fill%3D%27none%27%2F%3E%3Ccircle%20cx%3D%2726%27%20cy%3D%279%27%20r%3D%272.5%27%20fill%3D%27%2338bdf8%27%2F%3E%3C%2Fsvg%3E">
-    <meta name="theme-color" content="#0b0f19">
+    <meta name="description" content="Marketing Campaign Intelligence - Scale Labs style benchmark leaderboard and multi-brand revenue forecasting simulator for Nykaa, Purplle, and Tira.">
+    <title>Marketing Campaign Intelligence | Scale Labs Leaderboard</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Crect%20width%3D%2732%27%20height%3D%2732%27%20rx%3D%274%27%20fill%3D%27%2308080a%27%2F%3E%3Cpath%20d%3D%27M6%2022L12%2014L18%2018L26%209%27%20stroke%3D%27%23ffffff%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20fill%3D%27none%27%2F%3E%3Ccircle%20cx%3D%2726%27%20cy%3D%279%27%20r%3D%272%27%20fill%3D%27%23ffffff%27%2F%3E%3C%2Fsvg%3E">
+    <meta name="theme-color" content="#08080a">
 
-    <!-- Fonts: Plus Jakarta Sans for clean Swiss grotesk typography + JetBrains Mono for tabular numbers -->
+    <!-- Fonts: Inter for crisp technical UI + JetBrains Mono for benchmark tabular numbers -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            /* Palette: Stripe/Ramp Dark Slate High-Density Workstation */
-            --bg-canvas: #0b0f19;
-            --bg-bento: rgba(17, 24, 39, 0.95);
-            --bg-bento-subtle: #0f172a;
-            --bg-input: #080d1a;
-            --border-subtle: #1e293b;
-            --border-hover: #334155;
-            --border-focus: #38bdf8;
-            --text-heading: #f8fafc;
-            --text-body: #cbd5e1;
-            --text-muted: #94a3b8;
-            --text-dim: #64748b;
-            --brand-primary: #2563eb;
-            --brand-primary-hover: #1d4ed8;
-            
-            /* Status Indicators */
-            --emerald-bg: #022c22;
-            --emerald-border: #059669;
-            --emerald-text: #34d399;
-            --ruby-bg: #450a0a;
-            --ruby-border: #dc2626;
-            --ruby-text: #f87171;
-            --amber-bg: #451a03;
-            --amber-border: #d97706;
-            --amber-text: #fbbf24;
+            /* Scale Labs Leaderboard Theme: Obsidian Dark, Razor 1px Borders, High-Contrast Typography */
+            --bg-canvas: #08080a;
+            --bg-surface: #101013;
+            --bg-surface-elevated: #16161a;
+            --bg-glass-container: rgba(17, 24, 39, 0.98);
+            --bg-input: #0c0c0e;
+            --border-hairline: #1f1f24;
+            --border-hover: #32323a;
+            --border-focus: #ffffff;
+            --text-heading: #ffffff;
+            --text-body: #d1d1d6;
+            --text-muted: #8e8e93;
+            --text-dim: #545458;
+            --scale-blue: #0066ff;
+            --scale-cyan: #00d2ff;
 
-            /* Multi-Brand Anchors */
+            /* Benchmark Status Colors */
+            --emerald-bg: #061e14;
+            --emerald-border: #10b981;
+            --emerald-text: #34d399;
+            --ruby-bg: #22080a;
+            --ruby-border: #ef4444;
+            --ruby-text: #f87171;
+
+            /* Brand Accent Tags */
             --brand-nykaa: #fc2779;
             --brand-purplle: #a855f7;
             --brand-tira: #f59e0b;
@@ -51,20 +49,19 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         body {
             background-color: var(--bg-canvas);
             color: var(--text-body);
             min-height: 100vh;
-            padding: 2rem 1.5rem 3.5rem;
-            /* Micro-grid texture + subtle ambient vignette */
+            padding: 1.5rem 1.5rem 4rem;
             background-image:
-                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-                radial-gradient(circle at 50% 0%, rgba(30, 41, 59, 0.45) 0%, transparent 75%);
-            background-size: 32px 32px, 32px 32px, 100% 100%;
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+            background-size: 40px 40px, 40px 40px, 100% 100%;
             background-attachment: fixed;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
@@ -72,52 +69,71 @@
 
         .container {
             width: 100%;
-            max-width: 1160px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* ---------- Top Bar / Navigation ---------- */
+        /* ---------- Scale Labs Header Bar ---------- */
         .app-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 1.25rem;
+            gap: 1.5rem;
             flex-wrap: wrap;
-            margin-bottom: 1.75rem;
+            margin-bottom: 2rem;
             padding-bottom: 1.25rem;
-            border-bottom: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-hairline);
         }
 
         .brand-header {
             display: flex;
             align-items: center;
-            gap: 0.85rem;
+            gap: 1rem;
         }
 
         .brand-logo-badge {
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            background: #0f172a;
-            border: 1px solid var(--border-subtle);
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #000000;
+            border: 1px solid var(--border-hairline);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            font-size: 1.1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        .brand-titles .scale-breadcrumb {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--scale-cyan);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 0.2rem;
         }
 
         .brand-titles h1 {
-            font-size: 1.35rem;
+            font-size: 1.45rem;
             font-weight: 700;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.03em;
             color: var(--text-heading);
         }
 
         .brand-titles p {
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
             font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         .status-pill {
@@ -125,19 +141,19 @@
             align-items: center;
             gap: 0.55rem;
             padding: 0.4rem 0.85rem;
-            border-radius: 6px;
-            background: #0f172a;
+            border-radius: 4px;
+            background: var(--bg-surface);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-subtle);
-            font-size: 0.78rem;
+            border: 1px solid var(--border-hairline);
+            font-size: 0.76rem;
             color: var(--text-muted);
             font-family: 'JetBrains Mono', monospace;
         }
 
         .dot {
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: var(--text-dim);
             flex: none;
@@ -145,12 +161,12 @@
 
         .dot.online {
             background: #10b981;
-            box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
         }
 
         .dot.offline {
             background: #ef4444;
-            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+            box-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
         }
 
         .dot.pending {
@@ -160,33 +176,218 @@
 
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
+            50% { opacity: 0.3; transform: scale(0.85); }
         }
 
-        /* ---------- Main Bento Container ---------- */
+        /* ---------- Leaderboard Section (Scale Benchmark Matrix) ---------- */
+        .leaderboard-section {
+            margin-bottom: 2rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-hairline);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .leaderboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            background: #0d0d10;
+            border-bottom: 1px solid var(--border-hairline);
+        }
+
+        .leaderboard-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-heading);
+        }
+
+        .leaderboard-badge {
+            font-size: 0.68rem;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.84rem;
+        }
+
+        .leaderboard-table th {
+            text-align: left;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-dim);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-hairline);
+            background: #0b0b0e;
+        }
+
+        .leaderboard-table td {
+            padding: 0.95rem 1.25rem;
+            border-bottom: 1px solid var(--border-hairline);
+            vertical-align: middle;
+            color: var(--text-body);
+        }
+
+        .leaderboard-table tr {
+            transition: background 0.15s ease;
+            cursor: pointer;
+        }
+
+        .leaderboard-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .leaderboard-table tr.selected {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .rank-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .rank-num.top-1 {
+            color: #f59e0b;
+        }
+
+        .brand-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        .brand-tag {
+            font-size: 0.68rem;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 0.15rem 0.5rem;
+            border-radius: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .brand-tag.nykaa {
+            background: rgba(252, 39, 121, 0.12);
+            color: var(--brand-nykaa);
+            border: 1px solid rgba(252, 39, 121, 0.3);
+        }
+
+        .brand-tag.purplle {
+            background: rgba(168, 85, 247, 0.12);
+            color: var(--brand-purplle);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .brand-tag.tira {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--brand-tira);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .metric-mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+        }
+
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.72rem;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 0.2rem 0.55rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .badge-status.profitable {
+            background: var(--emerald-bg);
+            border: 1px solid var(--emerald-border);
+            color: var(--emerald-text);
+        }
+
+        .select-row-btn {
+            font-size: 0.72rem;
+            font-family: 'JetBrains Mono', monospace;
+            background: transparent;
+            border: 1px solid var(--border-hairline);
+            border-radius: 4px;
+            color: var(--text-muted);
+            padding: 0.25rem 0.65rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .select-row-btn:hover,
+        .leaderboard-table tr.selected .select-row-btn {
+            background: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+        }
+
+        /* ---------- Simulator Main Workspace ---------- */
         .glass-panel {
-            background: var(--bg-bento);
+            background: var(--bg-surface);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-subtle);
-            border-radius: 14px;
+            border: 1px solid var(--border-hairline);
+            border-radius: 12px;
             padding: 1.75rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
             margin-bottom: 2rem;
         }
 
-        /* ---------- Brand Selection Bento Bar ---------- */
+        .workspace-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-hairline);
+        }
+
+        .workspace-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-heading);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Brand Selector Segmented Bar */
         .brand-selector-section {
             margin-bottom: 1.5rem;
         }
 
         .brand-selector-label {
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--text-dim);
             font-weight: 700;
-            margin-bottom: 0.65rem;
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -195,77 +396,65 @@
         .brand-buttons-group {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
+            gap: 0.5rem;
+            background: #0c0c0e;
+            padding: 0.35rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-hairline);
         }
 
         .brand-btn {
-            background: #0f172a;
-            border: 1px solid var(--border-subtle);
-            border-radius: 10px;
-            padding: 0.85rem 1rem;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 0.65rem 0.85rem;
             cursor: pointer;
             text-align: left;
-            transition: all 0.18s ease;
-            color: var(--text-heading);
+            transition: all 0.15s ease;
+            color: var(--text-muted);
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
         .brand-btn:hover {
+            color: var(--text-heading);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .brand-btn.active {
+            background: var(--bg-surface-elevated);
             border-color: var(--border-hover);
-            background: #131d31;
-        }
-
-        .brand-btn.active[data-brand="nykaa"] {
-            border-color: var(--brand-nykaa);
-            background: rgba(252, 39, 121, 0.08);
-            box-shadow: inset 0 0 0 1px var(--brand-nykaa);
-        }
-
-        .brand-btn.active[data-brand="purplle"] {
-            border-color: var(--brand-purplle);
-            background: rgba(168, 85, 247, 0.08);
-            box-shadow: inset 0 0 0 1px var(--brand-purplle);
-        }
-
-        .brand-btn.active[data-brand="tira"] {
-            border-color: var(--brand-tira);
-            background: rgba(245, 158, 11, 0.08);
-            box-shadow: inset 0 0 0 1px var(--brand-tira);
-        }
-
-        .brand-btn-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
+            color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         }
 
         .brand-name {
-            font-size: 0.98rem;
+            font-size: 0.88rem;
             font-weight: 700;
             letter-spacing: -0.01em;
         }
 
         .brand-sub {
-            font-size: 0.72rem;
-            color: var(--text-muted);
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .brand-indicator {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            border: 2px solid var(--text-dim);
+            background: var(--text-dim);
             transition: all 0.2s ease;
         }
 
         .brand-btn.active .brand-indicator {
-            border-color: #ffffff;
             background: #ffffff;
+            box-shadow: 0 0 6px #ffffff;
         }
 
-        /* ---------- 3-Column Bento Configuration Grid ---------- */
+        /* 3-Column Parameter Configuration Grid */
         .config-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -274,9 +463,9 @@
         }
 
         .config-column {
-            background: #0d1322;
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
+            background: #0c0c0e;
+            border: 1px solid var(--border-hairline);
+            border-radius: 8px;
             padding: 1.25rem;
             display: flex;
             flex-direction: column;
@@ -292,8 +481,8 @@
             display: flex;
             align-items: center;
             gap: 0.45rem;
-            padding-bottom: 0.55rem;
-            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-hairline);
         }
 
         .form-group {
@@ -303,7 +492,7 @@
         }
 
         .form-group label {
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             color: var(--text-muted);
             font-weight: 500;
             display: flex;
@@ -313,7 +502,7 @@
 
         .form-group label .badge {
             font-size: 0.72rem;
-            color: #38bdf8;
+            color: #ffffff;
             font-family: 'JetBrains Mono', monospace;
             font-weight: 600;
             font-variant-numeric: tabular-nums;
@@ -323,13 +512,13 @@
         input[type="number"],
         select {
             width: 100%;
-            padding: 0.6rem 0.75rem;
-            border-radius: 8px;
+            padding: 0.58rem 0.75rem;
+            border-radius: 6px;
             background: var(--bg-input);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border-hairline);
             color: var(--text-heading);
-            font-size: 0.85rem;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            font-size: 0.84rem;
+            transition: border-color 0.15s ease;
         }
 
         input[type="number"] {
@@ -341,13 +530,12 @@
         select:focus {
             outline: none;
             border-color: var(--border-focus);
-            box-shadow: 0 0 0 1px var(--border-focus);
         }
 
         select {
             appearance: none;
             cursor: pointer;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
             background-position: right 0.75rem center;
             background-size: 14px;
@@ -355,7 +543,7 @@
         }
 
         select option {
-            background: #0f172a;
+            background: #101013;
             color: var(--text-heading);
         }
 
@@ -363,13 +551,13 @@
         .slider-container {
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            gap: 0.35rem;
         }
 
         .slider-labels {
             display: flex;
             justify-content: space-between;
-            font-size: 0.68rem;
+            font-size: 0.66rem;
             color: var(--text-dim);
             font-family: 'JetBrains Mono', monospace;
         }
@@ -378,9 +566,9 @@
             -webkit-appearance: none;
             appearance: none;
             width: 100%;
-            height: 5px;
-            border-radius: 4px;
-            background: #1e293b;
+            height: 4px;
+            border-radius: 2px;
+            background: #1f1f24;
             outline: none;
             cursor: pointer;
         }
@@ -388,24 +576,24 @@
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
-            background: #38bdf8;
-            border: 1px solid #0284c7;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid #000000;
             cursor: pointer;
             transition: transform 0.1s ease;
         }
 
         input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.15);
+            transform: scale(1.2);
         }
 
         /* Delivery Channel Checkboxes */
         .channel-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 0.45rem;
+            gap: 0.4rem;
             margin-top: 0.2rem;
         }
 
@@ -414,10 +602,10 @@
             align-items: center;
             gap: 0.45rem;
             background: var(--bg-input);
-            border: 1px solid var(--border-subtle);
-            border-radius: 6px;
-            padding: 0.4rem 0.6rem;
-            font-size: 0.78rem;
+            border: 1px solid var(--border-hairline);
+            border-radius: 4px;
+            padding: 0.38rem 0.55rem;
+            font-size: 0.76rem;
             color: var(--text-muted);
             cursor: pointer;
             user-select: none;
@@ -430,25 +618,25 @@
         }
 
         .channel-chip input[type="checkbox"] {
-            accent-color: var(--brand-primary);
+            accent-color: #ffffff;
             cursor: pointer;
         }
 
         .channel-chip.checked {
-            border-color: #3b82f6;
-            background: rgba(37, 99, 235, 0.12);
-            color: #93c5fd;
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
         }
 
-        /* Validation Alerts */
+        /* Validation Alert Banner */
         .validation-alert {
             display: none;
             padding: 0.75rem 1rem;
-            border-radius: 8px;
-            background: rgba(239, 68, 68, 0.1);
+            border-radius: 6px;
+            background: rgba(239, 68, 68, 0.08);
             border: 1px solid rgba(239, 68, 68, 0.35);
             color: #fca5a5;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             margin-bottom: 1.25rem;
             font-family: 'JetBrains Mono', monospace;
         }
@@ -459,7 +647,7 @@
             gap: 0.65rem;
         }
 
-        /* Live Analytical Preview Strip */
+        /* Analytical Preview Strip */
         .preview-strip {
             display: flex;
             align-items: center;
@@ -468,10 +656,10 @@
             flex-wrap: wrap;
             padding: 0.65rem 1rem;
             margin-bottom: 1.25rem;
-            background: #0d1322;
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            font-size: 0.78rem;
+            background: #0c0c0e;
+            border: 1px solid var(--border-hairline);
+            border-radius: 6px;
+            font-size: 0.76rem;
             color: var(--text-muted);
         }
 
@@ -501,55 +689,56 @@
             flex: 1;
             min-width: 240px;
             padding: 0.85rem 1.4rem;
-            border: 1px solid #1d4ed8;
-            border-radius: 8px;
-            background: var(--brand-primary);
-            color: #ffffff;
-            font-size: 0.92rem;
-            font-weight: 600;
+            border: 1px solid #ffffff;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #000000;
+            font-size: 0.88rem;
+            font-weight: 700;
             letter-spacing: -0.01em;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.65rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
             transition: all 0.15s ease;
         }
 
         .submit-btn:hover:not(:disabled) {
-            background: var(--brand-primary-hover);
+            background: #e5e5e5;
+            border-color: #e5e5e5;
         }
 
         .submit-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
         }
 
         .preset-btn {
             padding: 0.75rem 0.95rem;
-            border-radius: 8px;
-            background: #0f172a;
+            border-radius: 6px;
+            background: #0c0c0e;
             color: var(--text-muted);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border-hairline);
             cursor: pointer;
-            font-size: 0.78rem;
+            font-size: 0.76rem;
+            font-family: 'JetBrains Mono', monospace;
             font-weight: 500;
             transition: all 0.15s ease;
         }
 
         .preset-btn:hover {
-            background: #172338;
+            background: var(--bg-surface-elevated);
             color: var(--text-heading);
             border-color: var(--border-hover);
         }
 
         .spinner {
             display: none;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #ffffff;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            border-top-color: #000000;
             border-radius: 50%;
             animation: spin 0.75s linear infinite;
         }
@@ -558,10 +747,10 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ---------- Results Section & Bento KPI Cards ---------- */
+        /* ---------- Results Section & Scale Benchmark KPI Cards ---------- */
         .results-section {
             margin-top: 1.75rem;
-            animation: fadeIn 0.25s ease;
+            animation: fadeIn 0.2s ease;
         }
 
         @keyframes fadeIn {
@@ -577,15 +766,14 @@
         }
 
         .kpi-card {
-            background: #0d1322;
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
+            background: #0c0c0e;
+            border: 1px solid var(--border-hairline);
+            border-radius: 8px;
             padding: 1.35rem 1.5rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
-            overflow: hidden;
         }
 
         .kpi-card-header {
@@ -604,17 +792,17 @@
         }
 
         .kpi-card-pill {
-            font-size: 0.68rem;
-            padding: 0.2rem 0.55rem;
-            border-radius: 4px;
-            background: #080d1a;
+            font-size: 0.66rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 3px;
+            background: #141418;
             color: var(--text-muted);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border-hairline);
             font-family: 'JetBrains Mono', monospace;
         }
 
         .kpi-card-value {
-            font-size: 2.15rem;
+            font-size: 2.25rem;
             font-weight: 700;
             letter-spacing: -0.03em;
             line-height: 1.15;
@@ -629,14 +817,14 @@
             color: var(--text-muted);
         }
 
-        /* High-Contrast Emerald and Ruby Status Badges */
+        /* High-Contrast Status Badges */
         .profit-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.75rem 1.1rem;
-            border-radius: 8px;
-            font-size: 0.95rem;
+            padding: 0.7rem 1rem;
+            border-radius: 6px;
+            font-size: 0.88rem;
             font-weight: 700;
             letter-spacing: -0.01em;
             margin-top: 0.35rem;
@@ -655,7 +843,7 @@
             color: var(--ruby-text);
         }
 
-        /* Efficiency Scorecards Bento Row */
+        /* Efficiency Scorecards Row */
         .scorecards-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -664,9 +852,9 @@
         }
 
         .scorecard-item {
-            background: #0d1322;
-            border: 1px solid var(--border-subtle);
-            border-radius: 10px;
+            background: #0c0c0e;
+            border: 1px solid var(--border-hairline);
+            border-radius: 8px;
             padding: 1rem 1.15rem;
         }
 
@@ -680,17 +868,18 @@
         }
 
         .scorecard-val {
-            font-size: 1.35rem;
+            font-size: 1.4rem;
             font-weight: 700;
             font-family: 'JetBrains Mono', monospace;
             font-variant-numeric: tabular-nums;
-            color: #f1f5f9;
+            color: #ffffff;
         }
 
         .scorecard-meta {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             color: var(--text-dim);
             margin-top: 0.2rem;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .meta-strip {
@@ -700,18 +889,18 @@
             font-size: 0.72rem;
             color: var(--text-dim);
             padding: 0.55rem 0.85rem;
-            background: #080d1a;
-            border-radius: 6px;
-            border: 1px solid var(--border-subtle);
+            background: #0c0c0e;
+            border-radius: 4px;
+            border: 1px solid var(--border-hairline);
             font-family: 'JetBrains Mono', monospace;
         }
 
         /* ---------- Footer ---------- */
         .app-footer {
             text-align: center;
-            font-size: 0.74rem;
+            font-size: 0.72rem;
             color: var(--text-dim);
-            margin-top: 2rem;
+            margin-top: 2.5rem;
             line-height: 1.8;
             font-family: 'JetBrains Mono', monospace;
         }
@@ -723,7 +912,7 @@
         }
 
         .app-footer a:hover {
-            color: #38bdf8;
+            color: #ffffff;
             text-decoration: underline;
         }
 
@@ -738,11 +927,15 @@
             .brand-buttons-group {
                 grid-template-columns: 1fr;
             }
+            .leaderboard-table th:nth-child(3),
+            .leaderboard-table td:nth-child(3) {
+                display: none;
+            }
         }
 
         @media (max-width: 640px) {
             body {
-                padding: 1.25rem 1rem 2.5rem;
+                padding: 1rem 0.85rem 2.5rem;
             }
             .glass-panel {
                 padding: 1.25rem;
@@ -751,7 +944,11 @@
                 grid-template-columns: 1fr;
             }
             .kpi-card-value {
-                font-size: 1.75rem;
+                font-size: 1.85rem;
+            }
+            .leaderboard-table th:nth-child(4),
+            .leaderboard-table td:nth-child(4) {
+                display: none;
             }
         }
     </style>
@@ -759,49 +956,151 @@
 <body>
 
 <div class="container">
-    <!-- Header with Live Service Status -->
+    <!-- Scale Labs Header Bar -->
     <header class="app-header">
         <div class="brand-header">
-            <div class="brand-logo-badge">📊</div>
+            <div class="brand-logo-badge">⚡</div>
             <div class="brand-titles">
+                <div class="scale-breadcrumb">SCALE // LABS · CAMPAIGN EVALUATION</div>
                 <h1>Marketing Campaign Intelligence</h1>
-                <p>Multi-Brand Ad Spend Allocation, Revenue Forecasting &amp; Profitability Simulation</p>
+                <p>Enterprise Model Benchmark Leaderboard &amp; Ad Spend Forecasting Engine</p>
             </div>
         </div>
-        <div class="status-pill" id="service-status">
-            <span class="dot pending" id="status-dot"></span>
-            <span id="status-text">Checking service…</span>
+        <div class="header-actions">
+            <div class="status-pill" id="service-status">
+                <span class="dot pending" id="status-dot"></span>
+                <span id="status-text">Checking service…</span>
+            </div>
         </div>
     </header>
 
-    <!-- Main Bento Interactive Workspace -->
+    <!-- Scale Benchmark Leaderboard Section -->
+    <section class="leaderboard-section">
+        <div class="leaderboard-header">
+            <div class="leaderboard-title">
+                <span>🏆 Multi-Brand Performance Leaderboard</span>
+                <span class="leaderboard-badge">SEAL EVALUATION MATRIX</span>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-dim);">
+                SORTED BY: NET PROJECTED MARGIN
+            </div>
+        </div>
+        <table class="leaderboard-table" id="leaderboard-tbl">
+            <thead>
+                <tr>
+                    <th style="width: 70px;">Rank</th>
+                    <th>Brand &amp; Segment</th>
+                    <th>Strategy &amp; Channels</th>
+                    <th>Benchmark Revenue</th>
+                    <th>Win Rate / Profit</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="selected" id="row-nykaa" onclick="selectLeaderboardRow('nykaa', 'high-growth')">
+                    <td><span class="rank-num top-1">#1</span></td>
+                    <td>
+                        <div class="brand-cell">
+                            <span class="brand-tag nykaa">Nykaa</span>
+                            <span>Premium Beauty &amp; Wellness</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="color: var(--text-muted); font-size: 0.78rem;">Paid Ads · Instagram, Google, YouTube</span>
+                    </td>
+                    <td>
+                        <span class="metric-mono" style="color: #ffffff;">₹2,75,122.22</span>
+                    </td>
+                    <td>
+                        <span class="badge-status profitable">94.8% WIN · PROFITABLE</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <button type="button" class="select-row-btn">Simulate</button>
+                    </td>
+                </tr>
+                <tr id="row-tira" onclick="selectLeaderboardRow('tira', 'tira-luxury')">
+                    <td><span class="rank-num">#2</span></td>
+                    <td>
+                        <div class="brand-cell">
+                            <span class="brand-tag tira">Tira</span>
+                            <span>Omnichannel Luxury Cosmetics</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="color: var(--text-muted); font-size: 0.78rem;">Influencer · Instagram, YouTube, Google</span>
+                    </td>
+                    <td>
+                        <span class="metric-mono" style="color: #ffffff;">₹4,15,705.10</span>
+                    </td>
+                    <td>
+                        <span class="badge-status profitable">88.4% WIN · PROFITABLE</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <button type="button" class="select-row-btn">Simulate</button>
+                    </td>
+                </tr>
+                <tr id="row-purplle" onclick="selectLeaderboardRow('purplle', 'purplle-tier2')">
+                    <td><span class="rank-num">#3</span></td>
+                    <td>
+                        <div class="brand-cell">
+                            <span class="brand-tag purplle">Purplle</span>
+                            <span>Tier-2/3 Affordable Glamour</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="color: var(--text-muted); font-size: 0.78rem;">Social Media · Instagram, WhatsApp</span>
+                    </td>
+                    <td>
+                        <span class="metric-mono" style="color: #ffffff;">₹1,95,142.45</span>
+                    </td>
+                    <td>
+                        <span class="badge-status profitable">81.2% WIN · PROFITABLE</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <button type="button" class="select-row-btn">Simulate</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Main Interactive Evaluation Workspace -->
     <main class="glass-panel">
+        <div class="workspace-header">
+            <div class="workspace-title">
+                <span>⚙️ Campaign Parameter Evaluation Console</span>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-muted);">
+                MODEL: XGBOOST REGRESSOR + CLASSIFIER (LIFESPAN DUAL)
+            </div>
+        </div>
+
         <form id="campaign-form" onsubmit="handleForecastSubmit(event)">
-            <!-- Brand Selector Bento Bar -->
+            <!-- Brand Selector Segmented Bar -->
             <div class="brand-selector-section">
                 <div class="brand-selector-label">
-                    <span>Target E-Commerce Brand Portfolio</span>
-                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: #38bdf8;">Categorical Anchor</span>
+                    <span>Target Brand Benchmark Anchor</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--text-muted);">SELECT TO INITIALIZE MATRIX</span>
                 </div>
                 <div class="brand-buttons-group" role="group" aria-label="Brand Selection">
                     <button type="button" class="brand-btn active" data-brand="nykaa" onclick="selectBrand('nykaa')">
-                        <div class="brand-btn-info">
-                            <span class="brand-name" style="color: #fc2779;">Nykaa</span>
-                            <span class="brand-sub">Beauty &amp; Wellness Leader</span>
+                        <div>
+                            <div class="brand-name" style="color: var(--brand-nykaa);">Nykaa</div>
+                            <div class="brand-sub">Leader · Beauty &amp; Wellness</div>
                         </div>
                         <div class="brand-indicator"></div>
                     </button>
                     <button type="button" class="brand-btn" data-brand="purplle" onclick="selectBrand('purplle')">
-                        <div class="brand-btn-info">
-                            <span class="brand-name" style="color: #c084fc;">Purplle</span>
-                            <span class="brand-sub">Tier-2/3 Beauty E-Commerce</span>
+                        <div>
+                            <div class="brand-name" style="color: var(--brand-purplle);">Purplle</div>
+                            <div class="brand-sub">Tier-2/3 Beauty E-Commerce</div>
                         </div>
                         <div class="brand-indicator"></div>
                     </button>
                     <button type="button" class="brand-btn" data-brand="tira" onclick="selectBrand('tira')">
-                        <div class="brand-btn-info">
-                            <span class="brand-name" style="color: #fbbf24;">Tira</span>
-                            <span class="brand-sub">Omnichannel Luxury Beauty</span>
+                        <div>
+                            <div class="brand-name" style="color: var(--brand-tira);">Tira</div>
+                            <div class="brand-sub">Omnichannel Luxury Beauty</div>
                         </div>
                         <div class="brand-indicator"></div>
                     </button>
@@ -809,7 +1108,7 @@
                 <input type="hidden" id="brand-input" name="brand" value="nykaa">
             </div>
 
-            <!-- 3-Column Bento Configuration Grid -->
+            <!-- 3-Column Configuration Grid -->
             <div class="config-grid">
                 <!-- Column 1: Strategy & Audience -->
                 <div class="config-column">
@@ -960,7 +1259,7 @@
                 <span id="validation-message">Logical invariant violation</span>
             </div>
 
-            <!-- Derived Metrics Live Strip -->
+            <!-- Analytical Preview Strip -->
             <div class="preview-strip">
                 <div class="preview-metric">
                     <span>CTR Preview:</span>
@@ -983,14 +1282,14 @@
                     <div class="spinner" id="forecast-spinner"></div>
                 </button>
 
-                <button type="button" class="preset-btn" onclick="applyPreset('high-growth')">High-Growth Nykaa</button>
-                <button type="button" class="preset-btn" onclick="applyPreset('purplle-tier2')">Purplle Tier-2 Push</button>
-                <button type="button" class="preset-btn" onclick="applyPreset('tira-luxury')">Tira Festive Luxury</button>
+                <button type="button" class="preset-btn" onclick="applyPreset('high-growth')">Eval: Nykaa Growth</button>
+                <button type="button" class="preset-btn" onclick="applyPreset('purplle-tier2')">Eval: Purplle Tier-2</button>
+                <button type="button" class="preset-btn" onclick="applyPreset('tira-luxury')">Eval: Tira Luxury</button>
                 <button type="button" class="preset-btn" onclick="resetFormDefaults()">Reset</button>
             </div>
         </form>
 
-        <!-- Dynamic Results Section with Bento KPI Cards -->
+        <!-- Dynamic Results Section with Scale Benchmark KPI Cards -->
         <section id="results-display" class="results-section">
             <div class="kpi-cards-grid">
                 <!-- KPI Card 1: Forecasted Revenue -->
@@ -1041,7 +1340,7 @@
 
             <!-- Model Latency & Telemetry Metadata -->
             <div class="meta-strip">
-                <span id="telemetry-latency">Inference Latency: &lt; 5 ms (In-Memory Lifespan Cache)</span>
+                <span id="telemetry-latency">Scale In-Memory Lifespan Inference Engine · Latency &lt; 5 ms</span>
                 <span id="telemetry-timestamp">Simulated timestamp: Live</span>
             </div>
         </section>
@@ -1049,7 +1348,7 @@
 
     <!-- Footer Links -->
     <footer class="app-footer">
-        Multi-brand predictive machine learning served via FastAPI lifespan in-memory pipelines.<br>
+        Scale Labs Leaderboard architecture · Multi-brand predictive machine learning served via FastAPI lifespan singletons.<br>
         <a href="/docs">OpenAPI Documentation</a> · <a href="/health">Service Health</a> · <a href="/ready">Readiness Probe</a>
     </footer>
 </div>
@@ -1070,7 +1369,22 @@
                 btn.classList.remove('active');
             }
         });
+        
+        // Synchronize selected leaderboard row
+        document.querySelectorAll('#leaderboard-tbl tbody tr').forEach(row => {
+            row.classList.remove('selected');
+        });
+        const targetRow = document.getElementById(`row-${brand}`);
+        if (targetRow) targetRow.classList.add('selected');
+
         triggerLivePreview();
+    }
+
+    function selectLeaderboardRow(brand, preset) {
+        selectBrand(brand);
+        if (preset) {
+            applyPreset(preset);
+        }
     }
 
     function updateMonthDisplay(val) {
@@ -1199,8 +1513,8 @@
             const modelsActive = (data.revenue_model ? 1 : 0) + (data.profit_model ? 1 : 0);
             dot.className = 'dot online';
             text.textContent = modelsActive === 2
-                ? 'Service Online · Models Loaded'
-                : `Service Online · ${modelsActive}/2 Models Loaded`;
+                ? 'Scale Inference Online · Dual Models Ready'
+                : `Scale Inference Online · ${modelsActive}/2 Models Loaded`;
         } catch (err) {
             dot.className = 'dot offline';
             text.textContent = 'Service Offline / Error';
@@ -1278,8 +1592,8 @@
             }
 
             // Update Telemetry
-            document.getElementById('telemetry-latency').textContent = `Inference Latency: ${elapsed} ms (Dual-Model Async Fetch)`;
-            document.getElementById('telemetry-timestamp').textContent = `Simulated at: ${new Date().toLocaleTimeString()}`;
+            document.getElementById('telemetry-latency').textContent = `Scale Inference Latency: ${elapsed} ms (Dual Lifespan In-Memory Fetch)`;
+            document.getElementById('telemetry-timestamp').textContent = `Benchmark eval: ${new Date().toLocaleTimeString()}`;
 
             triggerLivePreview();
         } catch (err) {
