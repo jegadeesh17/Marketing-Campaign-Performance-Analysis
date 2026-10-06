@@ -151,13 +151,14 @@
           "title": "End-to-End Smoke Verification Script & Demo Documentation Alignment",
           "description": "Create scripts/smoke_test.py as an automated verification script that tests a live running instance of the unified FastAPI service: checks /health, /ready, GET /app (HTML 200), single /forecast_revenue, single /predict_profitability, batch /forecast_revenue/batch, batch /predict_profitability/batch, and boundary invariant rejections (clicks > impressions returning 422). Update docs/DEMO.md with the 5-minute showcase narrative covering single and batch prediction curl commands, dark-mode glassmorphic web app (/app) walkthrough, probe inspection, and single-container docker-compose deployment commands.",
           "files_to_create": [
-            "scripts/smoke_test.py"
+            "scripts/smoke_test.py",
+            "tests/test_smoke.py"
           ],
           "files_to_modify": [
             "docs/DEMO.md"
           ],
           "acceptance_criteria": "Verified by running 'python scripts/smoke_test.py --mock' or running against running FastAPI app, confirming all assertions pass including /app check, and checking that docs/DEMO.md includes updated curl examples, single-port container steps, and probe inspection steps without any Streamlit references.",
-          "status": "pending"
+          "status": "completed"
         }
       ]
     }
