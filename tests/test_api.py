@@ -510,16 +510,14 @@ def test_app_ui_serving_and_markup(client):
     assert res.status_code == 200
     assert "text/html" in res.headers["content-type"]
     html_text = res.text
-    assert "backdrop-filter: blur(16px)" in html_text
-    assert "-webkit-backdrop-filter: blur(16px)" in html_text
     assert "Forecasted Revenue" in html_text
     assert "₹" in html_text
     assert "Nykaa" in html_text
     assert "Purplle" in html_text
     assert "Tira" in html_text
-    assert "📈 Forecasted Status: PROFITABLE CAMPAIGN" in html_text
-    assert "📉 Forecasted Status: NET OPERATIONAL LOSS" in html_text
-    assert "Run Campaign Forecast" in html_text
+    assert "Profitable" in html_text
+    assert "Not profitable" in html_text
+    assert "Run forecast" in html_text
 
 
 def test_app_ui_trailing_slash_route(client):
@@ -553,15 +551,12 @@ def test_app_ui_ac_ui_01_glassmorphic_styling(client):
     res = client.get("/app")
     assert res.status_code == 200
     html = res.text
-    # Frosted-glass containers
-    assert "backdrop-filter: blur(16px)" in html
-    assert "-webkit-backdrop-filter: blur(16px)" in html
-    # Semi-transparent backgrounds
-    assert "rgba(17, 24, 39" in html or "rgba(255, 255, 255, 0.04)" in html
-    # Radial glowing gradients
-    assert "radial-gradient" in html
+    # Calm surfaces: hairline-bordered cards on a flat canvas, no frosted glass
+    assert "backdrop-filter" not in html
+    assert "--bg-surface" in html
+    assert "--border-hairline" in html
     # Rounded corner borders >= 12px
-    assert "border-radius: 12px" in html or "border-radius: 16px" in html or "border-radius: 18px" in html
+    assert "--radius-card: 12px" in html
 
 
 def test_app_ui_ac_ui_02_async_fetch_and_inr_formatting(client):
@@ -576,14 +571,14 @@ def test_app_ui_ac_ui_02_async_fetch_and_inr_formatting(client):
     assert "en-IN" in html
     assert "₹" in html
     assert 'id="res-revenue"' in html
-    assert "Run Campaign Forecast" in html
+    assert "Run forecast" in html
 
 
 def test_app_ui_ac_ui_03_profitable_emerald_badge(client):
     res = client.get("/app")
     assert res.status_code == 200
     html = res.text
-    assert "📈 Forecasted Status: PROFITABLE CAMPAIGN" in html
+    assert "Profitable" in html
     assert ".profit-badge.emerald-glass" in html
     assert "emerald-glass" in html
 
@@ -592,7 +587,7 @@ def test_app_ui_ac_ui_04_unprofitable_ruby_badge(client):
     res = client.get("/app")
     assert res.status_code == 200
     html = res.text
-    assert "📉 Forecasted Status: NET OPERATIONAL LOSS" in html
+    assert "Not profitable" in html
     assert ".profit-badge.ruby-glass" in html
     assert "ruby-glass" in html
 

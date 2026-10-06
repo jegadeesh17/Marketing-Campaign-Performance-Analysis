@@ -13,26 +13,28 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+
     <style>
         :root {
-            /* Light Theme Tokens */
+            /* Light theme tokens */
             --bg-canvas: #f8fafc;
             --bg-surface: #ffffff;
             --bg-surface-subtle: #f8fafc;
-            --bg-glass: rgba(255, 255, 255, 0.96);
-            --bg-overlay: rgba(17, 24, 39, 0.03);
+            --bg-segment: #f1f5f9;
             --border-hairline: #e2e8f0;
             --border-subtle: #f1f5f9;
-            --border-hover: #cbd5e1;
+            --border-strong: #cbd5e1;
             --border-focus: #09090b;
+            --ink: #09090b;
+            --ink-hover: #27272a;
             --text-heading: #09090b;
             --text-body: #334155;
-            --text-muted: #64748b;
+            --text-muted: #526173;
             --text-dim: #94a3b8;
             --accent-blue: #0066ff;
             --accent-cyan: #0284c7;
 
-            /* Benchmark Status Colors */
+            /* Status colours */
             --emerald-bg: #ecfdf5;
             --emerald-border: #10b981;
             --emerald-text: #065f46;
@@ -40,32 +42,64 @@
             --ruby-border: #ef4444;
             --ruby-text: #991b1b;
 
-            /* Brand Accent Colors */
+            /* Brand colours (dots and bars) and darker text shades that pass AA */
             --brand-nykaa: #db2777;
             --brand-purplle: #7c3aed;
             --brand-tira: #d97706;
+            --brand-nykaa-text: #be185d;
+            --brand-purplle-text: #6d28d9;
+            --brand-tira-text: #b45309;
+
+            /* Type scale: 13 / 14 / 16 / 20 / 44 */
+            --fs-meta: 0.8125rem;
+            --fs-body: 0.875rem;
+            --fs-title: 1rem;
+            --fs-page: 1.25rem;
+            --fs-hero: 2.75rem;
+
+            /* 8pt spacing scale (--space-0 is the half step) */
+            --space-0: 4px;
+            --space-1: 8px;
+            --space-2: 16px;
+            --space-3: 24px;
+            --space-4: 32px;
+
+            --radius-card: 12px;
+            --radius-control: 6px;
+            --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Geist Mono', ui-monospace, monospace;
+            --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: var(--font-sans);
+        }
+
+        [hidden] {
+            display: none !important;
         }
 
         body {
             background-color: var(--bg-canvas);
             color: var(--text-body);
+            font-size: var(--fs-body);
             min-height: 100vh;
-            padding: 1.25rem 1.5rem 3.5rem;
-            background-image:
-                linear-gradient(to right, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
-                radial-gradient(circle at 50% 0%, rgba(0, 102, 255, 0.035) 0%, transparent 65%);
-            background-size: 32px 32px, 32px 32px, 100% 100%;
-            background-attachment: fixed;
+            padding: var(--space-3) var(--space-3) var(--space-4);
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection {
+            background: var(--ink);
+            color: #ffffff;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--border-focus);
+            outline-offset: 2px;
         }
 
         .container {
@@ -74,114 +108,107 @@
             margin: 0 auto;
         }
 
-        /* ---------- Top Navigation Bar ---------- */
+        /* Numbers only: mono with tabular figures */
+        .num {
+            font-family: var(--font-mono);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ---------- Top bar ---------- */
         .app-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 1.25rem;
+            gap: var(--space-2);
             flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
+            margin-bottom: var(--space-3);
+            padding-bottom: var(--space-2);
             border-bottom: 1px solid var(--border-hairline);
         }
 
         .brand-header {
             display: flex;
             align-items: center;
-            gap: 0.85rem;
+            gap: var(--space-2);
         }
 
         .brand-logo-badge {
             width: 36px;
             height: 36px;
-            border-radius: 6px;
-            background: #09090b;
+            flex: none;
+            border-radius: var(--radius-control);
+            background: var(--ink);
             color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.05rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .brand-titles h1 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
+            font-size: var(--fs-page);
+            font-weight: 600;
+            letter-spacing: -0.01em;
             color: var(--text-heading);
             line-height: 1.2;
         }
 
         .brand-titles p {
-            font-size: 0.76rem;
+            font-size: var(--fs-meta);
             color: var(--text-muted);
-            font-family: 'Geist Mono', monospace;
         }
 
         .header-center {
             display: flex;
             align-items: center;
-            background: #f1f5f9;
-            padding: 0.25rem;
-            border-radius: 6px;
-            border: 1px solid var(--border-hairline);
-            gap: 0.25rem;
+            background: var(--bg-segment);
+            padding: var(--space-0);
+            border-radius: var(--radius-control);
+            gap: var(--space-0);
         }
 
-        .view-tab-btn {
+        .view-tab-btn,
+        .seg-btn {
             background: transparent;
-            border: none;
-            padding: 0.4rem 0.85rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            border: 1px solid transparent;
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--space-0);
+            font-size: var(--fs-body);
+            font-weight: 500;
             color: var(--text-muted);
             cursor: pointer;
-            transition: all 0.15s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.35rem;
+            transition: background-color 0.15s ease, color 0.15s ease;
         }
 
-        .view-tab-btn.active {
-            background: #ffffff;
+        .view-tab-btn:hover,
+        .seg-btn:hover {
             color: var(--text-heading);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .view-tab-btn.active,
+        .seg-btn[aria-pressed="true"] {
+            background: var(--bg-surface);
+            color: var(--text-heading);
+            border-color: var(--border-hairline);
         }
 
         .status-pill {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            background: var(--bg-surface);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-hairline);
-            font-size: 0.72rem;
+            gap: var(--space-1);
+            font-size: var(--fs-meta);
             color: var(--text-body);
-            font-family: 'Geist Mono', monospace;
         }
 
         .dot {
-            width: 7px;
-            height: 7px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: var(--text-dim);
             flex: none;
         }
 
-        .dot.online {
-            background: #10b981;
-            box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
-        }
-
-        .dot.offline {
-            background: #ef4444;
-            box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
-        }
+        .dot.online { background: #10b981; }
+        .dot.offline { background: #ef4444; }
 
         .dot.pending {
             background: #f59e0b;
@@ -189,94 +216,90 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.85); }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
         }
 
-        /* ---------- Workstation Split-Pane Layout ---------- */
+        /* ---------- Split-pane layout ---------- */
         .workstation-grid {
             display: grid;
-            grid-template-columns: 430px 1fr;
-            gap: 1.5rem;
+            grid-template-columns: 380px minmax(0, 1fr);
+            gap: var(--space-3);
             align-items: start;
         }
 
-        /* Left Rail: Parameters Console Card */
+        /* Surface 1: parameters */
         .config-card {
             background: var(--bg-surface);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-hairline);
-            border-radius: 12px;
-            padding: 1.35rem 1.4rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px -4px rgba(0, 0, 0, 0.02);
+            border-radius: var(--radius-card);
+            padding: var(--space-3);
+            box-shadow: none;
             display: flex;
             flex-direction: column;
-            gap: 1.15rem;
+            gap: var(--space-3);
         }
 
         .config-card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-bottom: 0.65rem;
-            border-bottom: 1px solid var(--border-hairline);
+            gap: var(--space-2);
         }
 
         .config-card-title {
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
+            font-size: var(--fs-title);
+            font-weight: 600;
             color: var(--text-heading);
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
         }
 
         .preset-select {
-            font-size: 0.72rem;
-            font-family: 'Geist Mono', monospace;
-            padding: 0.25rem 0.65rem;
-            border-radius: 4px;
-            background: #f8fafc;
-            border: 1px solid var(--border-hairline);
-            color: var(--text-body);
-            font-weight: 600;
-            cursor: pointer;
-            outline: none;
+            width: auto;
+            max-width: 190px;
+            font-size: var(--fs-body);
+            font-weight: 500;
         }
 
-        /* Brand Selector Bar */
+        #campaign-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        /* Brand segmented control */
         .brand-buttons-group {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.4rem;
-            background: #f1f5f9;
-            padding: 0.25rem;
-            border-radius: 6px;
+            gap: var(--space-0);
+            background: var(--bg-segment);
+            padding: var(--space-0);
+            border-radius: var(--radius-control);
         }
 
         .brand-btn {
             background: transparent;
             border: 1px solid transparent;
-            border-radius: 4px;
-            padding: 0.45rem 0.5rem;
+            border-radius: var(--space-0);
+            padding: var(--space-1);
             cursor: pointer;
             text-align: center;
-            font-size: 0.78rem;
-            font-weight: 700;
+            font-size: var(--fs-body);
+            font-weight: 500;
             color: var(--text-muted);
-            transition: all 0.15s ease;
+            transition: background-color 0.15s ease, color 0.15s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.35rem;
+            gap: var(--space-1);
+        }
+
+        .brand-btn:hover {
+            color: var(--text-heading);
         }
 
         .brand-btn .indicator-dot {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: var(--text-dim);
         }
@@ -286,76 +309,68 @@
         .brand-btn[data-brand="tira"].active .indicator-dot { background: var(--brand-tira); }
 
         .brand-btn.active {
-            background: #ffffff;
+            background: var(--bg-surface);
             color: var(--text-heading);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-            border-color: #cbd5e1;
+            font-weight: 600;
+            border-color: var(--border-strong);
         }
 
-        /* Clean Form Sections (No Nested Gray Boxes!) */
         .form-section {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
-            padding-top: 0.25rem;
-            border-top: 1px solid var(--border-subtle);
-        }
-
-        .form-section-title {
-            font-size: 0.68rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
+            gap: var(--space-2);
         }
 
         .field-row-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.65rem;
+            gap: var(--space-2);
         }
 
         .form-field {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: var(--space-1);
+            min-width: 0;
         }
 
-        .form-field label {
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: var(--text-body);
+        .form-field > label,
+        .form-field > .field-label {
+            font-size: var(--fs-body);
+            font-weight: 500;
+            color: var(--text-heading);
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: baseline;
+            gap: var(--space-1);
         }
 
         .form-field label .badge {
-            font-size: 0.68rem;
-            color: var(--accent-cyan);
-            font-family: 'Geist Mono', monospace;
-            font-weight: 700;
+            font-size: var(--fs-meta);
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
         input[type="number"],
         select {
             width: 100%;
-            padding: 0.48rem 0.65rem;
-            border-radius: 6px;
+            padding: var(--space-1) 12px;
+            border-radius: var(--radius-control);
             background: #ffffff;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border-strong);
             color: var(--text-heading);
-            font-size: 0.8rem;
+            font-size: var(--fs-body);
+            line-height: 1.4;
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
 
         input[type="number"] {
-            font-family: 'Geist Mono', monospace;
+            font-family: var(--font-mono);
             font-variant-numeric: tabular-nums;
         }
 
-        input:focus,
-        select:focus {
+        input:focus-visible,
+        select:focus-visible {
             outline: none;
             border-color: var(--border-focus);
             box-shadow: 0 0 0 1px var(--border-focus);
@@ -364,11 +379,11 @@
         select {
             appearance: none;
             cursor: pointer;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23526173' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
-            background-position: right 0.65rem center;
-            background-size: 13px;
-            padding-right: 1.8rem;
+            background-position: right 12px center;
+            background-size: 14px;
+            padding-right: 36px;
         }
 
         input[type="range"] {
@@ -377,104 +392,185 @@
             width: 100%;
             height: 4px;
             border-radius: 2px;
-            background: #cbd5e1;
-            outline: none;
+            background: var(--border-strong);
             cursor: pointer;
+            margin: var(--space-1) 0;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
-            background: #09090b;
+            background: var(--ink);
             border: 2px solid #ffffff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 0 1px var(--border-strong);
             cursor: pointer;
         }
 
-        /* Delivery Channel Inline Tags */
+        input[type="range"]::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--ink);
+            border: 2px solid #ffffff;
+            cursor: pointer;
+        }
+
+        /* Progressive disclosure: audience and channels */
+        .more-fields {
+            border-top: 1px solid var(--border-hairline);
+            padding-top: var(--space-2);
+        }
+
+        .more-fields summary {
+            list-style: none;
+            cursor: pointer;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            column-gap: var(--space-1);
+            font-size: var(--fs-body);
+            font-weight: 500;
+            color: var(--text-heading);
+            border-radius: var(--space-0);
+        }
+
+        .more-fields summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .more-fields summary::after {
+            content: "";
+            grid-column: 2;
+            grid-row: 1;
+            width: 8px;
+            height: 8px;
+            border-right: 1.5px solid var(--text-muted);
+            border-bottom: 1.5px solid var(--text-muted);
+            transform: rotate(-45deg);
+            transition: transform 0.2s var(--ease-out);
+            margin-right: var(--space-0);
+        }
+
+        .more-fields[open] summary::after {
+            transform: rotate(45deg);
+        }
+
+        .more-summary {
+            grid-column: 1;
+            font-size: var(--fs-meta);
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .more-fields-body {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            padding-top: var(--space-2);
+        }
+
+        /* Delivery channel chips */
         .channel-tags-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.35rem;
-            margin-top: 0.15rem;
+            gap: var(--space-1);
         }
 
         .channel-chip {
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            padding: 0.28rem 0.55rem;
-            font-size: 0.72rem;
+            gap: var(--space-1);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--space-0);
+            padding: var(--space-0) 12px;
+            font-size: var(--fs-meta);
             font-weight: 500;
             color: var(--text-body);
             cursor: pointer;
             user-select: none;
-            transition: all 0.15s ease;
+            transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
         }
 
         .channel-chip:hover {
-            border-color: #94a3b8;
-            background: #f1f5f9;
+            border-color: var(--text-dim);
+            background: var(--bg-segment);
+        }
+
+        .channel-chip:focus-within {
+            outline: 2px solid var(--border-focus);
+            outline-offset: 2px;
         }
 
         .channel-chip input[type="checkbox"] {
-            accent-color: #09090b;
+            accent-color: var(--ink);
             cursor: pointer;
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
         }
 
         .channel-chip.checked {
-            border-color: #09090b;
-            background: #09090b;
+            border-color: var(--ink);
+            background: var(--ink);
             color: #ffffff;
         }
 
-        /* Invariant Validation Alert Banner */
+        /* Validation alert */
         .validation-alert {
             display: none;
-            padding: 0.65rem 0.85rem;
-            border-radius: 6px;
+            padding: var(--space-1) 12px;
+            border-radius: var(--radius-control);
             background: #fef2f2;
             border: 1px solid #fca5a5;
             color: #b91c1c;
-            font-size: 0.74rem;
-            font-family: 'Geist Mono', monospace;
-            align-items: center;
-            gap: 0.5rem;
+            font-size: var(--fs-meta);
+            align-items: flex-start;
+            gap: var(--space-1);
+        }
+
+        .validation-alert svg {
+            flex: none;
+            margin-top: 2px;
         }
 
         .validation-alert.show {
             display: flex;
         }
 
-        /* Submit Button */
+        /* Submit */
+        .submit-area {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+
+        .stale-note {
+            font-size: var(--fs-meta);
+            color: var(--text-muted);
+        }
+
         .submit-btn {
             width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid #09090b;
-            border-radius: 6px;
-            background: #09090b;
+            padding: 12px var(--space-2);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-control);
+            background: var(--ink);
             color: #ffffff;
-            font-size: 0.84rem;
-            font-weight: 700;
+            font-size: var(--fs-body);
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
-            transition: all 0.15s ease;
+            gap: var(--space-1);
+            transition: background-color 0.15s ease;
         }
 
         .submit-btn:hover:not(:disabled) {
-            background: #27272a;
+            background: var(--ink-hover);
         }
 
         .submit-btn:disabled {
@@ -484,8 +580,8 @@
 
         .spinner {
             display: none;
-            width: 13px;
-            height: 13px;
+            width: 14px;
+            height: 14px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-top-color: #ffffff;
             border-radius: 50%;
@@ -496,85 +592,78 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Right Rail: Intelligence & Diagnostics Canvas */
+        /* ---------- Right column ---------- */
         .intelligence-column {
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: var(--space-3);
+            min-width: 0;
         }
 
-        /* Executive KPI Hero Deck (Single Authoritative Source, Zero Duplication) */
+        /* Surface 2: result band */
         .kpi-banner-card {
             background: var(--bg-surface);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-hairline);
-            border-radius: 12px;
-            padding: 1.25rem 1.4rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px -4px rgba(0, 0, 0, 0.02);
-            display: grid;
-            grid-template-columns: 1.3fr 1.3fr 1.4fr;
-            gap: 1.25rem;
-            align-items: center;
-        }
-
-        .kpi-col {
+            border-radius: var(--radius-card);
+            padding: var(--space-3);
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .kpi-col.border-left {
-            border-left: 1px solid var(--border-hairline);
-            padding-left: 1.25rem;
+            gap: var(--space-2);
         }
 
         .kpi-col-label {
-            font-size: 0.68rem;
+            font-size: var(--fs-meta);
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.06em;
             color: var(--text-muted);
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .kpi-model-pill {
-            font-size: 0.64rem;
-            padding: 0.12rem 0.45rem;
-            border-radius: 3px;
-            background: #f1f5f9;
-            color: var(--text-body);
-            font-family: 'Geist Mono', monospace;
             font-weight: 600;
         }
 
+        .hero-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-1) var(--space-3);
+        }
+
         .kpi-revenue-val {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            font-family: 'Geist Mono', monospace;
+            font-size: var(--fs-hero);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            font-family: var(--font-mono);
             font-variant-numeric: tabular-nums;
             color: var(--text-heading);
             line-height: 1.1;
         }
 
         .kpi-subtext {
-            font-size: 0.72rem;
+            font-size: var(--fs-body);
             color: var(--text-muted);
+        }
+
+        .hero-sub {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-0);
         }
 
         .profit-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.45rem;
-            padding: 0.55rem 0.85rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-            font-family: 'Geist Mono', monospace;
+            gap: var(--space-1);
+            padding: var(--space-0) 12px;
+            border-radius: 999px;
+            font-size: var(--fs-body);
+            font-weight: 500;
+        }
+
+        .profit-badge::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            flex: none;
         }
 
         .profit-badge.emerald-glass {
@@ -589,354 +678,400 @@
             color: var(--ruby-text);
         }
 
-        /* Efficiency Triad Matrix in KPI Deck */
-        .efficiency-triad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            text-align: center;
+        .profit-badge.compact {
+            font-size: var(--fs-meta);
         }
 
-        .triad-box {
-            background: #f8fafc;
-            border: 1px solid var(--border-hairline);
-            border-radius: 6px;
-            padding: 0.45rem 0.4rem;
+        /* Ratios: plain inline stats */
+        .ratio-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-1) 0;
+            padding-top: var(--space-2);
+            border-top: 1px solid var(--border-hairline);
+            font-size: var(--fs-body);
         }
 
-        .triad-box-lbl {
-            font-size: 0.62rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
+        .ratio-item {
+            display: flex;
+            align-items: baseline;
+            gap: var(--space-1);
+        }
+
+        .ratio-item + .ratio-item::before {
+            content: "\00b7";
+            color: var(--text-dim);
+            margin: 0 var(--space-2);
+        }
+
+        .ratio-item dt {
             color: var(--text-muted);
-            font-weight: 700;
-            margin-bottom: 0.15rem;
         }
 
-        .triad-box-val {
-            font-size: 1rem;
-            font-weight: 800;
-            font-family: 'Geist Mono', monospace;
-            font-variant-numeric: tabular-nums;
+        .ratio-item dd {
             color: var(--text-heading);
+            font-weight: 600;
         }
 
-        /* Analytics Visual Cards */
+        /* Surface 3: diagnostics */
         .analytics-card {
             background: var(--bg-surface);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-hairline);
-            border-radius: 12px;
-            padding: 1.25rem 1.4rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px -4px rgba(0, 0, 0, 0.02);
+            border-radius: var(--radius-card);
+            padding: var(--space-3);
             display: flex;
             flex-direction: column;
-            gap: 0.95rem;
+            gap: var(--space-3);
         }
 
         .analytics-card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-bottom: 0.55rem;
-            border-bottom: 1px solid var(--border-hairline);
+            flex-wrap: wrap;
+            gap: var(--space-2);
         }
 
         .analytics-card-title {
-            font-size: 0.78rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
+            font-size: var(--fs-title);
+            font-weight: 600;
             color: var(--text-heading);
+        }
+
+        .seg-group {
+            display: inline-flex;
+            gap: var(--space-0);
+            background: var(--bg-segment);
+            padding: var(--space-0);
+            border-radius: var(--radius-control);
+        }
+
+        .diag-pane {
             display: flex;
-            align-items: center;
-            gap: 0.4rem;
+            flex-direction: column;
+            gap: var(--space-2);
         }
 
         .analytics-card-badge {
-            font-size: 0.64rem;
-            font-family: 'Geist Mono', monospace;
-            padding: 0.12rem 0.45rem;
-            border-radius: 3px;
-            background: #f1f5f9;
-            color: var(--text-body);
-            font-weight: 600;
+            font-size: var(--fs-meta);
+            color: var(--text-muted);
         }
 
-        /* Funnel Progress Tiers */
+        /* Funnel */
         .funnel-container {
             display: flex;
             flex-direction: column;
-            gap: 0.45rem;
         }
 
         .funnel-stage {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: var(--space-1);
         }
 
         .funnel-stage-header {
             display: flex;
-            align-items: center;
+            align-items: baseline;
             justify-content: space-between;
-            font-size: 0.74rem;
+            gap: var(--space-2);
+            font-size: var(--fs-body);
             color: var(--text-heading);
             font-weight: 500;
         }
 
-        .funnel-stage-name {
-            display: flex;
-            align-items: center;
-            gap: 0.35rem;
-        }
-
         .funnel-stage-value {
-            font-family: 'Geist Mono', monospace;
-            font-weight: 700;
+            font-family: var(--font-mono);
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
             color: var(--text-heading);
         }
 
         .funnel-stage-pct {
-            font-size: 0.68rem;
+            font-size: var(--fs-meta);
             color: var(--text-muted);
-            font-family: 'Geist Mono', monospace;
-            margin-left: 0.3rem;
+            font-family: var(--font-mono);
+            font-variant-numeric: tabular-nums;
+            font-weight: 400;
+            margin-left: var(--space-1);
         }
 
         .funnel-bar-track {
             width: 100%;
-            height: 10px;
-            background: #f1f5f9;
-            border-radius: 5px;
+            height: 8px;
+            background: var(--bg-segment);
+            border-radius: var(--space-0);
             overflow: hidden;
-            position: relative;
         }
 
         .funnel-bar-fill {
             height: 100%;
-            border-radius: 5px;
-            background: linear-gradient(90deg, #0066ff, #0284c7);
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            background: var(--accent-blue);
+            transform-origin: left center;
+            transition: transform 0.3s var(--ease-out);
         }
 
-        .funnel-dropoff-connector {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.18rem 0.5rem;
-            background: #f8fafc;
-            border-radius: 4px;
-            border-left: 2px solid #ef4444;
-            font-size: 0.66rem;
-            font-family: 'Geist Mono', monospace;
+        .funnel-step {
+            font-size: var(--fs-meta);
             color: var(--text-muted);
+            padding: var(--space-1) 0;
+            font-variant-numeric: tabular-nums;
         }
 
-        .funnel-dropoff-val {
-            color: #b91c1c;
-            font-weight: 600;
-        }
-
-        /* Sensitivity Curve SVG & Legend */
+        /* Break-even chart */
         .sensitivity-container {
             display: flex;
             flex-direction: column;
-            gap: 0.65rem;
+            gap: var(--space-2);
+        }
+
+        #sensitivity-chart-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: 260px;
         }
 
         .sensitivity-svg {
+            display: block;
             width: 100%;
-            height: auto;
-            max-height: 210px;
+            height: 260px;
             overflow: visible;
         }
+
+        .curve-tooltip {
+            position: absolute;
+            display: none;
+            background: var(--ink);
+            color: #ffffff;
+            padding: var(--space-1) 12px;
+            border-radius: var(--space-0);
+            font-size: var(--fs-meta);
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+            line-height: 1.5;
+            white-space: nowrap;
+        }
+
+        .curve-tooltip .tt-title {
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+            padding-bottom: 2px;
+            margin-bottom: var(--space-0);
+        }
+
+        .curve-tooltip .tt-margin { font-weight: 600; }
+        .curve-tooltip .tt-margin.pos { color: #6ee7b7; }
+        .curve-tooltip .tt-margin.neg { color: #fca5a5; }
 
         .sensitivity-legend {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             flex-wrap: wrap;
-            gap: 0.75rem;
-            font-size: 0.68rem;
-            font-family: 'Geist Mono', monospace;
+            gap: var(--space-1) var(--space-3);
+            font-size: var(--fs-meta);
             color: var(--text-muted);
-            padding-top: 0.45rem;
-            border-top: 1px solid var(--border-hairline);
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 0.35rem;
+            gap: var(--space-1);
         }
 
         .legend-line {
-            width: 12px;
-            height: 2.5px;
+            width: 16px;
+            height: 3px;
             border-radius: 1px;
         }
 
-        .legend-line.revenue { background: #0066ff; }
-        .legend-line.cost { border-top: 2px dashed #ef4444; height: 0px; }
+        .legend-line.revenue { background: var(--accent-blue); }
+        .legend-line.cost { border-top: 2px dashed #ef4444; height: 0; }
 
         .legend-dot.current {
-            width: 7px;
-            height: 7px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: #0066ff;
-            box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #0066ff;
+            background: var(--accent-blue);
+            box-shadow: 0 0 0 2px #ffffff, 0 0 0 3px var(--accent-blue);
         }
 
-        /* Telemetry Strip */
-        .meta-strip {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            padding: 0.45rem 0.75rem;
-            background: #f8fafc;
-            border-radius: 4px;
-            border: 1px solid var(--border-hairline);
-            font-family: 'Geist Mono', monospace;
-        }
-
-        /* ---------- Tab 2: Benchmark Leaderboard View ---------- */
+        /* ---------- Benchmarks view ---------- */
         .leaderboard-view {
             display: none;
             background: var(--bg-surface);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-hairline);
-            border-radius: 12px;
+            border-radius: var(--radius-card);
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px -4px rgba(0, 0, 0, 0.02);
         }
 
         .leaderboard-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1rem 1.25rem;
-            background: #f8fafc;
+            flex-wrap: wrap;
+            gap: var(--space-1) var(--space-2);
+            padding: var(--space-2) var(--space-3);
             border-bottom: 1px solid var(--border-hairline);
         }
 
         .leaderboard-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.82rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
+            font-size: var(--fs-title);
+            font-weight: 600;
             color: var(--text-heading);
+        }
+
+        .leaderboard-note {
+            font-size: var(--fs-meta);
+            color: var(--text-muted);
+        }
+
+        .table-scroll {
+            overflow-x: auto;
         }
 
         .leaderboard-table {
             width: 100%;
+            min-width: 720px;
             border-collapse: collapse;
-            font-size: 0.82rem;
+            font-size: var(--fs-body);
         }
 
         .leaderboard-table th {
             text-align: left;
-            padding: 0.75rem 1.25rem;
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
+            padding: var(--space-1) var(--space-3);
+            font-size: var(--fs-meta);
             color: var(--text-muted);
-            font-weight: 600;
+            font-weight: 500;
             border-bottom: 1px solid var(--border-hairline);
-            background: #f8fafc;
+            background: var(--bg-surface-subtle);
         }
 
+        .leaderboard-table th.th-rank { width: 72px; }
+        .leaderboard-table th.th-action,
+        .leaderboard-table td.cell-action { text-align: right; }
+
         .leaderboard-table td {
-            padding: 0.95rem 1.25rem;
+            padding: var(--space-2) var(--space-3);
             border-bottom: 1px solid var(--border-hairline);
             vertical-align: middle;
             color: var(--text-body);
         }
 
-        .leaderboard-table tr:hover {
-            background: #f8fafc;
+        .leaderboard-table tbody tr {
+            cursor: pointer;
+        }
+
+        .leaderboard-table tbody tr:hover {
+            background: var(--bg-surface-subtle);
+        }
+
+        .rank { font-weight: 600; color: var(--text-heading); }
+        .rank.rank-top { color: var(--accent-blue); }
+
+        .row-sub {
+            color: var(--text-muted);
+            font-size: var(--fs-meta);
+        }
+
+        .money {
+            font-weight: 600;
+            color: var(--text-heading);
         }
 
         .brand-cell {
             display: flex;
             align-items: center;
-            gap: 0.65rem;
-            font-weight: 600;
+            gap: var(--space-1);
+            font-weight: 500;
             color: var(--text-heading);
         }
 
         .brand-tag {
-            font-size: 0.68rem;
-            font-weight: 700;
-            padding: 0.15rem 0.45rem;
-            border-radius: 4px;
-            text-transform: uppercase;
-            font-family: 'Geist Mono', monospace;
+            font-size: var(--fs-meta);
+            font-weight: 600;
+            padding: 2px var(--space-1);
+            border-radius: var(--space-0);
         }
 
-        .brand-tag.nykaa { background: #fdf2f8; color: var(--brand-nykaa); border: 1px solid #fbcfe8; }
-        .brand-tag.purplle { background: #f5f3ff; color: var(--brand-purplle); border: 1px solid #ddd6fe; }
-        .brand-tag.tira { background: #fffbeb; color: var(--brand-tira); border: 1px solid #fde68a; }
+        .brand-tag.nykaa { background: #fdf2f8; color: var(--brand-nykaa-text); border: 1px solid #fbcfe8; }
+        .brand-tag.purplle { background: #f5f3ff; color: var(--brand-purplle-text); border: 1px solid #ddd6fe; }
+        .brand-tag.tira { background: #fffbeb; color: var(--brand-tira-text); border: 1px solid #fde68a; }
 
         .select-row-btn {
-            font-size: 0.72rem;
-            font-family: 'Geist Mono', monospace;
-            font-weight: 600;
+            font-size: var(--fs-meta);
+            font-weight: 500;
             background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--space-0);
             color: var(--text-body);
-            padding: 0.25rem 0.65rem;
+            padding: var(--space-0) 12px;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
         }
 
         .select-row-btn:hover {
-            background: #09090b;
+            background: var(--ink);
             color: #ffffff;
-            border-color: #09090b;
+            border-color: var(--ink);
         }
 
         /* ---------- Footer ---------- */
         .app-footer {
-            text-align: center;
-            font-size: 0.7rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: var(--space-0) var(--space-2);
+            font-size: var(--fs-meta);
             color: var(--text-muted);
-            margin-top: 2rem;
-            font-family: 'Geist Mono', monospace;
-            line-height: 1.8;
+            margin-top: var(--space-4);
+            line-height: 1.6;
         }
 
         .app-footer a {
             color: var(--text-body);
-            text-decoration: none;
+            text-underline-offset: 3px;
         }
 
         .app-footer a:hover {
-            text-decoration: underline;
+            color: var(--text-heading);
         }
 
-        /* ---------- Responsive Media Queries ---------- */
+        /* ---------- Responsive ---------- */
         @media (max-width: 1024px) {
             .workstation-grid {
                 grid-template-columns: 1fr;
             }
-            .kpi-banner-card {
-                grid-template-columns: 1fr;
-                gap: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: var(--space-2) var(--space-2) var(--space-3);
             }
-            .kpi-col.border-left {
-                border-left: none;
-                border-top: 1px solid var(--border-hairline);
-                padding-left: 0;
-                padding-top: 0.75rem;
+            .config-card,
+            .kpi-banner-card,
+            .analytics-card {
+                padding: var(--space-2);
+            }
+            .kpi-revenue-val {
+                font-size: 2rem;
+            }
+            .ratio-row {
+                flex-direction: column;
+            }
+            .ratio-item + .ratio-item::before {
+                content: none;
+            }
+            .preset-select {
+                max-width: 150px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
@@ -944,50 +1079,46 @@
 <body>
 
 <div class="container">
-    <!-- Top Navigation Header -->
+    <!-- Top bar -->
     <header class="app-header">
         <div class="brand-header">
-            <div class="brand-logo-badge">⚡</div>
+            <div class="brand-logo-badge" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l5-6 4 3 7-8"/><circle cx="20" cy="6" r="1.5" fill="currentColor"/></svg>
+            </div>
             <div class="brand-titles">
-                <h1>Marketing Campaign Intelligence</h1>
-                <p>FastAPI Dual XGBoost Lifespan Microservice · Production Serving</p>
+                <h1>Campaign Intelligence</h1>
+                <p>Forecast revenue and profitability for a beauty campaign</p>
             </div>
         </div>
-        <div class="header-center" role="tablist">
-            <button type="button" class="view-tab-btn active" id="tab-sim" onclick="switchView('simulator')">
-                <span>⚡ Campaign Simulator</span>
-            </button>
-            <button type="button" class="view-tab-btn" id="tab-bench" onclick="switchView('leaderboard')">
-                <span>🏆 Benchmark Matrix</span>
-            </button>
+        <div class="header-center" role="tablist" aria-label="Views">
+            <button type="button" role="tab" aria-selected="true" class="view-tab-btn active" id="tab-sim" onclick="switchView('simulator')">Simulator</button>
+            <button type="button" role="tab" aria-selected="false" class="view-tab-btn" id="tab-bench" onclick="switchView('leaderboard')">Benchmarks</button>
         </div>
-        <div class="status-pill" id="service-status">
+        <div class="status-pill" id="service-status" role="status">
             <span class="dot pending" id="status-dot"></span>
             <span id="status-text">Checking service…</span>
         </div>
     </header>
 
-    <!-- TAB 1: WORKSTATION SPLIT-PANE SIMULATOR -->
+    <!-- Simulator -->
     <div id="view-simulator">
         <div class="workstation-grid">
-            <!-- Left Rail: Parameter Configuration Console -->
-            <aside class="config-card">
+            <!-- Left: parameters -->
+            <aside class="config-card" aria-label="Campaign parameters">
                 <div class="config-card-header">
-                    <div class="config-card-title">
-                        <span>⚙️ Parameters</span>
-                    </div>
-                    <select id="preset-dropdown" class="preset-select" onchange="applyPreset(this.value)">
-                        <option value="">Presets: Custom</option>
-                        <option value="high-growth">Nykaa Growth</option>
-                        <option value="purplle-tier2">Purplle Tier-2</option>
-                        <option value="tira-luxury">Tira Luxury</option>
-                        <option value="reset">↺ Reset</option>
+                    <h2 class="config-card-title">Parameters</h2>
+                    <select id="preset-dropdown" class="preset-select" aria-label="Preset" onchange="applyPreset(this.value)">
+                        <option value="">Preset: custom</option>
+                        <option value="high-growth">Nykaa growth</option>
+                        <option value="purplle-tier2">Purplle tier 2</option>
+                        <option value="tira-luxury">Tira luxury</option>
+                        <option value="reset">Reset to defaults</option>
                     </select>
                 </div>
 
                 <form id="campaign-form" onsubmit="handleForecastSubmit(event)">
-                    <!-- Brand Segmented Control -->
-                    <div class="brand-buttons-group" role="group" aria-label="Brand Selection">
+                    <!-- Brand segmented control -->
+                    <div class="brand-buttons-group" role="group" aria-label="Brand">
                         <button type="button" class="brand-btn active" data-brand="nykaa" onclick="selectBrand('nykaa')">
                             <span class="indicator-dot"></span> Nykaa
                         </button>
@@ -1000,62 +1131,29 @@
                     </div>
                     <input type="hidden" id="brand-input" name="brand" value="nykaa">
 
-                    <!-- Section 1: Targeting & Strategy -->
+                    <!-- Strategy and timing -->
                     <div class="form-section">
-                        <div class="form-section-title">1. Strategy &amp; Targeting</div>
-                        <div class="field-row-2">
-                            <div class="form-field">
-                                <label for="campaign_type">Strategy</label>
-                                <select id="campaign_type" name="campaign_type" onchange="triggerLivePreview()">
-                                    <option value="Paid Ads" selected>Paid Ads</option>
-                                    <option value="Social Media">Social Media</option>
-                                    <option value="Influencer">Influencer</option>
-                                    <option value="Email">Email</option>
-                                    <option value="SEO">SEO</option>
-                                </select>
-                            </div>
-                            <div class="form-field">
-                                <label for="target_audience">Demographic</label>
-                                <select id="target_audience" name="target_audience" onchange="triggerLivePreview()">
-                                    <option value="Youth" selected>Youth</option>
-                                    <option value="College Students">College Students</option>
-                                    <option value="Tier 2 City Customers">Tier 2 Cities</option>
-                                    <option value="Working Women">Working Women</option>
-                                </select>
-                            </div>
+                        <div class="form-field">
+                            <label for="campaign_type">Strategy</label>
+                            <select id="campaign_type" name="campaign_type" onchange="triggerLivePreview()">
+                                <option value="Paid Ads" selected>Paid Ads</option>
+                                <option value="Social Media">Social Media</option>
+                                <option value="Influencer">Influencer</option>
+                                <option value="Email">Email</option>
+                                <option value="SEO">SEO</option>
+                            </select>
                         </div>
-                        <div class="field-row-2">
-                            <div class="form-field">
-                                <label for="customer_segment">Segment Tier</label>
-                                <select id="customer_segment" name="customer_segment" onchange="triggerLivePreview()">
-                                    <option value="Premium Shoppers" selected>Premium Shoppers</option>
-                                    <option value="College Students">College Students</option>
-                                    <option value="Working Women">Working Women</option>
-                                    <option value="Tier 2 City Customers">Tier 2 Cities</option>
-                                </select>
-                            </div>
-                            <div class="form-field">
-                                <label for="language">Language</label>
-                                <select id="language" name="language" onchange="triggerLivePreview()">
-                                    <option value="English" selected>English</option>
-                                    <option value="Hindi">Hindi</option>
-                                    <option value="Tamil">Tamil</option>
-                                    <option value="Bengali">Bengali</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Section 2: Funnel Volumes & Execution Month -->
-                    <div class="form-section">
-                        <div class="form-section-title">2. Funnel Volumes &amp; Timeline</div>
                         <div class="form-field">
                             <label for="month">
-                                <span>Execution Month</span>
-                                <span class="badge" id="month-display">May (Month 5)</span>
+                                <span>Month</span>
+                                <span class="badge" id="month-display">May</span>
                             </label>
                             <input type="range" id="month" name="month" min="1" max="12" value="5" step="1" oninput="updateMonthDisplay(this.value)">
                         </div>
+                    </div>
+
+                    <!-- Funnel volumes and cost -->
+                    <div class="form-section">
                         <div class="field-row-2">
                             <div class="form-field">
                                 <label for="impressions">Impressions</label>
@@ -1065,10 +1163,8 @@
                                 <label for="clicks">Clicks</label>
                                 <input type="number" id="clicks" name="clicks" value="4000" min="0" step="100" required oninput="triggerLivePreview()">
                             </div>
-                        </div>
-                        <div class="field-row-2">
                             <div class="form-field">
-                                <label for="leads">Inbound Leads</label>
+                                <label for="leads">Leads</label>
                                 <input type="number" id="leads" name="leads" value="1500" min="0" step="50" required oninput="triggerLivePreview()">
                             </div>
                             <div class="form-field">
@@ -1076,340 +1172,315 @@
                                 <input type="number" id="conversions" name="conversions" value="500" min="0" step="25" required oninput="triggerLivePreview()">
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Section 3: Economics & Channels -->
-                    <div class="form-section">
-                        <div class="form-section-title">3. Unit Economics &amp; Channels</div>
-                        <div class="field-row-2">
-                            <div class="form-field">
-                                <label for="acquisition_cost">CPA in ₹</label>
-                                <input type="number" id="acquisition_cost" name="acquisition_cost" value="250.0" min="0" step="10" required oninput="triggerLivePreview()">
-                            </div>
-                            <div class="form-field">
-                                <label for="engagement_score">
-                                    <span>Eng. Score</span>
-                                    <span class="badge" id="eng-display">15.0</span>
-                                </label>
-                                <input type="number" id="engagement_score" name="engagement_score" value="15.0" min="0" max="30" step="0.5" required oninput="updateEngDisplay(this.value)">
-                            </div>
-                        </div>
                         <div class="form-field">
-                            <label>Delivery Channels</label>
-                            <div class="channel-tags-row">
-                                <label class="channel-chip checked">
-                                    <input type="checkbox" name="channels" value="Instagram" checked onchange="toggleChip(this)"> Instagram
-                                </label>
-                                <label class="channel-chip checked">
-                                    <input type="checkbox" name="channels" value="Google" checked onchange="toggleChip(this)"> Google
-                                </label>
-                                <label class="channel-chip">
-                                    <input type="checkbox" name="channels" value="YouTube" onchange="toggleChip(this)"> YouTube
-                                </label>
-                                <label class="channel-chip">
-                                    <input type="checkbox" name="channels" value="WhatsApp" onchange="toggleChip(this)"> WhatsApp
-                                </label>
-                                <label class="channel-chip">
-                                    <input type="checkbox" name="channels" value="Email" onchange="toggleChip(this)"> Email
-                                </label>
-                                <label class="channel-chip">
-                                    <input type="checkbox" name="channels" value="Facebook" onchange="toggleChip(this)"> Facebook
-                                </label>
-                            </div>
+                            <label for="acquisition_cost">Cost per acquisition (₹)</label>
+                            <input type="number" id="acquisition_cost" name="acquisition_cost" value="250.0" min="0" step="10" required oninput="triggerLivePreview()">
                         </div>
                     </div>
 
-                    <!-- Invariant Validation Alert Banner -->
-                    <div id="validation-banner" class="validation-alert" role="alert" style="margin-top: 0.95rem;">
-                        <span>⚠️</span>
+                    <!-- Secondary inputs, collapsed by default -->
+                    <details class="more-fields" id="more-fields">
+                        <summary>Audience &amp; channels <span class="more-summary" id="more-summary">Youth · Premium Shoppers · English · 2 channels</span></summary>
+                        <div class="more-fields-body">
+                            <div class="field-row-2">
+                                <div class="form-field">
+                                    <label for="target_audience">Demographic</label>
+                                    <select id="target_audience" name="target_audience" onchange="triggerLivePreview()">
+                                        <option value="Youth" selected>Youth</option>
+                                        <option value="College Students">College Students</option>
+                                        <option value="Tier 2 City Customers">Tier 2 Cities</option>
+                                        <option value="Working Women">Working Women</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label for="customer_segment">Segment</label>
+                                    <select id="customer_segment" name="customer_segment" onchange="triggerLivePreview()">
+                                        <option value="Premium Shoppers" selected>Premium Shoppers</option>
+                                        <option value="College Students">College Students</option>
+                                        <option value="Working Women">Working Women</option>
+                                        <option value="Tier 2 City Customers">Tier 2 Cities</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label for="language">Language</label>
+                                    <select id="language" name="language" onchange="triggerLivePreview()">
+                                        <option value="English" selected>English</option>
+                                        <option value="Hindi">Hindi</option>
+                                        <option value="Tamil">Tamil</option>
+                                        <option value="Bengali">Bengali</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label for="engagement_score">
+                                        <span>Engagement</span>
+                                        <span class="badge num" id="eng-display">15.0</span>
+                                    </label>
+                                    <input type="number" id="engagement_score" name="engagement_score" value="15.0" min="0" max="30" step="0.5" required oninput="updateEngDisplay(this.value)">
+                                </div>
+                            </div>
+                            <div class="form-field">
+                                <span class="field-label" id="channels-label">Delivery channels</span>
+                                <div class="channel-tags-row" role="group" aria-labelledby="channels-label">
+                                    <label class="channel-chip checked">
+                                        <input type="checkbox" name="channels" value="Instagram" checked onchange="toggleChip(this)"> Instagram
+                                    </label>
+                                    <label class="channel-chip checked">
+                                        <input type="checkbox" name="channels" value="Google" checked onchange="toggleChip(this)"> Google
+                                    </label>
+                                    <label class="channel-chip">
+                                        <input type="checkbox" name="channels" value="YouTube" onchange="toggleChip(this)"> YouTube
+                                    </label>
+                                    <label class="channel-chip">
+                                        <input type="checkbox" name="channels" value="WhatsApp" onchange="toggleChip(this)"> WhatsApp
+                                    </label>
+                                    <label class="channel-chip">
+                                        <input type="checkbox" name="channels" value="Email" onchange="toggleChip(this)"> Email
+                                    </label>
+                                    <label class="channel-chip">
+                                        <input type="checkbox" name="channels" value="Facebook" onchange="toggleChip(this)"> Facebook
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- Validation alert -->
+                    <div id="validation-banner" class="validation-alert" role="alert">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><circle cx="12" cy="16.5" r="0.6" fill="currentColor"/></svg>
                         <span id="validation-message">Logical invariant violation</span>
                     </div>
 
-                    <!-- Submit Action Button -->
-                    <div style="margin-top: 1rem;">
+                    <!-- Submit -->
+                    <div class="submit-area">
+                        <p class="stale-note" id="stale-note" hidden>Inputs changed. Run forecast to update the model output.</p>
                         <button type="submit" id="forecast-btn" class="submit-btn">
-                            <span>⚡ Run Campaign Forecast</span>
+                            <span>Run forecast</span>
                             <div class="spinner" id="forecast-spinner"></div>
                         </button>
                     </div>
                 </form>
             </aside>
 
-            <!-- Right Rail: Live Intelligence Canvas (Outputs & Diagnostics) -->
+            <!-- Right: results and diagnostics -->
             <main class="intelligence-column">
-                <!-- Executive KPI Hero Deck -->
-                <section class="kpi-banner-card" id="results-display">
-                    <!-- Col 1: Forecasted Revenue -->
-                    <div class="kpi-col">
-                        <div class="kpi-col-label">
-                            <span>Forecasted Revenue</span>
-                            <span class="kpi-model-pill">XGBoost Regressor</span>
-                        </div>
+                <!-- Result band -->
+                <section class="kpi-banner-card" id="results-display" aria-label="Forecast result">
+                    <div class="kpi-col-label">Forecasted Revenue</div>
+                    <div class="hero-row">
                         <div class="kpi-revenue-val" id="res-revenue">₹1,25,000.00</div>
-                        <div class="kpi-subtext">Continuous projected gross margin in INR</div>
+                        <div id="res-profit-badge" class="profit-badge emerald-glass"><span>Profitable</span></div>
                     </div>
-
-                    <!-- Col 2: Profitability Status -->
-                    <div class="kpi-col border-left">
-                        <div class="kpi-col-label">
-                            <span>Profitability Status</span>
-                            <span class="kpi-model-pill">XGBoost Classifier</span>
-                        </div>
-                        <div id="res-profit-badge" class="profit-badge emerald-glass">
-                            <span>📈 Forecasted Status: PROFITABLE CAMPAIGN</span>
-                        </div>
-                        <div class="kpi-subtext" id="res-profit-sub" style="margin-top: 0.2rem;">Revenue comfortably exceeds media &amp; acquisition costs.</div>
+                    <div class="hero-sub">
+                        <div class="kpi-subtext">Projected revenue for this campaign</div>
+                        <div class="kpi-subtext" id="res-profit-sub">Revenue comfortably exceeds media &amp; acquisition costs.</div>
                     </div>
-
-                    <!-- Col 3: Authoritative Efficiency Triad -->
-                    <div class="kpi-col border-left">
-                        <div class="kpi-col-label">Efficiency Ratios</div>
-                        <div class="efficiency-triad">
-                            <div class="triad-box">
-                                <div class="triad-box-lbl">CTR</div>
-                                <div class="triad-box-val" id="res-ctr">8.00%</div>
-                            </div>
-                            <div class="triad-box">
-                                <div class="triad-box-lbl">Conv Rate</div>
-                                <div class="triad-box-val" id="res-cr">12.50%</div>
-                            </div>
-                            <div class="triad-box">
-                                <div class="triad-box-lbl">CPL</div>
-                                <div class="triad-box-val" id="res-cpl">₹0.17</div>
-                            </div>
+                    <dl class="ratio-row">
+                        <div class="ratio-item">
+                            <dt>CTR</dt>
+                            <dd class="num" id="res-ctr">8.00%</dd>
                         </div>
-                    </div>
+                        <div class="ratio-item">
+                            <dt>Conv. rate</dt>
+                            <dd class="num" id="res-cr">12.50%</dd>
+                        </div>
+                        <div class="ratio-item">
+                            <dt>Cost per lead</dt>
+                            <dd class="num" id="res-cpl">₹0.17</dd>
+                        </div>
+                    </dl>
                 </section>
 
-                <!-- Diagnostics 1: Conversion Funnel & Drop-Off -->
-                <section class="analytics-card" id="analytics-funnel-card">
+                <!-- Diagnostics: one view at a time -->
+                <section class="analytics-card" id="analytics-card" aria-label="Diagnostics">
                     <div class="analytics-card-header">
-                        <div class="analytics-card-title">
-                            <span>🔻 Conversion Funnel &amp; Drop-Off</span>
+                        <h2 class="analytics-card-title">Diagnostics</h2>
+                        <div class="seg-group" role="group" aria-label="Diagnostics view">
+                            <button type="button" class="seg-btn" id="diag-tab-funnel" aria-pressed="true" onclick="switchDiagnostics('funnel')">Funnel</button>
+                            <button type="button" class="seg-btn" id="diag-tab-curve" aria-pressed="false" onclick="switchDiagnostics('curve')">Break-even</button>
                         </div>
-                        <span class="analytics-card-badge" id="funnel-brand-tag">NYKAA · STAGE RETENTION</span>
                     </div>
-                    <div class="funnel-container" id="funnel-stages-container">
-                        <!-- Stage 1: Impressions -->
-                        <div class="funnel-stage">
-                            <div class="funnel-stage-header">
-                                <span class="funnel-stage-name">1. Ad Impressions (Top of Funnel)</span>
-                                <div>
-                                    <span class="funnel-stage-value" id="funnel-val-imp">50,000</span>
-                                    <span class="funnel-stage-pct">100.0%</span>
+
+                    <!-- Pane 1: conversion funnel -->
+                    <div class="diag-pane" id="analytics-funnel-card">
+                        <span class="analytics-card-badge" id="funnel-brand-tag">Nykaa funnel</span>
+                        <div class="funnel-container" id="funnel-stages-container">
+                            <div class="funnel-stage">
+                                <div class="funnel-stage-header">
+                                    <span class="funnel-stage-name">Impressions</span>
+                                    <div>
+                                        <span class="funnel-stage-value" id="funnel-val-imp">50,000</span>
+                                        <span class="funnel-stage-pct">100.0%</span>
+                                    </div>
+                                </div>
+                                <div class="funnel-bar-track">
+                                    <div class="funnel-bar-fill" id="funnel-bar-imp"></div>
                                 </div>
                             </div>
-                            <div class="funnel-bar-track">
-                                <div class="funnel-bar-fill" id="funnel-bar-imp" style="width: 100%;"></div>
-                            </div>
-                        </div>
 
-                        <!-- Drop-Off 1 -->
-                        <div class="funnel-dropoff-connector">
-                            <span>Drop-off: <strong class="funnel-dropoff-val" id="funnel-drop-1">92.0% lost</strong></span>
-                            <span>Step CTR: <strong id="funnel-ctr-step">8.00%</strong></span>
-                        </div>
+                            <div class="funnel-step" id="funnel-ctr-step">8.0% continue</div>
 
-                        <!-- Stage 2: Clicks -->
-                        <div class="funnel-stage">
-                            <div class="funnel-stage-header">
-                                <span class="funnel-stage-name">2. Traffic / Clicks</span>
-                                <div>
-                                    <span class="funnel-stage-value" id="funnel-val-clicks">4,000</span>
-                                    <span class="funnel-stage-pct" id="funnel-pct-clicks">8.0%</span>
+                            <div class="funnel-stage">
+                                <div class="funnel-stage-header">
+                                    <span class="funnel-stage-name">Clicks</span>
+                                    <div>
+                                        <span class="funnel-stage-value" id="funnel-val-clicks">4,000</span>
+                                        <span class="funnel-stage-pct" id="funnel-pct-clicks">8.0%</span>
+                                    </div>
+                                </div>
+                                <div class="funnel-bar-track">
+                                    <div class="funnel-bar-fill" id="funnel-bar-clicks" style="transform: scaleX(0.08);"></div>
                                 </div>
                             </div>
-                            <div class="funnel-bar-track">
-                                <div class="funnel-bar-fill" id="funnel-bar-clicks" style="width: 8.0%;"></div>
-                            </div>
-                        </div>
 
-                        <!-- Drop-Off 2 -->
-                        <div class="funnel-dropoff-connector">
-                            <span>Drop-off: <strong class="funnel-dropoff-val" id="funnel-drop-2">62.5% lost</strong></span>
-                            <span>Lead Rate: <strong id="funnel-lead-step">37.50%</strong></span>
-                        </div>
+                            <div class="funnel-step" id="funnel-lead-step">37.5% continue</div>
 
-                        <!-- Stage 3: Leads -->
-                        <div class="funnel-stage">
-                            <div class="funnel-stage-header">
-                                <span class="funnel-stage-name">3. Inbound Qualified Leads</span>
-                                <div>
-                                    <span class="funnel-stage-value" id="funnel-val-leads">1,500</span>
-                                    <span class="funnel-stage-pct" id="funnel-pct-leads">3.0%</span>
+                            <div class="funnel-stage">
+                                <div class="funnel-stage-header">
+                                    <span class="funnel-stage-name">Leads</span>
+                                    <div>
+                                        <span class="funnel-stage-value" id="funnel-val-leads">1,500</span>
+                                        <span class="funnel-stage-pct" id="funnel-pct-leads">3.0%</span>
+                                    </div>
+                                </div>
+                                <div class="funnel-bar-track">
+                                    <div class="funnel-bar-fill" id="funnel-bar-leads" style="transform: scaleX(0.03);"></div>
                                 </div>
                             </div>
-                            <div class="funnel-bar-track">
-                                <div class="funnel-bar-fill" id="funnel-bar-leads" style="width: 3.0%;"></div>
-                            </div>
-                        </div>
 
-                        <!-- Drop-Off 3 -->
-                        <div class="funnel-dropoff-connector">
-                            <span>Drop-off: <strong class="funnel-dropoff-val" id="funnel-drop-3">66.7% lost</strong></span>
-                            <span>Close Rate: <strong id="funnel-conv-step">33.33%</strong></span>
-                        </div>
+                            <div class="funnel-step" id="funnel-conv-step">33.3% continue</div>
 
-                        <!-- Stage 4: Conversions -->
-                        <div class="funnel-stage">
-                            <div class="funnel-stage-header">
-                                <span class="funnel-stage-name">4. Closed Conversions</span>
-                                <div>
-                                    <span class="funnel-stage-value" id="funnel-val-conv">500</span>
-                                    <span class="funnel-stage-pct" id="funnel-pct-conv">1.0%</span>
+                            <div class="funnel-stage">
+                                <div class="funnel-stage-header">
+                                    <span class="funnel-stage-name">Conversions</span>
+                                    <div>
+                                        <span class="funnel-stage-value" id="funnel-val-conv">500</span>
+                                        <span class="funnel-stage-pct" id="funnel-pct-conv">1.0%</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="funnel-bar-track">
-                                <div class="funnel-bar-fill" id="funnel-bar-conv" style="width: 1.0%;"></div>
+                                <div class="funnel-bar-track">
+                                    <div class="funnel-bar-fill" id="funnel-bar-conv" style="transform: scaleX(0.01);"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </section>
 
-                <!-- Diagnostics 2: Spend & Scale Sensitivity Curve -->
-                <section class="analytics-card" id="analytics-sensitivity-card">
-                    <div class="analytics-card-header">
-                        <div class="analytics-card-title">
-                            <span>📈 Spend &amp; Scale Sensitivity Curve</span>
-                        </div>
-                        <span class="analytics-card-badge" id="sensitivity-badge">BREAK-EVEN SIMULATOR</span>
-                    </div>
-                    <div class="sensitivity-container">
-                        <div id="sensitivity-chart-wrapper" style="position: relative; width: 100%; min-height: 200px;">
-                            <svg id="sensitivity-svg" class="sensitivity-svg" viewBox="0 0 520 210" preserveAspectRatio="xMidYMid meet"></svg>
-                            <div id="curve-tooltip" style="position: absolute; display: none; background: #09090b; color: #ffffff; padding: 0.4rem 0.65rem; border-radius: 4px; font-size: 0.68rem; font-family: 'Geist Mono', monospace; pointer-events: none; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.18); line-height: 1.4;"></div>
-                        </div>
-                        <div class="sensitivity-legend">
-                            <div class="legend-item">
-                                <span class="legend-line revenue"></span>
-                                <span>Projected Revenue (₹)</span>
+                    <!-- Pane 2: spend and scale sensitivity -->
+                    <div class="diag-pane" id="analytics-sensitivity-card" hidden>
+                        <span class="analytics-card-badge" id="sensitivity-badge">Revenue and cost as spend scales up or down</span>
+                        <div class="sensitivity-container">
+                            <div id="sensitivity-chart-wrapper">
+                                <svg id="sensitivity-svg" class="sensitivity-svg" viewBox="0 0 520 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Projected revenue and acquisition cost at different spend scales"></svg>
+                                <div id="curve-tooltip" class="curve-tooltip"></div>
                             </div>
-                            <div class="legend-item">
-                                <span class="legend-line cost"></span>
-                                <span>Media Acquisition Cost (₹)</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-dot current"></span>
-                                <span id="legend-current-status">1.0x Current Simulation</span>
+                            <div class="sensitivity-legend">
+                                <div class="legend-item">
+                                    <span class="legend-line revenue"></span>
+                                    <span>Projected revenue (₹)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-line cost"></span>
+                                    <span>Acquisition cost (₹)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot current"></span>
+                                    <span id="legend-current-status">Current simulation</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
-
-                <!-- Telemetry Meta Bar -->
-                <div class="meta-strip">
-                    <span id="telemetry-latency">In-Memory Lifespan Inference Engine · Latency &lt; 5 ms</span>
-                    <span id="telemetry-timestamp">Simulated timestamp: Live</span>
-                </div>
             </main>
         </div>
     </div>
 
-    <!-- TAB 2: PORTFOLIO BENCHMARK MATRIX VIEW -->
+    <!-- Benchmarks -->
     <section id="view-leaderboard" class="leaderboard-view">
         <div class="leaderboard-header">
-            <div class="leaderboard-title">
-                <span>🏆 Multi-Brand Performance Leaderboard</span>
-            </div>
-            <div style="font-family: 'Geist Mono', monospace; font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">
-                PORTFOLIO BENCHMARK EVALUATION MATRIX
-            </div>
+            <h2 class="leaderboard-title">Multi-brand performance leaderboard</h2>
+            <div class="leaderboard-note">Pick a row to load it into the simulator</div>
         </div>
+        <div class="table-scroll">
         <table class="leaderboard-table" id="leaderboard-tbl">
             <thead>
                 <tr>
-                    <th style="width: 70px;">Rank</th>
-                    <th>Brand &amp; Segment</th>
-                    <th>Strategy &amp; Channels</th>
-                    <th>Benchmark Revenue</th>
-                    <th>Win Rate / Profit</th>
-                    <th style="text-align: right;">Action</th>
+                    <th class="th-rank">Rank</th>
+                    <th>Brand &amp; segment</th>
+                    <th>Strategy &amp; channels</th>
+                    <th>Benchmark revenue</th>
+                    <th>Win rate</th>
+                    <th class="th-action">Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr class="selected" id="row-nykaa" onclick="selectLeaderboardRow('nykaa', 'high-growth')">
-                    <td><strong style="color: var(--accent-blue);">#1</strong></td>
+                    <td><span class="rank rank-top">#1</span></td>
                     <td>
                         <div class="brand-cell">
                             <span class="brand-tag nykaa">Nykaa</span>
                             <span>Premium Beauty &amp; Wellness</span>
                         </div>
                     </td>
-                    <td>
-                        <span style="color: var(--text-muted); font-size: 0.76rem;">Paid Ads · Instagram, Google, YouTube</span>
-                    </td>
-                    <td>
-                        <span style="font-family: 'Geist Mono', monospace; font-weight: 600; color: var(--text-heading);">₹2,75,122.22</span>
-                    </td>
-                    <td>
-                        <span class="profit-badge emerald-glass" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;">94.8% WIN · PROFITABLE</span>
-                    </td>
-                    <td style="text-align: right;">
+                    <td><span class="row-sub">Paid Ads · Instagram, Google, YouTube</span></td>
+                    <td><span class="money num">₹2,75,122.22</span></td>
+                    <td><span class="profit-badge compact emerald-glass"><span class="num">94.8%</span> win · Profitable</span></td>
+                    <td class="cell-action">
                         <button type="button" class="select-row-btn" onclick="event.stopPropagation(); selectLeaderboardRow('nykaa', 'high-growth')">Simulate</button>
                     </td>
                 </tr>
                 <tr id="row-tira" onclick="selectLeaderboardRow('tira', 'tira-luxury')">
-                    <td><strong style="color: var(--text-heading);">#2</strong></td>
+                    <td><span class="rank">#2</span></td>
                     <td>
                         <div class="brand-cell">
                             <span class="brand-tag tira">Tira</span>
                             <span>Omnichannel Luxury Cosmetics</span>
                         </div>
                     </td>
-                    <td>
-                        <span style="color: var(--text-muted); font-size: 0.76rem;">Influencer · Instagram, YouTube, Google</span>
-                    </td>
-                    <td>
-                        <span style="font-family: 'Geist Mono', monospace; font-weight: 600; color: var(--text-heading);">₹4,15,705.10</span>
-                    </td>
-                    <td>
-                        <span class="profit-badge emerald-glass" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;">88.4% WIN · PROFITABLE</span>
-                    </td>
-                    <td style="text-align: right;">
+                    <td><span class="row-sub">Influencer · Instagram, YouTube, Google</span></td>
+                    <td><span class="money num">₹4,15,705.10</span></td>
+                    <td><span class="profit-badge compact emerald-glass"><span class="num">88.4%</span> win · Profitable</span></td>
+                    <td class="cell-action">
                         <button type="button" class="select-row-btn" onclick="event.stopPropagation(); selectLeaderboardRow('tira', 'tira-luxury')">Simulate</button>
                     </td>
                 </tr>
                 <tr id="row-purplle" onclick="selectLeaderboardRow('purplle', 'purplle-tier2')">
-                    <td><strong style="color: var(--text-heading);">#3</strong></td>
+                    <td><span class="rank">#3</span></td>
                     <td>
                         <div class="brand-cell">
                             <span class="brand-tag purplle">Purplle</span>
                             <span>Tier-2/3 Affordable Glamour</span>
                         </div>
                     </td>
-                    <td>
-                        <span style="color: var(--text-muted); font-size: 0.76rem;">Social Media · Instagram, WhatsApp</span>
-                    </td>
-                    <td>
-                        <span style="font-family: 'Geist Mono', monospace; font-weight: 600; color: var(--text-heading);">₹1,95,142.45</span>
-                    </td>
-                    <td>
-                        <span class="profit-badge emerald-glass" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;">81.2% WIN · PROFITABLE</span>
-                    </td>
-                    <td style="text-align: right;">
+                    <td><span class="row-sub">Social Media · Instagram, WhatsApp</span></td>
+                    <td><span class="money num">₹1,95,142.45</span></td>
+                    <td><span class="profit-badge compact emerald-glass"><span class="num">81.2%</span> win · Profitable</span></td>
+                    <td class="cell-action">
                         <button type="button" class="select-row-btn" onclick="event.stopPropagation(); selectLeaderboardRow('purplle', 'purplle-tier2')">Simulate</button>
                     </td>
                 </tr>
             </tbody>
         </table>
+        </div>
     </section>
 
-    <!-- Footer Links -->
+    <!-- Footer: technical details and links -->
     <footer class="app-footer">
-        FastAPI lifespan singletons · In-memory XGBoost regression &amp; classification.<br>
-        <a href="/docs">OpenAPI Spec</a> · <a href="/health">Health Probe</a> · <a href="/ready">Readiness Probe</a>
+        <span>XGBoost revenue and profit models</span>
+        <span id="telemetry-latency">Under 5 ms per forecast</span>
+        <span id="telemetry-timestamp">Not run yet</span>
+        <span><a href="/docs">OpenAPI</a> · <a href="/health">Health</a> · <a href="/ready">Ready</a></span>
     </footer>
 </div>
 
 <script>
     const MONTH_NAMES = [
-        "", "Jan (Month 1)", "Feb (Month 2)", "Mar (Month 3)", "Apr (Month 4)",
-        "May (Month 5)", "Jun (Month 6)", "Jul (Month 7)", "Aug (Month 8)",
-        "Sep (Month 9)", "Oct (Month 10)", "Nov (Month 11)", "Dec (Month 12)"
+        "", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
 
     let currentForecastedRevenue = 125000.0;
     let currentIsProfitable = true;
+    // Signature of the inputs behind the model output currently on screen
+    let lastForecastSig = null;
 
     function switchView(viewName) {
         const simView = document.getElementById('view-simulator');
@@ -1422,11 +1493,15 @@
             benchView.style.display = 'block';
             tabSim.classList.remove('active');
             tabBench.classList.add('active');
+            tabSim.setAttribute('aria-selected', 'false');
+            tabBench.setAttribute('aria-selected', 'true');
         } else {
             simView.style.display = 'block';
             benchView.style.display = 'none';
             tabSim.classList.add('active');
             tabBench.classList.remove('active');
+            tabSim.setAttribute('aria-selected', 'true');
+            tabBench.setAttribute('aria-selected', 'false');
             triggerLivePreview();
         }
     }
@@ -1478,7 +1553,28 @@
         } else {
             parent.classList.remove('checked');
         }
+        updateMoreSummary();
         triggerLivePreview();
+    }
+
+    function updateMoreSummary() {
+        const el = document.getElementById('more-summary');
+        if (!el) return;
+        const audience = document.getElementById('target_audience').value;
+        const segment = document.getElementById('customer_segment').value;
+        const language = document.getElementById('language').value;
+        const count = document.querySelectorAll('input[name="channels"]:checked').length;
+        el.textContent = `${audience} · ${segment} · ${language} · ${count} ${count === 1 ? 'channel' : 'channels'}`;
+    }
+
+    function switchDiagnostics(name) {
+        const showCurve = name === 'curve';
+        document.getElementById('analytics-funnel-card').hidden = showCurve;
+        document.getElementById('analytics-sensitivity-card').hidden = !showCurve;
+        document.getElementById('diag-tab-funnel').setAttribute('aria-pressed', String(!showCurve));
+        document.getElementById('diag-tab-curve').setAttribute('aria-pressed', String(showCurve));
+        // The chart sizes itself to its container, so draw it once it is visible
+        if (showCurve) updateSensitivityCurve(currentForecastedRevenue, currentIsProfitable);
     }
 
     function validateInvariants() {
@@ -1561,6 +1657,16 @@
         return '₹' + Math.round(val);
     }
 
+    function setBar(id, pct) {
+        const bar = document.getElementById(id);
+        if (bar) bar.style.transform = `scaleX(${Math.min(100, Math.max(0, pct)) / 100})`;
+    }
+
+    function setText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    }
+
     function updateFunnelChart() {
         const brand = (document.getElementById('brand-input') ? document.getElementById('brand-input').value : 'nykaa') || 'nykaa';
         const impressions = parseFloat(document.getElementById('impressions').value) || 0;
@@ -1568,85 +1674,49 @@
         const leads = parseFloat(document.getElementById('leads').value) || 0;
         const conversions = parseFloat(document.getElementById('conversions').value) || 0;
 
-        const tagEl = document.getElementById('funnel-brand-tag');
-        if (tagEl) {
-            tagEl.textContent = brand.toUpperCase() + ' · STAGE RETENTION';
-        }
+        setText('funnel-brand-tag', brand.charAt(0).toUpperCase() + brand.slice(1) + ' funnel');
 
-        let brandGrad = 'linear-gradient(90deg, #0066ff, #0284c7)';
-        if (brand === 'nykaa') brandGrad = 'linear-gradient(90deg, #db2777, #f472b6)';
-        else if (brand === 'purplle') brandGrad = 'linear-gradient(90deg, #7c3aed, #a78bfa)';
-        else if (brand === 'tira') brandGrad = 'linear-gradient(90deg, #d97706, #fbbf24)';
-
+        // Bars use the brand's text shade (darker, passes 3:1 against the track); fall back to the CSS default
+        const brandColor = getComputedStyle(document.documentElement).getPropertyValue(`--brand-${brand}-text`).trim();
         ['funnel-bar-imp', 'funnel-bar-clicks', 'funnel-bar-leads', 'funnel-bar-conv'].forEach(id => {
             const bar = document.getElementById(id);
-            if (bar) bar.style.background = brandGrad;
+            if (bar) bar.style.background = brandColor;
         });
 
         // Stage 1: Impressions
-        const impEl = document.getElementById('funnel-val-imp');
-        if (impEl) impEl.textContent = Math.round(impressions).toLocaleString();
+        setText('funnel-val-imp', Math.round(impressions).toLocaleString());
+        setBar('funnel-bar-imp', 100);
 
         // Stage 2: Clicks
         const clicksPct = impressions > 0 ? (clicks / impressions) * 100 : 0.0;
-        const clicksValEl = document.getElementById('funnel-val-clicks');
-        if (clicksValEl) clicksValEl.textContent = Math.round(clicks).toLocaleString();
-        const clicksPctEl = document.getElementById('funnel-pct-clicks');
-        if (clicksPctEl) clicksPctEl.textContent = clicksPct.toFixed(1) + '%';
-        const clicksBarW = impressions > 0 ? Math.min(100, Math.max(clicksPct, clicks > 0 ? 3 : 0)) : 0;
-        const clicksBar = document.getElementById('funnel-bar-clicks');
-        if (clicksBar) clicksBar.style.width = clicksBarW + '%';
-
-        // Drop-off 1 (Imp -> Clicks)
-        const lost1 = Math.max(0, impressions - clicks);
-        const drop1Pct = impressions > 0 ? ((lost1 / impressions) * 100).toFixed(1) : '0.0';
-        const drop1El = document.getElementById('funnel-drop-1');
-        if (drop1El) drop1El.textContent = `${drop1Pct}% lost (${Math.round(lost1).toLocaleString()})`;
-        const ctrStepEl = document.getElementById('funnel-ctr-step');
-        if (ctrStepEl) ctrStepEl.textContent = clicksPct.toFixed(2) + '%';
+        setText('funnel-val-clicks', Math.round(clicks).toLocaleString());
+        setText('funnel-pct-clicks', clicksPct.toFixed(1) + '%');
+        setBar('funnel-bar-clicks', impressions > 0 ? Math.max(clicksPct, clicks > 0 ? 3 : 0) : 0);
+        setText('funnel-ctr-step', clicksPct.toFixed(1) + '% continue');
 
         // Stage 3: Leads
         const leadsPct = impressions > 0 ? (leads / impressions) * 100 : 0.0;
         const leadStepPct = clicks > 0 ? (leads / clicks) * 100 : 0.0;
-        const leadsValEl = document.getElementById('funnel-val-leads');
-        if (leadsValEl) leadsValEl.textContent = Math.round(leads).toLocaleString();
-        const leadsPctEl = document.getElementById('funnel-pct-leads');
-        if (leadsPctEl) leadsPctEl.textContent = leadsPct.toFixed(1) + '%';
-        const leadsBarW = impressions > 0 ? Math.min(100, Math.max(leadsPct, leads > 0 ? 2 : 0)) : 0;
-        const leadsBar = document.getElementById('funnel-bar-leads');
-        if (leadsBar) leadsBar.style.width = leadsBarW + '%';
-
-        // Drop-off 2 (Clicks -> Leads)
-        const lost2 = Math.max(0, clicks - leads);
-        const drop2Pct = clicks > 0 ? ((lost2 / clicks) * 100).toFixed(1) : '0.0';
-        const drop2El = document.getElementById('funnel-drop-2');
-        if (drop2El) drop2El.textContent = `${drop2Pct}% lost (${Math.round(lost2).toLocaleString()})`;
-        const leadStepEl = document.getElementById('funnel-lead-step');
-        if (leadStepEl) leadStepEl.textContent = leadStepPct.toFixed(2) + '%';
+        setText('funnel-val-leads', Math.round(leads).toLocaleString());
+        setText('funnel-pct-leads', leadsPct.toFixed(1) + '%');
+        setBar('funnel-bar-leads', impressions > 0 ? Math.max(leadsPct, leads > 0 ? 2 : 0) : 0);
+        setText('funnel-lead-step', leadStepPct.toFixed(1) + '% continue');
 
         // Stage 4: Conversions
         const convPct = impressions > 0 ? (conversions / impressions) * 100 : 0.0;
         const convStepPct = leads > 0 ? (conversions / leads) * 100 : 0.0;
-        const convValEl = document.getElementById('funnel-val-conv');
-        if (convValEl) convValEl.textContent = Math.round(conversions).toLocaleString();
-        const convPctEl = document.getElementById('funnel-pct-conv');
-        if (convPctEl) convPctEl.textContent = convPct.toFixed(1) + '%';
-        const convBarW = impressions > 0 ? Math.min(100, Math.max(convPct, conversions > 0 ? 1.5 : 0)) : 0;
-        const convBar = document.getElementById('funnel-bar-conv');
-        if (convBar) convBar.style.width = convBarW + '%';
-
-        // Drop-off 3 (Leads -> Conversions)
-        const lost3 = Math.max(0, leads - conversions);
-        const drop3Pct = leads > 0 ? ((lost3 / leads) * 100).toFixed(1) : '0.0';
-        const drop3El = document.getElementById('funnel-drop-3');
-        if (drop3El) drop3El.textContent = `${drop3Pct}% lost (${Math.round(lost3).toLocaleString()})`;
-        const convStepEl = document.getElementById('funnel-conv-step');
-        if (convStepEl) convStepEl.textContent = convStepPct.toFixed(2) + '%';
+        setText('funnel-val-conv', Math.round(conversions).toLocaleString());
+        setText('funnel-pct-conv', convPct.toFixed(1) + '%');
+        setBar('funnel-bar-conv', impressions > 0 ? Math.max(convPct, conversions > 0 ? 1.5 : 0) : 0);
+        setText('funnel-conv-step', convStepPct.toFixed(1) + '% continue');
     }
 
     function updateSensitivityCurve(forecastedRevenue, isProfitable) {
         const svg = document.getElementById('sensitivity-svg');
-        if (!svg) return;
+        const wrapper = document.getElementById('sensitivity-chart-wrapper');
+        if (!svg || !wrapper) return;
+        // Hidden pane has no width yet; switchDiagnostics redraws when it is shown
+        if (!wrapper.clientWidth) return;
 
         const conversions = parseFloat(document.getElementById('conversions').value) || 500;
         const cpa = parseFloat(document.getElementById('acquisition_cost').value) || 250;
@@ -1661,12 +1731,13 @@
             return { scale: s, rev, cost, margin };
         });
 
-        const padL = 65;
-        const padR = 25;
-        const padT = 18;
+        const totalW = Math.max(280, wrapper.clientWidth);
+        const totalH = 260;
+        const padL = totalW < 460 ? 56 : 64;
+        const padR = 16;
+        const padT = 16;
         const padB = 32;
-        const totalW = 520;
-        const totalH = 210;
+        svg.setAttribute('viewBox', `0 0 ${totalW} ${totalH}`);
         const plotW = totalW - padL - padR;
         const plotH = totalH - padT - padB;
 
@@ -1694,18 +1765,20 @@
             const y = toY(val);
             markup += `
                 <line x1="${padL}" y1="${y}" x2="${totalW - padR}" y2="${y}" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3 3" />
-                <text x="${padL - 8}" y="${y + 3.5}" text-anchor="end" font-family="'Geist Mono', monospace" font-size="9" fill="#64748b">${formatCompactINR(val)}</text>
+                <text x="${padL - 8}" y="${y + 3.5}" text-anchor="end" font-family="'Geist Mono', monospace" font-size="13" fill="#526173">${formatCompactINR(val)}</text>
             `;
         });
 
         // X Labels
-        scales.forEach(s => {
+        // On narrow charts, label every other step so the text does not collide
+        const labelScales = plotW < 360 ? scales.filter(s => [0.5, 1.0, 1.5, 2.0].includes(s)) : scales;
+        labelScales.forEach(s => {
             const x = toX(s);
-            const label = s === 1.0 ? '1.0x (Now)' : s + 'x';
+            const label = s === 1.0 ? '1.0x' : s + 'x';
             const fontWeight = s === 1.0 ? '700' : '500';
-            const fill = s === 1.0 ? '#09090b' : '#64748b';
+            const fill = s === 1.0 ? '#09090b' : '#526173';
             markup += `
-                <text x="${x}" y="${totalH - 10}" text-anchor="middle" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="${fontWeight}" fill="${fill}">${label}</text>
+                <text x="${x}" y="${totalH - 10}" text-anchor="middle" font-family="'Geist Mono', monospace" font-size="13" font-weight="${fontWeight}" fill="${fill}">${label}</text>
             `;
         });
 
@@ -1752,7 +1825,7 @@
         const statusEl = document.getElementById('legend-current-status');
         if (statusEl) {
             const isPos = currentMargin >= 0;
-            statusEl.innerHTML = `<strong>1.0x Current: Margin ${isPos ? '+' : '-'}${formatINR(Math.abs(currentMargin))} (${isPos ? 'Profitable' : 'Loss'})</strong>`;
+            statusEl.innerHTML = `<strong>Current: margin ${isPos ? '+' : '-'}${formatINR(Math.abs(currentMargin))} (${isPos ? 'profitable' : 'loss'})</strong>`;
             statusEl.style.color = isPos ? 'var(--emerald-text)' : 'var(--ruby-text)';
         }
     }
@@ -1768,15 +1841,16 @@
 
         const isPos = margin >= 0;
         tooltip.innerHTML = `
-            <div style="font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 2px; margin-bottom: 3px;">Scale: ${scale}x</div>
-            <div>Projected Rev: <strong>${formatINR(rev)}</strong></div>
-            <div>Media Spend: <strong>${formatINR(cost)}</strong></div>
-            <div style="color: ${isPos ? '#34d399' : '#f87171'}; font-weight: 600;">Net Margin: ${isPos ? '+' : '-'}${formatINR(Math.abs(margin))}</div>
+            <div class="tt-title">Scale: ${scale}x</div>
+            <div>Projected revenue: <strong>${formatINR(rev)}</strong></div>
+            <div>Media spend: <strong>${formatINR(cost)}</strong></div>
+            <div class="tt-margin ${isPos ? 'pos' : 'neg'}">Net margin: ${isPos ? '+' : '-'}${formatINR(Math.abs(margin))}</div>
         `;
 
-        tooltip.style.left = Math.min(rect.width - 160, Math.max(10, mouseX - 70)) + 'px';
-        tooltip.style.top = Math.max(5, mouseY - 75) + 'px';
         tooltip.style.display = 'block';
+        const left = Math.min(rect.width - tooltip.offsetWidth, Math.max(0, mouseX - tooltip.offsetWidth / 2));
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = Math.max(0, mouseY - tooltip.offsetHeight - 12) + 'px';
     }
 
     function hideCurveTooltip() {
@@ -1802,8 +1876,13 @@
             document.getElementById('res-cpl').textContent = formatINR(cpl);
         }
 
+        updateMoreSummary();
         updateFunnelChart();
         updateSensitivityCurve(currentForecastedRevenue, currentIsProfitable);
+
+        // Ratios above are live; the model output only changes on Run forecast
+        const staleNote = document.getElementById('stale-note');
+        if (staleNote) staleNote.hidden = formSignature() === lastForecastSig;
     }
 
     async function checkServiceHealth() {
@@ -1816,27 +1895,17 @@
             const modelsActive = (data.revenue_model ? 1 : 0) + (data.profit_model ? 1 : 0);
             dot.className = 'dot online';
             text.textContent = modelsActive === 2
-                ? 'Dual Models Online'
-                : `${modelsActive}/2 Models Ready`;
+                ? 'Online'
+                : `${modelsActive}/2 models ready`;
         } catch (err) {
             dot.className = 'dot offline';
-            text.textContent = 'Service Offline';
+            text.textContent = 'Service offline';
         }
     }
 
-    async function handleForecastSubmit(e) {
-        e.preventDefault();
-        if (!validateInvariants()) return;
-
-        const submitBtn = document.getElementById('forecast-btn');
-        const spinner = document.getElementById('forecast-spinner');
-        submitBtn.disabled = true;
-        spinner.style.display = 'inline-block';
-
-        const startTime = performance.now();
-
+    function collectPayload() {
         const channels = Array.from(document.querySelectorAll('input[name="channels"]:checked')).map(el => el.value);
-        const payload = {
+        return {
             brand: document.getElementById('brand-input').value,
             campaign_type: document.getElementById('campaign_type').value,
             target_audience: document.getElementById('target_audience').value,
@@ -1851,6 +1920,24 @@
             acquisition_cost: parseFloat(document.getElementById('acquisition_cost').value),
             channels: channels
         };
+    }
+
+    function formSignature() {
+        return JSON.stringify(collectPayload());
+    }
+
+    async function handleForecastSubmit(e) {
+        e.preventDefault();
+        if (!validateInvariants()) return;
+
+        const submitBtn = document.getElementById('forecast-btn');
+        const spinner = document.getElementById('forecast-spinner');
+        submitBtn.disabled = true;
+        spinner.style.display = 'inline-block';
+
+        const startTime = performance.now();
+
+        const payload = collectPayload();
 
         try {
             const [revRes, profRes] = await Promise.all([
@@ -1886,20 +1973,21 @@
             const sub = document.getElementById('res-profit-sub');
             if (profData.profitable) {
                 badge.className = 'profit-badge emerald-glass';
-                badge.innerHTML = '<span>📈 Forecasted Status: PROFITABLE CAMPAIGN</span>';
+                badge.innerHTML = '<span>Profitable</span>';
                 sub.textContent = 'Revenue comfortably exceeds media & acquisition costs.';
             } else {
                 badge.className = 'profit-badge ruby-glass';
-                badge.innerHTML = '<span>📉 Forecasted Status: NET OPERATIONAL LOSS</span>';
+                badge.innerHTML = '<span>Not profitable</span>';
                 sub.textContent = 'High acquisition cost leads to negative net margin.';
             }
 
             // Update Telemetry
-            document.getElementById('telemetry-latency').textContent = `Inference Latency: ${elapsed} ms (Dual Lifespan In-Memory Fetch)`;
-            document.getElementById('telemetry-timestamp').textContent = `Benchmark eval: ${new Date().toLocaleTimeString()}`;
+            document.getElementById('telemetry-latency').textContent = `Forecast took ${elapsed} ms`;
+            document.getElementById('telemetry-timestamp').textContent = `Run at ${new Date().toLocaleTimeString()}`;
 
             currentForecastedRevenue = revenueVal;
             currentIsProfitable = profData.profitable;
+            lastForecastSig = JSON.stringify(payload);
             triggerLivePreview();
         } catch (err) {
             alert('Network or server connection failed: ' + err.message);
@@ -1995,7 +2083,20 @@
         triggerLivePreview();
     }
 
+    // A collapsed section cannot show a native validation bubble, so open it first
+    document.getElementById('campaign-form').addEventListener('invalid', e => {
+        const details = e.target.closest('details');
+        if (details) details.open = true;
+    }, true);
+
+    window.addEventListener('resize', () => {
+        if (!document.getElementById('analytics-sensitivity-card').hidden) {
+            updateSensitivityCurve(currentForecastedRevenue, currentIsProfitable);
+        }
+    });
+
     // Startup Invocation
+    lastForecastSig = formSignature();
     checkServiceHealth();
     triggerLivePreview();
 </script>
