@@ -14,4 +14,5 @@ Documentation index and living engineering specifications for the Marketing Camp
 | [`TASKS.json`](./TASKS.json) | Granular, ordered, testable task definitions across milestones | `task-planner` | Phase 2.3, updated per task |
 | [`QA_RESULTS.json`](./QA_RESULTS.json) | Execution logs, exit codes, and test assertions per task attempt | `qa-tester` | Phase 3 build loop |
 | [`ADVERSARIAL_REVIEW.md`](./ADVERSARIAL_REVIEW.md) | Security, resilience, contract drift, and edge-case review reports | `adversarial-reviewer` | End of each milestone |
+| [`DEMO.md`](./DEMO.md) | 5-minute showcase narrative covering probes, glassmorphic UI, and batch API | `software-developer` | Phase 3 (M3) |
 

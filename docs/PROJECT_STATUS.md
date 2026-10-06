@@ -9,5 +9,5 @@
 - [x] Phase 3.1: M1 built, verified and committed per task, reviewed, CHANGELOG updated
 - [x] Phase 3.2: M2 built, verified and committed per task, reviewed, CHANGELOG updated
 - [x] Phase 3.3: M3 built, verified and committed per task, reviewed, CHANGELOG updated
-- [ ] Phase 4: Final test run, README, and handover
+- [x] Phase 4: Final test run, README, and handover
 
