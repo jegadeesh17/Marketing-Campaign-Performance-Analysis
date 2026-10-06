@@ -905,6 +905,189 @@
             font-family: 'Geist Mono', monospace;
         }
 
+        /* ---------- Visual Analytics & Funnel Diagnostics Grid ---------- */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-top: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .analytics-card {
+            background: #ffffff;
+            border: 1px solid var(--border-hairline);
+            border-radius: 8px;
+            padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .analytics-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.65rem;
+            border-bottom: 1px solid var(--border-hairline);
+        }
+
+        .analytics-card-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-heading);
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .analytics-card-badge {
+            font-size: 0.65rem;
+            font-family: 'Geist Mono', monospace;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            background: #f1f5f9;
+            color: var(--text-body);
+            font-weight: 600;
+        }
+
+        /* Funnel Stages */
+        .funnel-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+
+        .funnel-stage {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .funnel-stage-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            color: var(--text-heading);
+            font-weight: 500;
+        }
+
+        .funnel-stage-name {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .funnel-stage-value {
+            font-family: 'Geist Mono', monospace;
+            font-weight: 700;
+            color: var(--text-heading);
+        }
+
+        .funnel-stage-pct {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Geist Mono', monospace;
+            margin-left: 0.35rem;
+        }
+
+        .funnel-bar-track {
+            width: 100%;
+            height: 12px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .funnel-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #0066ff, #0284c7);
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .funnel-dropoff-connector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.2rem 0.5rem;
+            background: #f8fafc;
+            border-radius: 4px;
+            border-left: 2px solid #ef4444;
+            font-size: 0.68rem;
+            font-family: 'Geist Mono', monospace;
+            color: var(--text-muted);
+            margin: 0.05rem 0;
+        }
+
+        .funnel-dropoff-val {
+            color: #b91c1c;
+            font-weight: 600;
+        }
+
+        /* Sensitivity Curve Styles */
+        .sensitivity-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            height: 100%;
+        }
+
+        .sensitivity-svg {
+            width: 100%;
+            height: auto;
+            max-height: 230px;
+            overflow: visible;
+        }
+
+        .sensitivity-legend {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            font-size: 0.7rem;
+            font-family: 'Geist Mono', monospace;
+            color: var(--text-muted);
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--border-hairline);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .legend-line {
+            width: 14px;
+            height: 2.5px;
+            border-radius: 1px;
+        }
+
+        .legend-line.revenue {
+            background: #0066ff;
+        }
+
+        .legend-line.cost {
+            border-top: 2px dashed #ef4444;
+            height: 0px;
+        }
+
+        .legend-dot.current {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #0066ff;
+            box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #0066ff;
+        }
+
         /* ---------- Footer ---------- */
         .app-footer {
             text-align: center;
@@ -932,6 +1115,9 @@
                 grid-template-columns: 1fr;
             }
             .kpi-cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .analytics-grid {
                 grid-template-columns: 1fr;
             }
             .brand-buttons-group {
@@ -1348,6 +1534,124 @@
                 </div>
             </div>
 
+            <!-- Visual Analytics & Funnel Diagnostics Grid -->
+            <div class="analytics-grid">
+                <!-- Funnel Drop-Off Analysis -->
+                <div class="analytics-card" id="analytics-funnel-card">
+                    <div class="analytics-card-header">
+                        <div class="analytics-card-title">
+                            <span>🔻 Conversion Funnel &amp; Drop-Off</span>
+                        </div>
+                        <span class="analytics-card-badge" id="funnel-brand-tag">NYKAA · FUNNEL RETENTION</span>
+                    </div>
+                    <div class="funnel-container" id="funnel-stages-container">
+                        <!-- Stage 1: Impressions -->
+                        <div class="funnel-stage">
+                            <div class="funnel-stage-header">
+                                <span class="funnel-stage-name">1. Ad Impressions (Top of Funnel)</span>
+                                <div>
+                                    <span class="funnel-stage-value" id="funnel-val-imp">50,000</span>
+                                    <span class="funnel-stage-pct">100.0%</span>
+                                </div>
+                            </div>
+                            <div class="funnel-bar-track">
+                                <div class="funnel-bar-fill" id="funnel-bar-imp" style="width: 100%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Drop-Off 1 -->
+                        <div class="funnel-dropoff-connector">
+                            <span>Drop-off: <strong class="funnel-dropoff-val" id="funnel-drop-1">92.0% lost</strong></span>
+                            <span>Step CTR: <strong id="funnel-ctr-step">8.00%</strong></span>
+                        </div>
+
+                        <!-- Stage 2: Clicks -->
+                        <div class="funnel-stage">
+                            <div class="funnel-stage-header">
+                                <span class="funnel-stage-name">2. Traffic / Clicks</span>
+                                <div>
+                                    <span class="funnel-stage-value" id="funnel-val-clicks">4,000</span>
+                                    <span class="funnel-stage-pct" id="funnel-pct-clicks">8.0%</span>
+                                </div>
+                            </div>
+                            <div class="funnel-bar-track">
+                                <div class="funnel-bar-fill" id="funnel-bar-clicks" style="width: 8.0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Drop-Off 2 -->
+                        <div class="funnel-dropoff-connector">
+                            <span>Drop-off: <strong class="funnel-dropoff-val" id="funnel-drop-2">62.5% lost</strong></span>
+                            <span>Lead Rate: <strong id="funnel-lead-step">37.50%</strong></span>
+                        </div>
+
+                        <!-- Stage 3: Leads -->
+                        <div class="funnel-stage">
+                            <div class="funnel-stage-header">
+                                <span class="funnel-stage-name">3. Inbound Qualified Leads</span>
+                                <div>
+                                    <span class="funnel-stage-value" id="funnel-val-leads">1,500</span>
+                                    <span class="funnel-stage-pct" id="funnel-pct-leads">3.0%</span>
+                                </div>
+                            </div>
+                            <div class="funnel-bar-track">
+                                <div class="funnel-bar-fill" id="funnel-bar-leads" style="width: 3.0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Drop-Off 3 -->
+                        <div class="funnel-dropoff-connector">
+                            <span>Drop-off: <strong class="funnel-dropoff-val" id="funnel-drop-3">66.7% lost</strong></span>
+                            <span>Close Rate: <strong id="funnel-conv-step">33.33%</strong></span>
+                        </div>
+
+                        <!-- Stage 4: Conversions -->
+                        <div class="funnel-stage">
+                            <div class="funnel-stage-header">
+                                <span class="funnel-stage-name">4. Closed Conversions</span>
+                                <div>
+                                    <span class="funnel-stage-value" id="funnel-val-conv">500</span>
+                                    <span class="funnel-stage-pct" id="funnel-pct-conv">1.0%</span>
+                                </div>
+                            </div>
+                            <div class="funnel-bar-track">
+                                <div class="funnel-bar-fill" id="funnel-bar-conv" style="width: 1.0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Sensitivity & Scale Curve -->
+                <div class="analytics-card" id="analytics-sensitivity-card">
+                    <div class="analytics-card-header">
+                        <div class="analytics-card-title">
+                            <span>📈 Spend &amp; Scale Sensitivity Curve</span>
+                        </div>
+                        <span class="analytics-card-badge" id="sensitivity-badge">BREAK-EVEN SIMULATOR</span>
+                    </div>
+                    <div class="sensitivity-container">
+                        <div id="sensitivity-chart-wrapper" style="position: relative; width: 100%; min-height: 200px;">
+                            <svg id="sensitivity-svg" class="sensitivity-svg" viewBox="0 0 520 220" preserveAspectRatio="xMidYMid meet"></svg>
+                            <div id="curve-tooltip" style="position: absolute; display: none; background: #09090b; color: #ffffff; padding: 0.4rem 0.65rem; border-radius: 4px; font-size: 0.68rem; font-family: 'Geist Mono', monospace; pointer-events: none; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.18); line-height: 1.4;"></div>
+                        </div>
+                        <div class="sensitivity-legend">
+                            <div class="legend-item">
+                                <span class="legend-line revenue"></span>
+                                <span>Projected Revenue (₹)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-line cost"></span>
+                                <span>Media Acquisition Cost (₹)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot current"></span>
+                                <span id="legend-current-status">1.0x Current Simulation</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Model Latency & Telemetry Metadata -->
             <div class="meta-strip">
                 <span id="telemetry-latency">In-Memory Lifespan Inference Engine · Latency &lt; 5 ms</span>
@@ -1477,6 +1781,241 @@
         return true;
     }
 
+    let currentForecastedRevenue = 125000.0;
+    let currentIsProfitable = true;
+
+    function formatCompactINR(val) {
+        if (val >= 10000000) return '₹' + (val / 10000000).toFixed(1) + 'Cr';
+        if (val >= 100000) return '₹' + (val / 100000).toFixed(1) + 'L';
+        if (val >= 1000) return '₹' + (val / 1000).toFixed(0) + 'k';
+        return '₹' + Math.round(val);
+    }
+
+    function updateFunnelChart() {
+        const brand = (document.getElementById('brand-input') ? document.getElementById('brand-input').value : 'nykaa') || 'nykaa';
+        const impressions = parseFloat(document.getElementById('impressions').value) || 0;
+        const clicks = parseFloat(document.getElementById('clicks').value) || 0;
+        const leads = parseFloat(document.getElementById('leads').value) || 0;
+        const conversions = parseFloat(document.getElementById('conversions').value) || 0;
+
+        const tagEl = document.getElementById('funnel-brand-tag');
+        if (tagEl) {
+            tagEl.textContent = brand.toUpperCase() + ' · STAGE RETENTION';
+        }
+
+        let brandGrad = 'linear-gradient(90deg, #0066ff, #0284c7)';
+        if (brand === 'nykaa') brandGrad = 'linear-gradient(90deg, #db2777, #f472b6)';
+        else if (brand === 'purplle') brandGrad = 'linear-gradient(90deg, #7c3aed, #a78bfa)';
+        else if (brand === 'tira') brandGrad = 'linear-gradient(90deg, #d97706, #fbbf24)';
+
+        ['funnel-bar-imp', 'funnel-bar-clicks', 'funnel-bar-leads', 'funnel-bar-conv'].forEach(id => {
+            const bar = document.getElementById(id);
+            if (bar) bar.style.background = brandGrad;
+        });
+
+        // Stage 1: Impressions
+        const impEl = document.getElementById('funnel-val-imp');
+        if (impEl) impEl.textContent = Math.round(impressions).toLocaleString();
+
+        // Stage 2: Clicks
+        const clicksPct = impressions > 0 ? (clicks / impressions) * 100 : 0.0;
+        const clicksValEl = document.getElementById('funnel-val-clicks');
+        if (clicksValEl) clicksValEl.textContent = Math.round(clicks).toLocaleString();
+        const clicksPctEl = document.getElementById('funnel-pct-clicks');
+        if (clicksPctEl) clicksPctEl.textContent = clicksPct.toFixed(1) + '%';
+        const clicksBarW = impressions > 0 ? Math.min(100, Math.max(clicksPct, clicks > 0 ? 3 : 0)) : 0;
+        const clicksBar = document.getElementById('funnel-bar-clicks');
+        if (clicksBar) clicksBar.style.width = clicksBarW + '%';
+
+        // Drop-off 1 (Imp -> Clicks)
+        const lost1 = Math.max(0, impressions - clicks);
+        const drop1Pct = impressions > 0 ? ((lost1 / impressions) * 100).toFixed(1) : '0.0';
+        const drop1El = document.getElementById('funnel-drop-1');
+        if (drop1El) drop1El.textContent = `${drop1Pct}% lost (${Math.round(lost1).toLocaleString()})`;
+        const ctrStepEl = document.getElementById('funnel-ctr-step');
+        if (ctrStepEl) ctrStepEl.textContent = clicksPct.toFixed(2) + '%';
+
+        // Stage 3: Leads
+        const leadsPct = impressions > 0 ? (leads / impressions) * 100 : 0.0;
+        const leadStepPct = clicks > 0 ? (leads / clicks) * 100 : 0.0;
+        const leadsValEl = document.getElementById('funnel-val-leads');
+        if (leadsValEl) leadsValEl.textContent = Math.round(leads).toLocaleString();
+        const leadsPctEl = document.getElementById('funnel-pct-leads');
+        if (leadsPctEl) leadsPctEl.textContent = leadsPct.toFixed(1) + '%';
+        const leadsBarW = impressions > 0 ? Math.min(100, Math.max(leadsPct, leads > 0 ? 2 : 0)) : 0;
+        const leadsBar = document.getElementById('funnel-bar-leads');
+        if (leadsBar) leadsBar.style.width = leadsBarW + '%';
+
+        // Drop-off 2 (Clicks -> Leads)
+        const lost2 = Math.max(0, clicks - leads);
+        const drop2Pct = clicks > 0 ? ((lost2 / clicks) * 100).toFixed(1) : '0.0';
+        const drop2El = document.getElementById('funnel-drop-2');
+        if (drop2El) drop2El.textContent = `${drop2Pct}% lost (${Math.round(lost2).toLocaleString()})`;
+        const leadStepEl = document.getElementById('funnel-lead-step');
+        if (leadStepEl) leadStepEl.textContent = leadStepPct.toFixed(2) + '%';
+
+        // Stage 4: Conversions
+        const convPct = impressions > 0 ? (conversions / impressions) * 100 : 0.0;
+        const convStepPct = leads > 0 ? (conversions / leads) * 100 : 0.0;
+        const convValEl = document.getElementById('funnel-val-conv');
+        if (convValEl) convValEl.textContent = Math.round(conversions).toLocaleString();
+        const convPctEl = document.getElementById('funnel-pct-conv');
+        if (convPctEl) convPctEl.textContent = convPct.toFixed(1) + '%';
+        const convBarW = impressions > 0 ? Math.min(100, Math.max(convPct, conversions > 0 ? 1.5 : 0)) : 0;
+        const convBar = document.getElementById('funnel-bar-conv');
+        if (convBar) convBar.style.width = convBarW + '%';
+
+        // Drop-off 3 (Leads -> Conversions)
+        const lost3 = Math.max(0, leads - conversions);
+        const drop3Pct = leads > 0 ? ((lost3 / leads) * 100).toFixed(1) : '0.0';
+        const drop3El = document.getElementById('funnel-drop-3');
+        if (drop3El) drop3El.textContent = `${drop3Pct}% lost (${Math.round(lost3).toLocaleString()})`;
+        const convStepEl = document.getElementById('funnel-conv-step');
+        if (convStepEl) convStepEl.textContent = convStepPct.toFixed(2) + '%';
+    }
+
+    function updateSensitivityCurve(forecastedRevenue, isProfitable) {
+        const svg = document.getElementById('sensitivity-svg');
+        if (!svg) return;
+
+        const conversions = parseFloat(document.getElementById('conversions').value) || 500;
+        const cpa = parseFloat(document.getElementById('acquisition_cost').value) || 250;
+        const currentSpend = conversions * cpa;
+        const baseRev = forecastedRevenue || currentForecastedRevenue || 125000;
+
+        const scales = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
+        const dataPoints = scales.map(s => {
+            const rev = Math.round(baseRev * Math.pow(s, 0.88));
+            const cost = Math.round(currentSpend * s);
+            const margin = rev - cost;
+            return { scale: s, rev, cost, margin };
+        });
+
+        const padL = 68;
+        const padR = 25;
+        const padT = 20;
+        const padB = 35;
+        const totalW = 520;
+        const totalH = 220;
+        const plotW = totalW - padL - padR;
+        const plotH = totalH - padT - padB;
+
+        const maxVal = Math.max(
+            ...dataPoints.map(d => d.rev),
+            ...dataPoints.map(d => d.cost),
+            100000
+        ) * 1.15;
+
+        const toX = s => padL + ((s - 0.25) / (2.0 - 0.25)) * plotW;
+        const toY = v => padT + plotH - (Math.min(v, maxVal) / maxVal) * plotH;
+
+        // Build SVG Elements
+        let markup = `
+            <defs>
+                <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#0066ff" stop-opacity="0.2" />
+                    <stop offset="100%" stop-color="#0066ff" stop-opacity="0.0" />
+                </linearGradient>
+            </defs>
+        `;
+
+        // Horizontal Gridlines and Y-Ticks
+        const yTicks = [0, maxVal * 0.33, maxVal * 0.66, maxVal];
+        yTicks.forEach(val => {
+            const y = toY(val);
+            markup += `
+                <line x1="${padL}" y1="${y}" x2="${totalW - padR}" y2="${y}" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="${padL - 8}" y="${y + 3.5}" text-anchor="end" font-family="'Geist Mono', monospace" font-size="9" fill="#64748b">${formatCompactINR(val)}</text>
+            `;
+        });
+
+        // X-Axis Labels
+        scales.forEach(s => {
+            const x = toX(s);
+            const label = s === 1.0 ? '1.0x (Now)' : s + 'x';
+            const fontWeight = s === 1.0 ? '700' : '500';
+            const fill = s === 1.0 ? '#09090b' : '#64748b';
+            markup += `
+                <text x="${x}" y="${totalH - 12}" text-anchor="middle" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="${fontWeight}" fill="${fill}">${label}</text>
+            `;
+        });
+
+        // Area Path under Revenue Curve
+        const revPathPoints = dataPoints.map(d => `${toX(d.scale)},${toY(d.rev)}`);
+        const areaD = `M ${toX(0.25)},${toY(0)} L ${revPathPoints.join(' L ')} L ${toX(2.0)},${toY(0)} Z`;
+        markup += `<path d="${areaD}" fill="url(#revGrad)" />`;
+
+        // Revenue Curve Line
+        const revD = `M ${revPathPoints.join(' L ')}`;
+        markup += `<path d="${revD}" fill="none" stroke="#0066ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />`;
+
+        // Cost Line (Break-Even)
+        const costPathPoints = dataPoints.map(d => `${toX(d.scale)},${toY(d.cost)}`);
+        const costD = `M ${costPathPoints.join(' L ')}`;
+        markup += `<path d="${costD}" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4 4" stroke-linecap="round" />`;
+
+        // Interactive Data Points
+        dataPoints.forEach(d => {
+            const x = toX(d.scale);
+            const y = toY(d.rev);
+            if (d.scale === 1.0) {
+                markup += `
+                    <circle cx="${x}" cy="${y}" r="8" fill="none" stroke="#0066ff" stroke-width="1.5" opacity="0.3" />
+                    <circle cx="${x}" cy="${y}" r="5.5" fill="#0066ff" stroke="#ffffff" stroke-width="2" />
+                `;
+            } else {
+                markup += `
+                    <circle cx="${x}" cy="${y}" r="3.5" fill="#0066ff" stroke="#ffffff" stroke-width="1.5" />
+                `;
+            }
+
+            // Invisible Hover Trigger
+            markup += `
+                <circle cx="${x}" cy="${y}" r="14" fill="transparent" style="cursor: pointer;"
+                    onmouseenter="showCurveTooltip(event, '${d.scale}', ${d.rev}, ${d.cost}, ${d.margin})"
+                    onmouseleave="hideCurveTooltip()" />
+            `;
+        });
+
+        svg.innerHTML = markup;
+
+        // Update Legend Status
+        const currentMargin = baseRev - currentSpend;
+        const statusEl = document.getElementById('legend-current-status');
+        if (statusEl) {
+            const isPos = currentMargin >= 0;
+            statusEl.innerHTML = `<strong>1.0x Current: Margin ${isPos ? '+' : '-'}${formatINR(Math.abs(currentMargin))} (${isPos ? 'Profitable' : 'Loss'})</strong>`;
+            statusEl.style.color = isPos ? 'var(--emerald-text)' : 'var(--ruby-text)';
+        }
+    }
+
+    function showCurveTooltip(e, scale, rev, cost, margin) {
+        const tooltip = document.getElementById('curve-tooltip');
+        const wrapper = document.getElementById('sensitivity-chart-wrapper');
+        if (!tooltip || !wrapper) return;
+
+        const rect = wrapper.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const isPos = margin >= 0;
+        tooltip.innerHTML = `
+            <div style="font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 2px; margin-bottom: 3px;">Scale: ${scale}x</div>
+            <div>Projected Rev: <strong>${formatINR(rev)}</strong></div>
+            <div>Media Spend: <strong>${formatINR(cost)}</strong></div>
+            <div style="color: ${isPos ? '#34d399' : '#f87171'}; font-weight: 600;">Net Margin: ${isPos ? '+' : '-'}${formatINR(Math.abs(margin))}</div>
+        `;
+
+        tooltip.style.left = Math.min(rect.width - 160, Math.max(10, mouseX - 70)) + 'px';
+        tooltip.style.top = Math.max(5, mouseY - 75) + 'px';
+        tooltip.style.display = 'block';
+    }
+
+    function hideCurveTooltip() {
+        const tooltip = document.getElementById('curve-tooltip');
+        if (tooltip) tooltip.style.display = 'none';
+    }
+
     function triggerLivePreview() {
         const isValid = validateInvariants();
         const impressions = parseFloat(document.getElementById('impressions').value) || 0;
@@ -1498,6 +2037,9 @@
             document.getElementById('res-cr').textContent = cr.toFixed(2) + '%';
             document.getElementById('res-cpl').textContent = formatINR(cpl);
         }
+
+        updateFunnelChart();
+        updateSensitivityCurve(currentForecastedRevenue, currentIsProfitable);
     }
 
     function formatINR(val) {
@@ -1605,6 +2147,8 @@
             document.getElementById('telemetry-latency').textContent = `Inference Latency: ${elapsed} ms (Dual Lifespan In-Memory Fetch)`;
             document.getElementById('telemetry-timestamp').textContent = `Benchmark eval: ${new Date().toLocaleTimeString()}`;
 
+            currentForecastedRevenue = revenueVal;
+            currentIsProfitable = profData.profitable;
             triggerLivePreview();
         } catch (err) {
             alert('Network or server connection failed: ' + err.message);
