@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Marketing Campaign Intelligence - Benchmark leaderboard and multi-brand revenue forecasting simulator for Nykaa, Purplle, and Tira.">
-    <title>Marketing Campaign Intelligence | Performance Leaderboard</title>
+    <meta name="description" content="Marketing Campaign Intelligence - Enterprise Multi-Brand Revenue Forecasting & Performance Benchmark Platform">
+    <title>Marketing Campaign Intelligence | Workstation</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Crect%20width%3D%2732%27%20height%3D%2732%27%20rx%3D%274%27%20fill%3D%27%2309090b%27%2F%3E%3Cpath%20d%3D%27M6%2022L12%2014L18%2018L26%209%27%20stroke%3D%27%23ffffff%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20fill%3D%27none%27%2F%3E%3Ccircle%20cx%3D%2726%27%20cy%3D%279%27%20r%3D%272%27%20fill%3D%27%23ffffff%27%2F%3E%3C%2Fsvg%3E">
     <meta name="theme-color" content="#ffffff">
 
-    <!-- Fonts: Geist Sans for precision engineering UI + Geist Mono for benchmark tabular numbers -->
+    <!-- Fonts: Geist Sans for UI + Geist Mono for tabular metrics -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            /* Light Leaderboard Theme: Crisp Canvas, Clean Borders, High-Contrast Typography */
+            /* Light Theme Tokens */
             --bg-canvas: #f8fafc;
             --bg-surface: #ffffff;
-            --bg-surface-elevated: #f1f5f9;
-            --bg-glass-container: rgba(255, 255, 255, 0.95);
-            --bg-glass-overlay: rgba(17, 24, 39, 0.03);
-            --bg-input: #ffffff;
+            --bg-surface-subtle: #f8fafc;
+            --bg-glass: rgba(255, 255, 255, 0.96);
+            --bg-overlay: rgba(17, 24, 39, 0.03);
             --border-hairline: #e2e8f0;
+            --border-subtle: #f1f5f9;
             --border-hover: #cbd5e1;
             --border-focus: #09090b;
             --text-heading: #09090b;
@@ -40,7 +40,7 @@
             --ruby-border: #ef4444;
             --ruby-text: #991b1b;
 
-            /* Brand Accent Tags */
+            /* Brand Accent Colors */
             --brand-nykaa: #db2777;
             --brand-purplle: #7c3aed;
             --brand-tira: #d97706;
@@ -57,12 +57,12 @@
             background-color: var(--bg-canvas);
             color: var(--text-body);
             min-height: 100vh;
-            padding: 1.5rem 1.5rem 4rem;
+            padding: 1.25rem 1.5rem 3.5rem;
             background-image:
-                linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-                radial-gradient(circle at 50% 0%, rgba(0, 102, 255, 0.05) 0%, transparent 65%);
-            background-size: 36px 36px, 36px 36px, 100% 100%;
+                linear-gradient(to right, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+                radial-gradient(circle at 50% 0%, rgba(0, 102, 255, 0.035) 0%, transparent 65%);
+            background-size: 32px 32px, 32px 32px, 100% 100%;
             background-attachment: fixed;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
@@ -70,88 +70,99 @@
 
         .container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1360px;
             margin: 0 auto;
         }
 
-        /* ---------- Benchmark Header Bar ---------- */
+        /* ---------- Top Navigation Bar ---------- */
         .app-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 1.5rem;
+            gap: 1.25rem;
             flex-wrap: wrap;
-            margin-bottom: 2rem;
-            padding-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
             border-bottom: 1px solid var(--border-hairline);
         }
 
         .brand-header {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.85rem;
         }
 
         .brand-logo-badge {
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 6px;
             background: #09090b;
             color: #ffffff;
-            border: 1px solid var(--border-hairline);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-        }
-
-        .brand-titles .benchmark-breadcrumb {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--accent-cyan);
-            font-family: 'Geist Mono', monospace;
-            margin-bottom: 0.15rem;
+            font-size: 1.05rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .brand-titles h1 {
-            font-size: 1.45rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            letter-spacing: -0.03em;
+            letter-spacing: -0.02em;
             color: var(--text-heading);
+            line-height: 1.2;
         }
 
         .brand-titles p {
-            font-size: 0.82rem;
+            font-size: 0.76rem;
             color: var(--text-muted);
-            font-weight: 400;
+            font-family: 'Geist Mono', monospace;
         }
 
-        .header-actions {
+        .header-center {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            background: #f1f5f9;
+            padding: 0.25rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-hairline);
+            gap: 0.25rem;
+        }
+
+        .view-tab-btn {
+            background: transparent;
+            border: none;
+            padding: 0.4rem 0.85rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .view-tab-btn.active {
+            background: #ffffff;
+            color: var(--text-heading);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .status-pill {
             display: inline-flex;
             align-items: center;
-            gap: 0.55rem;
-            padding: 0.4rem 0.85rem;
+            gap: 0.5rem;
+            padding: 0.35rem 0.75rem;
             border-radius: 4px;
             background: var(--bg-surface);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-hairline);
-            font-size: 0.76rem;
+            font-size: 0.72rem;
             color: var(--text-body);
             font-family: 'Geist Mono', monospace;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         .dot {
@@ -164,12 +175,12 @@
 
         .dot.online {
             background: #10b981;
-            box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
         }
 
         .dot.offline {
             background: #ef4444;
-            box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+            box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
         }
 
         .dot.pending {
@@ -182,346 +193,159 @@
             50% { opacity: 0.3; transform: scale(0.85); }
         }
 
-        /* ---------- Leaderboard Section (Benchmark Matrix) ---------- */
-        .leaderboard-section {
-            margin-bottom: 2rem;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-hairline);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 25px -5px rgba(0, 0, 0, 0.03);
+        /* ---------- Workstation Split-Pane Layout ---------- */
+        .workstation-grid {
+            display: grid;
+            grid-template-columns: 430px 1fr;
+            gap: 1.5rem;
+            align-items: start;
         }
 
-        .leaderboard-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 1.25rem;
-            background: #f8fafc;
-            border-bottom: 1px solid var(--border-hairline);
-        }
-
-        .leaderboard-title {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-heading);
-        }
-
-        .leaderboard-badge {
-            font-size: 0.68rem;
-            font-family: 'Geist Mono', monospace;
-            padding: 0.15rem 0.45rem;
-            border-radius: 4px;
-            background: #e2e8f0;
-            color: #334155;
-            font-weight: 600;
-        }
-
-        .leaderboard-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.84rem;
-        }
-
-        .leaderboard-table th {
-            text-align: left;
-            padding: 0.75rem 1.25rem;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
-            font-weight: 600;
-            border-bottom: 1px solid var(--border-hairline);
-            background: #f8fafc;
-        }
-
-        .leaderboard-table td {
-            padding: 0.95rem 1.25rem;
-            border-bottom: 1px solid var(--border-hairline);
-            vertical-align: middle;
-            color: var(--text-body);
-        }
-
-        .leaderboard-table tr {
-            transition: background 0.15s ease;
-            cursor: pointer;
-        }
-
-        .leaderboard-table tr:hover {
-            background: #f8fafc;
-        }
-
-        .leaderboard-table tr.selected {
-            background: #f1f5f9;
-        }
-
-        .rank-num {
-            font-family: 'Geist Mono', monospace;
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .rank-num.top-1 {
-            color: #d97706;
-        }
-
-        .brand-cell {
-            display: flex;
-            align-items: center;
-            gap: 0.65rem;
-            font-weight: 600;
-            color: var(--text-heading);
-        }
-
-        .brand-tag {
-            font-size: 0.68rem;
-            font-family: 'Geist Mono', monospace;
-            padding: 0.15rem 0.5rem;
-            border-radius: 4px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .brand-tag.nykaa {
-            background: #fdf2f8;
-            color: var(--brand-nykaa);
-            border: 1px solid #fbcfe8;
-        }
-
-        .brand-tag.purplle {
-            background: #f5f3ff;
-            color: var(--brand-purplle);
-            border: 1px solid #ddd6fe;
-        }
-
-        .brand-tag.tira {
-            background: #fffbeb;
-            color: var(--brand-tira);
-            border: 1px solid #fde68a;
-        }
-
-        .metric-mono {
-            font-family: 'Geist Mono', monospace;
-            font-variant-numeric: tabular-nums;
-            font-weight: 600;
-        }
-
-        .badge-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            font-size: 0.72rem;
-            font-family: 'Geist Mono', monospace;
-            padding: 0.2rem 0.55rem;
-            border-radius: 4px;
-            font-weight: 700;
-        }
-
-        .badge-status.profitable {
-            background: var(--emerald-bg);
-            border: 1px solid var(--emerald-border);
-            color: var(--emerald-text);
-        }
-
-        .select-row-btn {
-            font-size: 0.72rem;
-            font-family: 'Geist Mono', monospace;
-            font-weight: 600;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            color: var(--text-body);
-            padding: 0.25rem 0.65rem;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .select-row-btn:hover,
-        .leaderboard-table tr.selected .select-row-btn {
-            background: #09090b;
-            color: #ffffff;
-            border-color: #09090b;
-        }
-
-        /* ---------- Simulator Main Workspace ---------- */
-        .glass-panel {
+        /* Left Rail: Parameters Console Card */
+        .config-card {
             background: var(--bg-surface);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-hairline);
             border-radius: 12px;
-            padding: 1.75rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 25px -5px rgba(0, 0, 0, 0.03);
-            margin-bottom: 2rem;
+            padding: 1.35rem 1.4rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px -4px rgba(0, 0, 0, 0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 1.15rem;
         }
 
-        .workspace-header {
+        .config-card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
+            padding-bottom: 0.65rem;
             border-bottom: 1px solid var(--border-hairline);
         }
 
-        .workspace-title {
-            font-size: 0.85rem;
+        .config-card-title {
+            font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.06em;
             color: var(--text-heading);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
-        /* Brand Selector Segmented Bar */
-        .brand-selector-section {
-            margin-bottom: 1.5rem;
+        .preset-select {
+            font-size: 0.72rem;
+            font-family: 'Geist Mono', monospace;
+            padding: 0.25rem 0.65rem;
+            border-radius: 4px;
+            background: #f8fafc;
+            border: 1px solid var(--border-hairline);
+            color: var(--text-body);
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
         }
 
-        .brand-selector-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
+        /* Brand Selector Bar */
         .brand-buttons-group {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
+            gap: 0.4rem;
             background: #f1f5f9;
-            padding: 0.35rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-hairline);
+            padding: 0.25rem;
+            border-radius: 6px;
         }
 
         .brand-btn {
             background: transparent;
             border: 1px solid transparent;
-            border-radius: 6px;
-            padding: 0.65rem 0.85rem;
+            border-radius: 4px;
+            padding: 0.45rem 0.5rem;
             cursor: pointer;
-            text-align: left;
+            text-align: center;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
             transition: all 0.15s ease;
-            color: var(--text-muted);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-        }
-
-        .brand-btn:hover {
-            color: var(--text-heading);
-            background: rgba(0, 0, 0, 0.04);
-        }
-
-        .brand-btn.active {
-            background: #ffffff;
-            border-color: #cbd5e1;
-            color: var(--text-heading);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        }
-
-        .brand-name {
-            font-size: 0.88rem;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-        }
-
-        .brand-sub {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            font-family: 'Geist Mono', monospace;
-        }
-
-        .brand-indicator {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #cbd5e1;
-            transition: all 0.2s ease;
-        }
-
-        .brand-btn.active .brand-indicator {
-            background: #09090b;
-        }
-
-        /* 3-Column Parameter Configuration Grid */
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .config-column {
-            background: #f8fafc;
-            border: 1px solid var(--border-hairline);
-            border-radius: 8px;
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.95rem;
-        }
-
-        .column-header {
-            font-size: 0.72rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-heading);
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.45rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border-hairline);
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
+            justify-content: center;
             gap: 0.35rem;
         }
 
-        .form-group label {
-            font-size: 0.76rem;
-            color: var(--text-body);
+        .brand-btn .indicator-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-dim);
+        }
+
+        .brand-btn[data-brand="nykaa"].active .indicator-dot { background: var(--brand-nykaa); }
+        .brand-btn[data-brand="purplle"].active .indicator-dot { background: var(--brand-purplle); }
+        .brand-btn[data-brand="tira"].active .indicator-dot { background: var(--brand-tira); }
+
+        .brand-btn.active {
+            background: #ffffff;
+            color: var(--text-heading);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+            border-color: #cbd5e1;
+        }
+
+        /* Clean Form Sections (No Nested Gray Boxes!) */
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding-top: 0.25rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .form-section-title {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        .field-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.65rem;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .form-field label {
+            font-size: 0.72rem;
             font-weight: 600;
+            color: var(--text-body);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .form-group label .badge {
-            font-size: 0.72rem;
-            color: #0284c7;
+        .form-field label .badge {
+            font-size: 0.68rem;
+            color: var(--accent-cyan);
             font-family: 'Geist Mono', monospace;
             font-weight: 700;
-            font-variant-numeric: tabular-nums;
         }
 
-        input[type="text"],
         input[type="number"],
         select {
             width: 100%;
-            padding: 0.58rem 0.75rem;
+            padding: 0.48rem 0.65rem;
             border-radius: 6px;
             background: #ffffff;
             border: 1px solid #cbd5e1;
             color: var(--text-heading);
-            font-size: 0.84rem;
+            font-size: 0.8rem;
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
 
@@ -542,29 +366,9 @@
             cursor: pointer;
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 14px;
-            padding-right: 2.2rem;
-        }
-
-        select option {
-            background: #ffffff;
-            color: var(--text-heading);
-        }
-
-        /* Range Slider */
-        .slider-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.35rem;
-        }
-
-        .slider-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.66rem;
-            color: var(--text-muted);
-            font-family: 'Geist Mono', monospace;
+            background-position: right 0.65rem center;
+            background-size: 13px;
+            padding-right: 1.8rem;
         }
 
         input[type="range"] {
@@ -581,37 +385,33 @@
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 15px;
-            height: 15px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             background: #09090b;
             border: 2px solid #ffffff;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
             cursor: pointer;
-            transition: transform 0.1s ease;
         }
 
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
-
-        /* Delivery Channel Checkboxes */
-        .channel-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.4rem;
-            margin-top: 0.2rem;
+        /* Delivery Channel Inline Tags */
+        .channel-tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin-top: 0.15rem;
         }
 
         .channel-chip {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 0.45rem;
-            background: #ffffff;
+            gap: 0.35rem;
+            background: #f8fafc;
             border: 1px solid #cbd5e1;
             border-radius: 4px;
-            padding: 0.38rem 0.55rem;
-            font-size: 0.76rem;
+            padding: 0.28rem 0.55rem;
+            font-size: 0.72rem;
+            font-weight: 500;
             color: var(--text-body);
             cursor: pointer;
             user-select: none;
@@ -620,12 +420,14 @@
 
         .channel-chip:hover {
             border-color: #94a3b8;
-            color: var(--text-heading);
+            background: #f1f5f9;
         }
 
         .channel-chip input[type="checkbox"] {
             accent-color: #09090b;
             cursor: pointer;
+            width: 12px;
+            height: 12px;
         }
 
         .channel-chip.checked {
@@ -634,116 +436,56 @@
             color: #ffffff;
         }
 
-        /* Validation Alert Banner */
+        /* Invariant Validation Alert Banner */
         .validation-alert {
             display: none;
-            padding: 0.75rem 1rem;
+            padding: 0.65rem 0.85rem;
             border-radius: 6px;
             background: #fef2f2;
             border: 1px solid #fca5a5;
             color: #b91c1c;
-            font-size: 0.78rem;
-            margin-bottom: 1.25rem;
+            font-size: 0.74rem;
             font-family: 'Geist Mono', monospace;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .validation-alert.show {
             display: flex;
-            align-items: center;
-            gap: 0.65rem;
         }
 
-        /* Analytical Preview Strip */
-        .preview-strip {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            flex-wrap: wrap;
-            padding: 0.65rem 1rem;
-            margin-bottom: 1.25rem;
-            background: #f8fafc;
-            border: 1px solid var(--border-hairline);
-            border-radius: 6px;
-            font-size: 0.76rem;
-            color: var(--text-muted);
-        }
-
-        .preview-metric {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .preview-metric strong {
-            color: var(--text-heading);
-            font-family: 'Geist Mono', monospace;
-            font-weight: 700;
-            font-variant-numeric: tabular-nums;
-        }
-
-        /* Action Buttons */
-        .action-container {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
+        /* Submit Button */
         .submit-btn {
-            flex: 1;
-            min-width: 240px;
-            padding: 0.85rem 1.4rem;
+            width: 100%;
+            padding: 0.75rem 1rem;
             border: 1px solid #09090b;
             border-radius: 6px;
             background: #09090b;
             color: #ffffff;
-            font-size: 0.88rem;
+            font-size: 0.84rem;
             font-weight: 700;
-            letter-spacing: -0.01em;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.65rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+            gap: 0.5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
             transition: all 0.15s ease;
         }
 
         .submit-btn:hover:not(:disabled) {
             background: #27272a;
-            border-color: #27272a;
         }
 
         .submit-btn:disabled {
-            opacity: 0.4;
+            opacity: 0.45;
             cursor: not-allowed;
-        }
-
-        .preset-btn {
-            padding: 0.75rem 0.95rem;
-            border-radius: 6px;
-            background: #ffffff;
-            color: var(--text-body);
-            border: 1px solid #cbd5e1;
-            cursor: pointer;
-            font-size: 0.76rem;
-            font-family: 'Geist Mono', monospace;
-            font-weight: 600;
-            transition: all 0.15s ease;
-        }
-
-        .preset-btn:hover {
-            background: #f1f5f9;
-            color: var(--text-heading);
-            border-color: #94a3b8;
         }
 
         .spinner {
             display: none;
-            width: 14px;
-            height: 14px;
+            width: 13px;
+            height: 13px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-top-color: #ffffff;
             border-radius: 50%;
@@ -754,89 +496,84 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ---------- Results Section & Benchmark KPI Cards ---------- */
-        .results-section {
-            margin-top: 1.75rem;
-            animation: fadeIn 0.2s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .kpi-cards-grid {
-            display: grid;
-            grid-template-columns: 1.3fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .kpi-card {
-            background: #ffffff;
-            border: 1px solid var(--border-hairline);
-            border-radius: 8px;
-            padding: 1.35rem 1.5rem;
+        /* Right Rail: Intelligence & Diagnostics Canvas */
+        .intelligence-column {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            gap: 1.25rem;
         }
 
-        .kpi-card-header {
-            display: flex;
+        /* Executive KPI Hero Deck (Single Authoritative Source, Zero Duplication) */
+        .kpi-banner-card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-hairline);
+            border-radius: 12px;
+            padding: 1.25rem 1.4rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px -4px rgba(0, 0, 0, 0.02);
+            display: grid;
+            grid-template-columns: 1.3fr 1.3fr 1.4fr;
+            gap: 1.25rem;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 0.65rem;
         }
 
-        .kpi-card-label {
-            font-size: 0.72rem;
+        .kpi-col {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .kpi-col.border-left {
+            border-left: 1px solid var(--border-hairline);
+            padding-left: 1.25rem;
+        }
+
+        .kpi-col-label {
+            font-size: 0.68rem;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--text-muted);
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .kpi-card-pill {
-            font-size: 0.66rem;
-            padding: 0.15rem 0.5rem;
+        .kpi-model-pill {
+            font-size: 0.64rem;
+            padding: 0.12rem 0.45rem;
             border-radius: 3px;
             background: #f1f5f9;
             color: var(--text-body);
-            border: 1px solid var(--border-hairline);
             font-family: 'Geist Mono', monospace;
             font-weight: 600;
         }
 
-        .kpi-card-value {
-            font-size: 2.25rem;
+        .kpi-revenue-val {
+            font-size: 2rem;
             font-weight: 800;
             letter-spacing: -0.03em;
-            line-height: 1.15;
             font-family: 'Geist Mono', monospace;
             font-variant-numeric: tabular-nums;
             color: var(--text-heading);
-            margin-bottom: 0.35rem;
+            line-height: 1.1;
         }
 
-        .kpi-card-sub {
-            font-size: 0.76rem;
+        .kpi-subtext {
+            font-size: 0.72rem;
             color: var(--text-muted);
         }
 
-        /* High-Contrast Status Badges */
         .profit-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.7rem 1rem;
+            gap: 0.45rem;
+            padding: 0.55rem 0.85rem;
             border-radius: 6px;
-            font-size: 0.88rem;
+            font-size: 0.8rem;
             font-weight: 700;
             letter-spacing: -0.01em;
-            margin-top: 0.35rem;
             font-family: 'Geist Mono', monospace;
         }
 
@@ -852,127 +589,99 @@
             color: var(--ruby-text);
         }
 
-        /* Efficiency Scorecards Row */
-        .scorecards-row {
+        /* Efficiency Triad Matrix in KPI Deck */
+        .efficiency-triad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 0.5rem;
+            text-align: center;
         }
 
-        .scorecard-item {
-            background: #ffffff;
+        .triad-box {
+            background: #f8fafc;
             border: 1px solid var(--border-hairline);
-            border-radius: 8px;
-            padding: 1rem 1.15rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            border-radius: 6px;
+            padding: 0.45rem 0.4rem;
         }
 
-        .scorecard-label {
-            font-size: 0.68rem;
+        .triad-box-lbl {
+            font-size: 0.62rem;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.06em;
             color: var(--text-muted);
             font-weight: 700;
-            margin-bottom: 0.35rem;
+            margin-bottom: 0.15rem;
         }
 
-        .scorecard-val {
-            font-size: 1.4rem;
+        .triad-box-val {
+            font-size: 1rem;
             font-weight: 800;
             font-family: 'Geist Mono', monospace;
             font-variant-numeric: tabular-nums;
             color: var(--text-heading);
         }
 
-        .scorecard-meta {
-            font-size: 0.68rem;
-            color: var(--text-dim);
-            margin-top: 0.2rem;
-            font-family: 'Geist Mono', monospace;
-        }
-
-        .meta-strip {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            padding: 0.55rem 0.85rem;
-            background: #f8fafc;
-            border-radius: 4px;
-            border: 1px solid var(--border-hairline);
-            font-family: 'Geist Mono', monospace;
-        }
-
-        /* ---------- Visual Analytics & Funnel Diagnostics Grid ---------- */
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.25rem;
-            margin-top: 1.25rem;
-            margin-bottom: 1.25rem;
-        }
-
+        /* Analytics Visual Cards */
         .analytics-card {
-            background: #ffffff;
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-hairline);
-            border-radius: 8px;
-            padding: 1.25rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            border-radius: 12px;
+            padding: 1.25rem 1.4rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px -4px rgba(0, 0, 0, 0.02);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 0.95rem;
         }
 
         .analytics-card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 1rem;
-            padding-bottom: 0.65rem;
+            padding-bottom: 0.55rem;
             border-bottom: 1px solid var(--border-hairline);
         }
 
         .analytics-card-title {
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.06em;
             color: var(--text-heading);
             display: flex;
             align-items: center;
-            gap: 0.45rem;
+            gap: 0.4rem;
         }
 
         .analytics-card-badge {
-            font-size: 0.65rem;
+            font-size: 0.64rem;
             font-family: 'Geist Mono', monospace;
-            padding: 0.15rem 0.45rem;
-            border-radius: 4px;
+            padding: 0.12rem 0.45rem;
+            border-radius: 3px;
             background: #f1f5f9;
             color: var(--text-body);
             font-weight: 600;
         }
 
-        /* Funnel Stages */
+        /* Funnel Progress Tiers */
         .funnel-container {
             display: flex;
             flex-direction: column;
-            gap: 0.55rem;
+            gap: 0.45rem;
         }
 
         .funnel-stage {
             display: flex;
             flex-direction: column;
-            gap: 0.3rem;
+            gap: 0.25rem;
         }
 
         .funnel-stage-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 0.76rem;
+            font-size: 0.74rem;
             color: var(--text-heading);
             font-weight: 500;
         }
@@ -990,40 +699,39 @@
         }
 
         .funnel-stage-pct {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             color: var(--text-muted);
             font-family: 'Geist Mono', monospace;
-            margin-left: 0.35rem;
+            margin-left: 0.3rem;
         }
 
         .funnel-bar-track {
             width: 100%;
-            height: 12px;
+            height: 10px;
             background: #f1f5f9;
-            border-radius: 6px;
+            border-radius: 5px;
             overflow: hidden;
             position: relative;
         }
 
         .funnel-bar-fill {
             height: 100%;
-            border-radius: 6px;
+            border-radius: 5px;
             background: linear-gradient(90deg, #0066ff, #0284c7);
-            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .funnel-dropoff-connector {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.2rem 0.5rem;
+            padding: 0.18rem 0.5rem;
             background: #f8fafc;
             border-radius: 4px;
             border-left: 2px solid #ef4444;
-            font-size: 0.68rem;
+            font-size: 0.66rem;
             font-family: 'Geist Mono', monospace;
             color: var(--text-muted);
-            margin: 0.05rem 0;
         }
 
         .funnel-dropoff-val {
@@ -1031,18 +739,17 @@
             font-weight: 600;
         }
 
-        /* Sensitivity Curve Styles */
+        /* Sensitivity Curve SVG & Legend */
         .sensitivity-container {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
-            height: 100%;
+            gap: 0.65rem;
         }
 
         .sensitivity-svg {
             width: 100%;
             height: auto;
-            max-height: 230px;
+            max-height: 210px;
             overflow: visible;
         }
 
@@ -1052,99 +759,184 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 0.75rem;
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             font-family: 'Geist Mono', monospace;
             color: var(--text-muted);
-            padding-top: 0.5rem;
+            padding-top: 0.45rem;
             border-top: 1px solid var(--border-hairline);
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.35rem;
         }
 
         .legend-line {
-            width: 14px;
+            width: 12px;
             height: 2.5px;
             border-radius: 1px;
         }
 
-        .legend-line.revenue {
-            background: #0066ff;
-        }
-
-        .legend-line.cost {
-            border-top: 2px dashed #ef4444;
-            height: 0px;
-        }
+        .legend-line.revenue { background: #0066ff; }
+        .legend-line.cost { border-top: 2px dashed #ef4444; height: 0px; }
 
         .legend-dot.current {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
             background: #0066ff;
             box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #0066ff;
         }
 
+        /* Telemetry Strip */
+        .meta-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            padding: 0.45rem 0.75rem;
+            background: #f8fafc;
+            border-radius: 4px;
+            border: 1px solid var(--border-hairline);
+            font-family: 'Geist Mono', monospace;
+        }
+
+        /* ---------- Tab 2: Benchmark Leaderboard View ---------- */
+        .leaderboard-view {
+            display: none;
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-hairline);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px -4px rgba(0, 0, 0, 0.02);
+        }
+
+        .leaderboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border-hairline);
+        }
+
+        .leaderboard-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-heading);
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .leaderboard-table th {
+            text-align: left;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-hairline);
+            background: #f8fafc;
+        }
+
+        .leaderboard-table td {
+            padding: 0.95rem 1.25rem;
+            border-bottom: 1px solid var(--border-hairline);
+            vertical-align: middle;
+            color: var(--text-body);
+        }
+
+        .leaderboard-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .brand-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        .brand-tag {
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-family: 'Geist Mono', monospace;
+        }
+
+        .brand-tag.nykaa { background: #fdf2f8; color: var(--brand-nykaa); border: 1px solid #fbcfe8; }
+        .brand-tag.purplle { background: #f5f3ff; color: var(--brand-purplle); border: 1px solid #ddd6fe; }
+        .brand-tag.tira { background: #fffbeb; color: var(--brand-tira); border: 1px solid #fde68a; }
+
+        .select-row-btn {
+            font-size: 0.72rem;
+            font-family: 'Geist Mono', monospace;
+            font-weight: 600;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            color: var(--text-body);
+            padding: 0.25rem 0.65rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .select-row-btn:hover {
+            background: #09090b;
+            color: #ffffff;
+            border-color: #09090b;
+        }
+
         /* ---------- Footer ---------- */
         .app-footer {
             text-align: center;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
-            margin-top: 2.5rem;
-            line-height: 1.8;
+            margin-top: 2rem;
             font-family: 'Geist Mono', monospace;
+            line-height: 1.8;
         }
 
         .app-footer a {
             color: var(--text-body);
             text-decoration: none;
-            transition: color 0.15s;
         }
 
         .app-footer a:hover {
-            color: #09090b;
             text-decoration: underline;
         }
 
         /* ---------- Responsive Media Queries ---------- */
-        @media (max-width: 960px) {
-            .config-grid {
+        @media (max-width: 1024px) {
+            .workstation-grid {
                 grid-template-columns: 1fr;
             }
-            .kpi-cards-grid {
+            .kpi-banner-card {
                 grid-template-columns: 1fr;
+                gap: 1rem;
             }
-            .analytics-grid {
-                grid-template-columns: 1fr;
-            }
-            .brand-buttons-group {
-                grid-template-columns: 1fr;
-            }
-            .leaderboard-table th:nth-child(3),
-            .leaderboard-table td:nth-child(3) {
-                display: none;
-            }
-        }
-
-        @media (max-width: 640px) {
-            body {
-                padding: 1rem 0.85rem 2.5rem;
-            }
-            .glass-panel {
-                padding: 1.25rem;
-            }
-            .scorecards-row {
-                grid-template-columns: 1fr;
-            }
-            .kpi-card-value {
-                font-size: 1.85rem;
-            }
-            .leaderboard-table th:nth-child(4),
-            .leaderboard-table td:nth-child(4) {
-                display: none;
+            .kpi-col.border-left {
+                border-left: none;
+                border-top: 1px solid var(--border-hairline);
+                padding-left: 0;
+                padding-top: 0.75rem;
             }
         }
     </style>
@@ -1152,397 +944,250 @@
 <body>
 
 <div class="container">
-    <!-- Benchmark Header Bar -->
+    <!-- Top Navigation Header -->
     <header class="app-header">
         <div class="brand-header">
             <div class="brand-logo-badge">⚡</div>
             <div class="brand-titles">
-                <div class="benchmark-breadcrumb">PORTFOLIO // BENCHMARK · CAMPAIGN EVALUATION</div>
                 <h1>Marketing Campaign Intelligence</h1>
-                <p>Enterprise Model Benchmark Leaderboard &amp; Ad Spend Forecasting Engine</p>
+                <p>FastAPI Dual XGBoost Lifespan Microservice · Production Serving</p>
             </div>
         </div>
-        <div class="header-actions">
-            <div class="status-pill" id="service-status">
-                <span class="dot pending" id="status-dot"></span>
-                <span id="status-text">Checking service…</span>
-            </div>
+        <div class="header-center" role="tablist">
+            <button type="button" class="view-tab-btn active" id="tab-sim" onclick="switchView('simulator')">
+                <span>⚡ Campaign Simulator</span>
+            </button>
+            <button type="button" class="view-tab-btn" id="tab-bench" onclick="switchView('leaderboard')">
+                <span>🏆 Benchmark Matrix</span>
+            </button>
+        </div>
+        <div class="status-pill" id="service-status">
+            <span class="dot pending" id="status-dot"></span>
+            <span id="status-text">Checking service…</span>
         </div>
     </header>
 
-    <!-- Multi-Brand Benchmark Leaderboard Section -->
-    <section class="leaderboard-section">
-        <div class="leaderboard-header">
-            <div class="leaderboard-title">
-                <span>🏆 Multi-Brand Performance Leaderboard</span>
-                <span class="leaderboard-badge">PORTFOLIO EVALUATION MATRIX</span>
-            </div>
-            <div style="font-family: 'Geist Mono', monospace; font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">
-                SORTED BY: NET PROJECTED MARGIN
-            </div>
-        </div>
-        <table class="leaderboard-table" id="leaderboard-tbl">
-            <thead>
-                <tr>
-                    <th style="width: 70px;">Rank</th>
-                    <th>Brand &amp; Segment</th>
-                    <th>Strategy &amp; Channels</th>
-                    <th>Benchmark Revenue</th>
-                    <th>Win Rate / Profit</th>
-                    <th style="text-align: right;">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="selected" id="row-nykaa" onclick="selectLeaderboardRow('nykaa', 'high-growth')">
-                    <td><span class="rank-num top-1">#1</span></td>
-                    <td>
-                        <div class="brand-cell">
-                            <span class="brand-tag nykaa">Nykaa</span>
-                            <span>Premium Beauty &amp; Wellness</span>
-                        </div>
-                    </td>
-                    <td>
-                        <span style="color: var(--text-muted); font-size: 0.78rem;">Paid Ads · Instagram, Google, YouTube</span>
-                    </td>
-                    <td>
-                        <span class="metric-mono" style="color: var(--text-heading);">₹2,75,122.22</span>
-                    </td>
-                    <td>
-                        <span class="badge-status profitable">94.8% WIN · PROFITABLE</span>
-                    </td>
-                    <td style="text-align: right;">
-                        <button type="button" class="select-row-btn">Simulate</button>
-                    </td>
-                </tr>
-                <tr id="row-tira" onclick="selectLeaderboardRow('tira', 'tira-luxury')">
-                    <td><span class="rank-num">#2</span></td>
-                    <td>
-                        <div class="brand-cell">
-                            <span class="brand-tag tira">Tira</span>
-                            <span>Omnichannel Luxury Cosmetics</span>
-                        </div>
-                    </td>
-                    <td>
-                        <span style="color: var(--text-muted); font-size: 0.78rem;">Influencer · Instagram, YouTube, Google</span>
-                    </td>
-                    <td>
-                        <span class="metric-mono" style="color: var(--text-heading);">₹4,15,705.10</span>
-                    </td>
-                    <td>
-                        <span class="badge-status profitable">88.4% WIN · PROFITABLE</span>
-                    </td>
-                    <td style="text-align: right;">
-                        <button type="button" class="select-row-btn">Simulate</button>
-                    </td>
-                </tr>
-                <tr id="row-purplle" onclick="selectLeaderboardRow('purplle', 'purplle-tier2')">
-                    <td><span class="rank-num">#3</span></td>
-                    <td>
-                        <div class="brand-cell">
-                            <span class="brand-tag purplle">Purplle</span>
-                            <span>Tier-2/3 Affordable Glamour</span>
-                        </div>
-                    </td>
-                    <td>
-                        <span style="color: var(--text-muted); font-size: 0.78rem;">Social Media · Instagram, WhatsApp</span>
-                    </td>
-                    <td>
-                        <span class="metric-mono" style="color: var(--text-heading);">₹1,95,142.45</span>
-                    </td>
-                    <td>
-                        <span class="badge-status profitable">81.2% WIN · PROFITABLE</span>
-                    </td>
-                    <td style="text-align: right;">
-                        <button type="button" class="select-row-btn">Simulate</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-
-    <!-- Main Interactive Evaluation Workspace -->
-    <main class="glass-panel">
-        <div class="workspace-header">
-            <div class="workspace-title">
-                <span>⚙️ Campaign Parameter Evaluation Console</span>
-            </div>
-            <div style="font-family: 'Geist Mono', monospace; font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">
-                MODEL: XGBOOST REGRESSOR + CLASSIFIER (LIFESPAN DUAL)
-            </div>
-        </div>
-
-        <form id="campaign-form" onsubmit="handleForecastSubmit(event)">
-            <!-- Brand Selector Segmented Bar -->
-            <div class="brand-selector-section">
-                <div class="brand-selector-label">
-                    <span>Target Brand Benchmark Anchor</span>
-                    <span style="font-family: 'Geist Mono', monospace; font-size: 0.68rem; color: var(--text-muted);">SELECT TO INITIALIZE MATRIX</span>
-                </div>
-                <div class="brand-buttons-group" role="group" aria-label="Brand Selection">
-                    <button type="button" class="brand-btn active" data-brand="nykaa" onclick="selectBrand('nykaa')">
-                        <div>
-                            <div class="brand-name" style="color: var(--brand-nykaa);">Nykaa</div>
-                            <div class="brand-sub">Leader · Beauty &amp; Wellness</div>
-                        </div>
-                        <div class="brand-indicator"></div>
-                    </button>
-                    <button type="button" class="brand-btn" data-brand="purplle" onclick="selectBrand('purplle')">
-                        <div>
-                            <div class="brand-name" style="color: var(--brand-purplle);">Purplle</div>
-                            <div class="brand-sub">Tier-2/3 Beauty E-Commerce</div>
-                        </div>
-                        <div class="brand-indicator"></div>
-                    </button>
-                    <button type="button" class="brand-btn" data-brand="tira" onclick="selectBrand('tira')">
-                        <div>
-                            <div class="brand-name" style="color: var(--brand-tira);">Tira</div>
-                            <div class="brand-sub">Omnichannel Luxury Beauty</div>
-                        </div>
-                        <div class="brand-indicator"></div>
-                    </button>
-                </div>
-                <input type="hidden" id="brand-input" name="brand" value="nykaa">
-            </div>
-
-            <!-- 3-Column Configuration Grid -->
-            <div class="config-grid">
-                <!-- Column 1: Strategy & Audience -->
-                <div class="config-column">
-                    <div class="column-header">
-                        <span>🎯 Strategy &amp; Targeting</span>
+    <!-- TAB 1: WORKSTATION SPLIT-PANE SIMULATOR -->
+    <div id="view-simulator">
+        <div class="workstation-grid">
+            <!-- Left Rail: Parameter Configuration Console -->
+            <aside class="config-card">
+                <div class="config-card-header">
+                    <div class="config-card-title">
+                        <span>⚙️ Parameters</span>
                     </div>
-
-                    <div class="form-group">
-                        <label for="campaign_type">Campaign Strategy</label>
-                        <select id="campaign_type" name="campaign_type" onchange="triggerLivePreview()">
-                            <option value="Paid Ads" selected>Paid Ads</option>
-                            <option value="Social Media">Social Media</option>
-                            <option value="Influencer">Influencer</option>
-                            <option value="Email">Email</option>
-                            <option value="SEO">SEO</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="target_audience">Target Demographic</label>
-                        <select id="target_audience" name="target_audience" onchange="triggerLivePreview()">
-                            <option value="Youth" selected>Youth</option>
-                            <option value="College Students">College Students</option>
-                            <option value="Tier 2 City Customers">Tier 2 City Customers</option>
-                            <option value="Working Women">Working Women</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="customer_segment">Customer Segment</label>
-                        <select id="customer_segment" name="customer_segment" onchange="triggerLivePreview()">
-                            <option value="Premium Shoppers" selected>Premium Shoppers</option>
-                            <option value="College Students">College Students</option>
-                            <option value="Working Women">Working Women</option>
-                            <option value="Tier 2 City Customers">Tier 2 City Customers</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="language">Creative Language</label>
-                        <select id="language" name="language" onchange="triggerLivePreview()">
-                            <option value="English" selected>English</option>
-                            <option value="Hindi">Hindi</option>
-                            <option value="Tamil">Tamil</option>
-                            <option value="Bengali">Bengali</option>
-                        </select>
-                    </div>
+                    <select id="preset-dropdown" class="preset-select" onchange="applyPreset(this.value)">
+                        <option value="">Presets: Custom</option>
+                        <option value="high-growth">Nykaa Growth</option>
+                        <option value="purplle-tier2">Purplle Tier-2</option>
+                        <option value="tira-luxury">Tira Luxury</option>
+                        <option value="reset">↺ Reset</option>
+                    </select>
                 </div>
 
-                <!-- Column 2: Timeline & Funnel Volumes -->
-                <div class="config-column">
-                    <div class="column-header">
-                        <span>📈 Timeline &amp; Funnel</span>
+                <form id="campaign-form" onsubmit="handleForecastSubmit(event)">
+                    <!-- Brand Segmented Control -->
+                    <div class="brand-buttons-group" role="group" aria-label="Brand Selection">
+                        <button type="button" class="brand-btn active" data-brand="nykaa" onclick="selectBrand('nykaa')">
+                            <span class="indicator-dot"></span> Nykaa
+                        </button>
+                        <button type="button" class="brand-btn" data-brand="purplle" onclick="selectBrand('purplle')">
+                            <span class="indicator-dot"></span> Purplle
+                        </button>
+                        <button type="button" class="brand-btn" data-brand="tira" onclick="selectBrand('tira')">
+                            <span class="indicator-dot"></span> Tira
+                        </button>
                     </div>
+                    <input type="hidden" id="brand-input" name="brand" value="nykaa">
 
-                    <div class="form-group slider-container">
-                        <label for="month">
-                            <span>Execution Month</span>
-                            <span class="badge" id="month-display">May (Month 5)</span>
-                        </label>
-                        <input type="range" id="month" name="month" min="1" max="12" value="5" step="1" oninput="updateMonthDisplay(this.value)">
-                        <div class="slider-labels">
-                            <span>Jan (1)</span>
-                            <span>Jun (6)</span>
-                            <span>Dec (12)</span>
+                    <!-- Section 1: Targeting & Strategy -->
+                    <div class="form-section">
+                        <div class="form-section-title">1. Strategy &amp; Targeting</div>
+                        <div class="field-row-2">
+                            <div class="form-field">
+                                <label for="campaign_type">Strategy</label>
+                                <select id="campaign_type" name="campaign_type" onchange="triggerLivePreview()">
+                                    <option value="Paid Ads" selected>Paid Ads</option>
+                                    <option value="Social Media">Social Media</option>
+                                    <option value="Influencer">Influencer</option>
+                                    <option value="Email">Email</option>
+                                    <option value="SEO">SEO</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label for="target_audience">Demographic</label>
+                                <select id="target_audience" name="target_audience" onchange="triggerLivePreview()">
+                                    <option value="Youth" selected>Youth</option>
+                                    <option value="College Students">College Students</option>
+                                    <option value="Tier 2 City Customers">Tier 2 Cities</option>
+                                    <option value="Working Women">Working Women</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="field-row-2">
+                            <div class="form-field">
+                                <label for="customer_segment">Segment Tier</label>
+                                <select id="customer_segment" name="customer_segment" onchange="triggerLivePreview()">
+                                    <option value="Premium Shoppers" selected>Premium Shoppers</option>
+                                    <option value="College Students">College Students</option>
+                                    <option value="Working Women">Working Women</option>
+                                    <option value="Tier 2 City Customers">Tier 2 Cities</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label for="language">Language</label>
+                                <select id="language" name="language" onchange="triggerLivePreview()">
+                                    <option value="English" selected>English</option>
+                                    <option value="Hindi">Hindi</option>
+                                    <option value="Tamil">Tamil</option>
+                                    <option value="Bengali">Bengali</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="impressions">
-                            <span>Expected Impressions</span>
-                        </label>
-                        <input type="number" id="impressions" name="impressions" value="50000" min="0" step="1000" required oninput="triggerLivePreview()">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="clicks">
-                            <span>Expected Click Volume</span>
-                        </label>
-                        <input type="number" id="clicks" name="clicks" value="4000" min="0" step="100" required oninput="triggerLivePreview()">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="leads">
-                            <span>Projected Inbound Leads</span>
-                        </label>
-                        <input type="number" id="leads" name="leads" value="1500" min="0" step="50" required oninput="triggerLivePreview()">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="conversions">
-                            <span>Target Conversions</span>
-                        </label>
-                        <input type="number" id="conversions" name="conversions" value="500" min="0" step="25" required oninput="triggerLivePreview()">
-                    </div>
-                </div>
-
-                <!-- Column 3: Economics & Multi-Channel Mix -->
-                <div class="config-column">
-                    <div class="column-header">
-                        <span>⚡ Unit Economics &amp; Channels</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="engagement_score">
-                            <span>Engagement Score (0 - 30)</span>
-                            <span class="badge" id="eng-display">15.0</span>
-                        </label>
-                        <input type="number" id="engagement_score" name="engagement_score" value="15.0" min="0" max="30" step="0.5" required oninput="updateEngDisplay(this.value)">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="acquisition_cost">
-                            <span>Cost Per Acquisition (CPA in ₹)</span>
-                        </label>
-                        <input type="number" id="acquisition_cost" name="acquisition_cost" value="250.0" min="0" step="10" required oninput="triggerLivePreview()">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Delivery Channels (Multi-select)</label>
-                        <div class="channel-grid">
-                            <label class="channel-chip">
-                                <input type="checkbox" name="channels" value="YouTube" onchange="toggleChip(this)"> YouTube
+                    <!-- Section 2: Funnel Volumes & Execution Month -->
+                    <div class="form-section">
+                        <div class="form-section-title">2. Funnel Volumes &amp; Timeline</div>
+                        <div class="form-field">
+                            <label for="month">
+                                <span>Execution Month</span>
+                                <span class="badge" id="month-display">May (Month 5)</span>
                             </label>
-                            <label class="channel-chip checked">
-                                <input type="checkbox" name="channels" value="Instagram" checked onchange="toggleChip(this)"> Instagram
-                            </label>
-                            <label class="channel-chip checked">
-                                <input type="checkbox" name="channels" value="Google" checked onchange="toggleChip(this)"> Google
-                            </label>
-                            <label class="channel-chip">
-                                <input type="checkbox" name="channels" value="WhatsApp" onchange="toggleChip(this)"> WhatsApp
-                            </label>
-                            <label class="channel-chip">
-                                <input type="checkbox" name="channels" value="Email" onchange="toggleChip(this)"> Email
-                            </label>
-                            <label class="channel-chip">
-                                <input type="checkbox" name="channels" value="Facebook" onchange="toggleChip(this)"> Facebook
-                            </label>
+                            <input type="range" id="month" name="month" min="1" max="12" value="5" step="1" oninput="updateMonthDisplay(this.value)">
+                        </div>
+                        <div class="field-row-2">
+                            <div class="form-field">
+                                <label for="impressions">Impressions</label>
+                                <input type="number" id="impressions" name="impressions" value="50000" min="0" step="1000" required oninput="triggerLivePreview()">
+                            </div>
+                            <div class="form-field">
+                                <label for="clicks">Clicks</label>
+                                <input type="number" id="clicks" name="clicks" value="4000" min="0" step="100" required oninput="triggerLivePreview()">
+                            </div>
+                        </div>
+                        <div class="field-row-2">
+                            <div class="form-field">
+                                <label for="leads">Inbound Leads</label>
+                                <input type="number" id="leads" name="leads" value="1500" min="0" step="50" required oninput="triggerLivePreview()">
+                            </div>
+                            <div class="form-field">
+                                <label for="conversions">Conversions</label>
+                                <input type="number" id="conversions" name="conversions" value="500" min="0" step="25" required oninput="triggerLivePreview()">
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Instant Invariant Validation Alert Banner -->
-            <div id="validation-banner" class="validation-alert" role="alert">
-                <span style="font-size: 1rem;">⚠️</span>
-                <span id="validation-message">Logical invariant violation</span>
-            </div>
-
-            <!-- Analytical Preview Strip -->
-            <div class="preview-strip">
-                <div class="preview-metric">
-                    <span>CTR Preview:</span>
-                    <strong id="preview-ctr">8.00%</strong>
-                </div>
-                <div class="preview-metric">
-                    <span>Conversion Rate:</span>
-                    <strong id="preview-cr">12.50%</strong>
-                </div>
-                <div class="preview-metric">
-                    <span>Cost Per Lead (CPL):</span>
-                    <strong id="preview-cpl">₹0.17</strong>
-                </div>
-            </div>
-
-            <!-- Action Buttons Strip -->
-            <div class="action-container">
-                <button type="submit" id="forecast-btn" class="submit-btn">
-                    <span>⚡ Run Campaign Forecast</span>
-                    <div class="spinner" id="forecast-spinner"></div>
-                </button>
-
-                <button type="button" class="preset-btn" onclick="applyPreset('high-growth')">Eval: Nykaa Growth</button>
-                <button type="button" class="preset-btn" onclick="applyPreset('purplle-tier2')">Eval: Purplle Tier-2</button>
-                <button type="button" class="preset-btn" onclick="applyPreset('tira-luxury')">Eval: Tira Luxury</button>
-                <button type="button" class="preset-btn" onclick="resetFormDefaults()">Reset</button>
-            </div>
-        </form>
-
-        <!-- Dynamic Results Section with Benchmark KPI Cards -->
-        <section id="results-display" class="results-section">
-            <div class="kpi-cards-grid">
-                <!-- KPI Card 1: Forecasted Revenue -->
-                <div class="kpi-card" id="card-revenue">
-                    <div class="kpi-card-header">
-                        <span class="kpi-card-label">Forecasted Revenue</span>
-                        <span class="kpi-card-pill">XGBoost Regressor</span>
+                    <!-- Section 3: Economics & Channels -->
+                    <div class="form-section">
+                        <div class="form-section-title">3. Unit Economics &amp; Channels</div>
+                        <div class="field-row-2">
+                            <div class="form-field">
+                                <label for="acquisition_cost">CPA in ₹</label>
+                                <input type="number" id="acquisition_cost" name="acquisition_cost" value="250.0" min="0" step="10" required oninput="triggerLivePreview()">
+                            </div>
+                            <div class="form-field">
+                                <label for="engagement_score">
+                                    <span>Eng. Score</span>
+                                    <span class="badge" id="eng-display">15.0</span>
+                                </label>
+                                <input type="number" id="engagement_score" name="engagement_score" value="15.0" min="0" max="30" step="0.5" required oninput="updateEngDisplay(this.value)">
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label>Delivery Channels</label>
+                            <div class="channel-tags-row">
+                                <label class="channel-chip checked">
+                                    <input type="checkbox" name="channels" value="Instagram" checked onchange="toggleChip(this)"> Instagram
+                                </label>
+                                <label class="channel-chip checked">
+                                    <input type="checkbox" name="channels" value="Google" checked onchange="toggleChip(this)"> Google
+                                </label>
+                                <label class="channel-chip">
+                                    <input type="checkbox" name="channels" value="YouTube" onchange="toggleChip(this)"> YouTube
+                                </label>
+                                <label class="channel-chip">
+                                    <input type="checkbox" name="channels" value="WhatsApp" onchange="toggleChip(this)"> WhatsApp
+                                </label>
+                                <label class="channel-chip">
+                                    <input type="checkbox" name="channels" value="Email" onchange="toggleChip(this)"> Email
+                                </label>
+                                <label class="channel-chip">
+                                    <input type="checkbox" name="channels" value="Facebook" onchange="toggleChip(this)"> Facebook
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="kpi-card-value" id="res-revenue">₹1,25,000.00</div>
-                        <div class="kpi-card-sub">Projected gross continuous campaign revenue in INR</div>
-                    </div>
-                </div>
 
-                <!-- KPI Card 2: Profitability Status -->
-                <div class="kpi-card" id="card-profit">
-                    <div class="kpi-card-header">
-                        <span class="kpi-card-label">Profitability Status</span>
-                        <span class="kpi-card-pill">XGBoost Classifier</span>
+                    <!-- Invariant Validation Alert Banner -->
+                    <div id="validation-banner" class="validation-alert" role="alert" style="margin-top: 0.95rem;">
+                        <span>⚠️</span>
+                        <span id="validation-message">Logical invariant violation</span>
                     </div>
-                    <div>
+
+                    <!-- Submit Action Button -->
+                    <div style="margin-top: 1rem;">
+                        <button type="submit" id="forecast-btn" class="submit-btn">
+                            <span>⚡ Run Campaign Forecast</span>
+                            <div class="spinner" id="forecast-spinner"></div>
+                        </button>
+                    </div>
+                </form>
+            </aside>
+
+            <!-- Right Rail: Live Intelligence Canvas (Outputs & Diagnostics) -->
+            <main class="intelligence-column">
+                <!-- Executive KPI Hero Deck -->
+                <section class="kpi-banner-card" id="results-display">
+                    <!-- Col 1: Forecasted Revenue -->
+                    <div class="kpi-col">
+                        <div class="kpi-col-label">
+                            <span>Forecasted Revenue</span>
+                            <span class="kpi-model-pill">XGBoost Regressor</span>
+                        </div>
+                        <div class="kpi-revenue-val" id="res-revenue">₹1,25,000.00</div>
+                        <div class="kpi-subtext">Continuous projected gross margin in INR</div>
+                    </div>
+
+                    <!-- Col 2: Profitability Status -->
+                    <div class="kpi-col border-left">
+                        <div class="kpi-col-label">
+                            <span>Profitability Status</span>
+                            <span class="kpi-model-pill">XGBoost Classifier</span>
+                        </div>
                         <div id="res-profit-badge" class="profit-badge emerald-glass">
                             <span>📈 Forecasted Status: PROFITABLE CAMPAIGN</span>
                         </div>
-                        <div class="kpi-card-sub" style="margin-top: 0.5rem;" id="res-profit-sub">Expected revenue exceeds operational and acquisition costs.</div>
+                        <div class="kpi-subtext" id="res-profit-sub" style="margin-top: 0.2rem;">Revenue comfortably exceeds media &amp; acquisition costs.</div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Derived Efficiency Scorecards -->
-            <div class="scorecards-row">
-                <div class="scorecard-item">
-                    <div class="scorecard-label">Click-Through Rate (CTR)</div>
-                    <div class="scorecard-val" id="res-ctr">8.00%</div>
-                    <div class="scorecard-meta">Expected clicks / impressions</div>
-                </div>
-                <div class="scorecard-item">
-                    <div class="scorecard-label">Conversion Rate</div>
-                    <div class="scorecard-val" id="res-cr">12.50%</div>
-                    <div class="scorecard-meta">Target conversions / clicks</div>
-                </div>
-                <div class="scorecard-item">
-                    <div class="scorecard-label">Cost Per Lead (CPL)</div>
-                    <div class="scorecard-val" id="res-cpl">₹0.17</div>
-                    <div class="scorecard-meta">Acquisition cost / leads in INR</div>
-                </div>
-            </div>
+                    <!-- Col 3: Authoritative Efficiency Triad -->
+                    <div class="kpi-col border-left">
+                        <div class="kpi-col-label">Efficiency Ratios</div>
+                        <div class="efficiency-triad">
+                            <div class="triad-box">
+                                <div class="triad-box-lbl">CTR</div>
+                                <div class="triad-box-val" id="res-ctr">8.00%</div>
+                            </div>
+                            <div class="triad-box">
+                                <div class="triad-box-lbl">Conv Rate</div>
+                                <div class="triad-box-val" id="res-cr">12.50%</div>
+                            </div>
+                            <div class="triad-box">
+                                <div class="triad-box-lbl">CPL</div>
+                                <div class="triad-box-val" id="res-cpl">₹0.17</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-            <!-- Visual Analytics & Funnel Diagnostics Grid -->
-            <div class="analytics-grid">
-                <!-- Funnel Drop-Off Analysis -->
-                <div class="analytics-card" id="analytics-funnel-card">
+                <!-- Diagnostics 1: Conversion Funnel & Drop-Off -->
+                <section class="analytics-card" id="analytics-funnel-card">
                     <div class="analytics-card-header">
                         <div class="analytics-card-title">
                             <span>🔻 Conversion Funnel &amp; Drop-Off</span>
                         </div>
-                        <span class="analytics-card-badge" id="funnel-brand-tag">NYKAA · FUNNEL RETENTION</span>
+                        <span class="analytics-card-badge" id="funnel-brand-tag">NYKAA · STAGE RETENTION</span>
                     </div>
                     <div class="funnel-container" id="funnel-stages-container">
                         <!-- Stage 1: Impressions -->
@@ -1619,10 +1264,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Revenue Sensitivity & Scale Curve -->
-                <div class="analytics-card" id="analytics-sensitivity-card">
+                <!-- Diagnostics 2: Spend & Scale Sensitivity Curve -->
+                <section class="analytics-card" id="analytics-sensitivity-card">
                     <div class="analytics-card-header">
                         <div class="analytics-card-title">
                             <span>📈 Spend &amp; Scale Sensitivity Curve</span>
@@ -1631,7 +1276,7 @@
                     </div>
                     <div class="sensitivity-container">
                         <div id="sensitivity-chart-wrapper" style="position: relative; width: 100%; min-height: 200px;">
-                            <svg id="sensitivity-svg" class="sensitivity-svg" viewBox="0 0 520 220" preserveAspectRatio="xMidYMid meet"></svg>
+                            <svg id="sensitivity-svg" class="sensitivity-svg" viewBox="0 0 520 210" preserveAspectRatio="xMidYMid meet"></svg>
                             <div id="curve-tooltip" style="position: absolute; display: none; background: #09090b; color: #ffffff; padding: 0.4rem 0.65rem; border-radius: 4px; font-size: 0.68rem; font-family: 'Geist Mono', monospace; pointer-events: none; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.18); line-height: 1.4;"></div>
                         </div>
                         <div class="sensitivity-legend">
@@ -1649,21 +1294,110 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </section>
 
-            <!-- Model Latency & Telemetry Metadata -->
-            <div class="meta-strip">
-                <span id="telemetry-latency">In-Memory Lifespan Inference Engine · Latency &lt; 5 ms</span>
-                <span id="telemetry-timestamp">Simulated timestamp: Live</span>
+                <!-- Telemetry Meta Bar -->
+                <div class="meta-strip">
+                    <span id="telemetry-latency">In-Memory Lifespan Inference Engine · Latency &lt; 5 ms</span>
+                    <span id="telemetry-timestamp">Simulated timestamp: Live</span>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- TAB 2: PORTFOLIO BENCHMARK MATRIX VIEW -->
+    <section id="view-leaderboard" class="leaderboard-view">
+        <div class="leaderboard-header">
+            <div class="leaderboard-title">
+                <span>🏆 Multi-Brand Performance Leaderboard</span>
             </div>
-        </section>
-    </main>
+            <div style="font-family: 'Geist Mono', monospace; font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">
+                PORTFOLIO BENCHMARK EVALUATION MATRIX
+            </div>
+        </div>
+        <table class="leaderboard-table" id="leaderboard-tbl">
+            <thead>
+                <tr>
+                    <th style="width: 70px;">Rank</th>
+                    <th>Brand &amp; Segment</th>
+                    <th>Strategy &amp; Channels</th>
+                    <th>Benchmark Revenue</th>
+                    <th>Win Rate / Profit</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="selected" id="row-nykaa" onclick="selectLeaderboardRow('nykaa', 'high-growth')">
+                    <td><strong style="color: var(--accent-blue);">#1</strong></td>
+                    <td>
+                        <div class="brand-cell">
+                            <span class="brand-tag nykaa">Nykaa</span>
+                            <span>Premium Beauty &amp; Wellness</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="color: var(--text-muted); font-size: 0.76rem;">Paid Ads · Instagram, Google, YouTube</span>
+                    </td>
+                    <td>
+                        <span style="font-family: 'Geist Mono', monospace; font-weight: 600; color: var(--text-heading);">₹2,75,122.22</span>
+                    </td>
+                    <td>
+                        <span class="profit-badge emerald-glass" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;">94.8% WIN · PROFITABLE</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <button type="button" class="select-row-btn" onclick="event.stopPropagation(); selectLeaderboardRow('nykaa', 'high-growth')">Simulate</button>
+                    </td>
+                </tr>
+                <tr id="row-tira" onclick="selectLeaderboardRow('tira', 'tira-luxury')">
+                    <td><strong style="color: var(--text-heading);">#2</strong></td>
+                    <td>
+                        <div class="brand-cell">
+                            <span class="brand-tag tira">Tira</span>
+                            <span>Omnichannel Luxury Cosmetics</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="color: var(--text-muted); font-size: 0.76rem;">Influencer · Instagram, YouTube, Google</span>
+                    </td>
+                    <td>
+                        <span style="font-family: 'Geist Mono', monospace; font-weight: 600; color: var(--text-heading);">₹4,15,705.10</span>
+                    </td>
+                    <td>
+                        <span class="profit-badge emerald-glass" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;">88.4% WIN · PROFITABLE</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <button type="button" class="select-row-btn" onclick="event.stopPropagation(); selectLeaderboardRow('tira', 'tira-luxury')">Simulate</button>
+                    </td>
+                </tr>
+                <tr id="row-purplle" onclick="selectLeaderboardRow('purplle', 'purplle-tier2')">
+                    <td><strong style="color: var(--text-heading);">#3</strong></td>
+                    <td>
+                        <div class="brand-cell">
+                            <span class="brand-tag purplle">Purplle</span>
+                            <span>Tier-2/3 Affordable Glamour</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="color: var(--text-muted); font-size: 0.76rem;">Social Media · Instagram, WhatsApp</span>
+                    </td>
+                    <td>
+                        <span style="font-family: 'Geist Mono', monospace; font-weight: 600; color: var(--text-heading);">₹1,95,142.45</span>
+                    </td>
+                    <td>
+                        <span class="profit-badge emerald-glass" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;">81.2% WIN · PROFITABLE</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <button type="button" class="select-row-btn" onclick="event.stopPropagation(); selectLeaderboardRow('purplle', 'purplle-tier2')">Simulate</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 
     <!-- Footer Links -->
     <footer class="app-footer">
-        Performance Leaderboard architecture · Multi-brand predictive machine learning served via FastAPI lifespan singletons.<br>
-        <a href="/docs">OpenAPI Documentation</a> · <a href="/health">Service Health</a> · <a href="/ready">Readiness Probe</a>
+        FastAPI lifespan singletons · In-memory XGBoost regression &amp; classification.<br>
+        <a href="/docs">OpenAPI Spec</a> · <a href="/health">Health Probe</a> · <a href="/ready">Readiness Probe</a>
     </footer>
 </div>
 
@@ -1674,6 +1408,29 @@
         "Sep (Month 9)", "Oct (Month 10)", "Nov (Month 11)", "Dec (Month 12)"
     ];
 
+    let currentForecastedRevenue = 125000.0;
+    let currentIsProfitable = true;
+
+    function switchView(viewName) {
+        const simView = document.getElementById('view-simulator');
+        const benchView = document.getElementById('view-leaderboard');
+        const tabSim = document.getElementById('tab-sim');
+        const tabBench = document.getElementById('tab-bench');
+
+        if (viewName === 'leaderboard') {
+            simView.style.display = 'none';
+            benchView.style.display = 'block';
+            tabSim.classList.remove('active');
+            tabBench.classList.add('active');
+        } else {
+            simView.style.display = 'block';
+            benchView.style.display = 'none';
+            tabSim.classList.add('active');
+            tabBench.classList.remove('active');
+            triggerLivePreview();
+        }
+    }
+
     function selectBrand(brand) {
         document.getElementById('brand-input').value = brand;
         document.querySelectorAll('.brand-btn').forEach(btn => {
@@ -1683,8 +1440,8 @@
                 btn.classList.remove('active');
             }
         });
-        
-        // Synchronize selected leaderboard row
+
+        // Sync leaderboard rows if present
         document.querySelectorAll('#leaderboard-tbl tbody tr').forEach(row => {
             row.classList.remove('selected');
         });
@@ -1698,7 +1455,10 @@
         selectBrand(brand);
         if (preset) {
             applyPreset(preset);
+            const drop = document.getElementById('preset-dropdown');
+            if (drop) drop.value = preset;
         }
+        switchView('simulator');
     }
 
     function updateMonthDisplay(val) {
@@ -1736,28 +1496,28 @@
 
         if (clicks > impressions) {
             banner.classList.add('show');
-            msg.textContent = `Logical Invariant Violated: Clicks (${clicks.toLocaleString()}) cannot exceed impressions (${impressions.toLocaleString()}).`;
+            msg.textContent = `Invariant Violated: Clicks (${clicks.toLocaleString()}) cannot exceed impressions (${impressions.toLocaleString()}).`;
             submitBtn.disabled = true;
             return false;
         }
 
         if (conversions > clicks) {
             banner.classList.add('show');
-            msg.textContent = `Logical Invariant Violated: Conversions (${conversions.toLocaleString()}) cannot exceed clicks (${clicks.toLocaleString()}).`;
+            msg.textContent = `Invariant Violated: Conversions (${conversions.toLocaleString()}) cannot exceed clicks (${clicks.toLocaleString()}).`;
             submitBtn.disabled = true;
             return false;
         }
 
         if (leads > clicks) {
             banner.classList.add('show');
-            msg.textContent = `Logical Invariant Violated: Leads (${leads.toLocaleString()}) cannot exceed clicks (${clicks.toLocaleString()}).`;
+            msg.textContent = `Invariant Violated: Leads (${leads.toLocaleString()}) cannot exceed clicks (${clicks.toLocaleString()}).`;
             submitBtn.disabled = true;
             return false;
         }
 
         if (impressions < 0 || clicks < 0 || leads < 0 || conversions < 0 || acquisitionCost < 0) {
             banner.classList.add('show');
-            msg.textContent = 'Invariant Violated: Funnel metrics and acquisition costs cannot be negative.';
+            msg.textContent = 'Invariant Violated: Funnel metrics and costs cannot be negative.';
             submitBtn.disabled = true;
             return false;
         }
@@ -1781,8 +1541,18 @@
         return true;
     }
 
-    let currentForecastedRevenue = 125000.0;
-    let currentIsProfitable = true;
+    function formatINR(val) {
+        try {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 2,
+            }).format(val);
+        } catch (e) {
+            return '₹' + Number(val).toFixed(2);
+        }
+    }
 
     function formatCompactINR(val) {
         if (val >= 10000000) return '₹' + (val / 10000000).toFixed(1) + 'Cr';
@@ -1891,12 +1661,12 @@
             return { scale: s, rev, cost, margin };
         });
 
-        const padL = 68;
+        const padL = 65;
         const padR = 25;
-        const padT = 20;
-        const padB = 35;
+        const padT = 18;
+        const padB = 32;
         const totalW = 520;
-        const totalH = 220;
+        const totalH = 210;
         const plotW = totalW - padL - padR;
         const plotH = totalH - padT - padB;
 
@@ -1909,7 +1679,6 @@
         const toX = s => padL + ((s - 0.25) / (2.0 - 0.25)) * plotW;
         const toY = v => padT + plotH - (Math.min(v, maxVal) / maxVal) * plotH;
 
-        // Build SVG Elements
         let markup = `
             <defs>
                 <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
@@ -1919,7 +1688,7 @@
             </defs>
         `;
 
-        // Horizontal Gridlines and Y-Ticks
+        // Y Gridlines and Ticks
         const yTicks = [0, maxVal * 0.33, maxVal * 0.66, maxVal];
         yTicks.forEach(val => {
             const y = toY(val);
@@ -1929,18 +1698,18 @@
             `;
         });
 
-        // X-Axis Labels
+        // X Labels
         scales.forEach(s => {
             const x = toX(s);
             const label = s === 1.0 ? '1.0x (Now)' : s + 'x';
             const fontWeight = s === 1.0 ? '700' : '500';
             const fill = s === 1.0 ? '#09090b' : '#64748b';
             markup += `
-                <text x="${x}" y="${totalH - 12}" text-anchor="middle" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="${fontWeight}" fill="${fill}">${label}</text>
+                <text x="${x}" y="${totalH - 10}" text-anchor="middle" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="${fontWeight}" fill="${fill}">${label}</text>
             `;
         });
 
-        // Area Path under Revenue Curve
+        // Shaded Revenue Area
         const revPathPoints = dataPoints.map(d => `${toX(d.scale)},${toY(d.rev)}`);
         const areaD = `M ${toX(0.25)},${toY(0)} L ${revPathPoints.join(' L ')} L ${toX(2.0)},${toY(0)} Z`;
         markup += `<path d="${areaD}" fill="url(#revGrad)" />`;
@@ -1949,12 +1718,12 @@
         const revD = `M ${revPathPoints.join(' L ')}`;
         markup += `<path d="${revD}" fill="none" stroke="#0066ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />`;
 
-        // Cost Line (Break-Even)
+        // Cost Break-Even Line
         const costPathPoints = dataPoints.map(d => `${toX(d.scale)},${toY(d.cost)}`);
         const costD = `M ${costPathPoints.join(' L ')}`;
         markup += `<path d="${costD}" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4 4" stroke-linecap="round" />`;
 
-        // Interactive Data Points
+        // Interactive Data Circles
         dataPoints.forEach(d => {
             const x = toX(d.scale);
             const y = toY(d.rev);
@@ -1969,7 +1738,6 @@
                 `;
             }
 
-            // Invisible Hover Trigger
             markup += `
                 <circle cx="${x}" cy="${y}" r="14" fill="transparent" style="cursor: pointer;"
                     onmouseenter="showCurveTooltip(event, '${d.scale}', ${d.rev}, ${d.cost}, ${d.margin})"
@@ -2028,10 +1796,6 @@
         const cr = clicks > 0 ? (conversions / clicks) * 100 : 0.0;
         const cpl = leads > 0 ? (acquisitionCost / leads) : 0.0;
 
-        document.getElementById('preview-ctr').textContent = ctr.toFixed(2) + '%';
-        document.getElementById('preview-cr').textContent = cr.toFixed(2) + '%';
-        document.getElementById('preview-cpl').textContent = formatINR(cpl);
-
         if (isValid) {
             document.getElementById('res-ctr').textContent = ctr.toFixed(2) + '%';
             document.getElementById('res-cr').textContent = cr.toFixed(2) + '%';
@@ -2040,19 +1804,6 @@
 
         updateFunnelChart();
         updateSensitivityCurve(currentForecastedRevenue, currentIsProfitable);
-    }
-
-    function formatINR(val) {
-        try {
-            return new Intl.NumberFormat('en-IN', {
-                style: 'currency',
-                currency: 'INR',
-                maximumFractionDigits: 2,
-                minimumFractionDigits: 2,
-            }).format(val);
-        } catch (e) {
-            return '₹' + Number(val).toFixed(2);
-        }
     }
 
     async function checkServiceHealth() {
@@ -2065,11 +1816,11 @@
             const modelsActive = (data.revenue_model ? 1 : 0) + (data.profit_model ? 1 : 0);
             dot.className = 'dot online';
             text.textContent = modelsActive === 2
-                ? 'Inference Engine Online · Dual Models Ready'
-                : `Inference Engine Online · ${modelsActive}/2 Models Loaded`;
+                ? 'Dual Models Online'
+                : `${modelsActive}/2 Models Ready`;
         } catch (err) {
             dot.className = 'dot offline';
-            text.textContent = 'Service Offline / Error';
+            text.textContent = 'Service Offline';
         }
     }
 
@@ -2136,11 +1887,11 @@
             if (profData.profitable) {
                 badge.className = 'profit-badge emerald-glass';
                 badge.innerHTML = '<span>📈 Forecasted Status: PROFITABLE CAMPAIGN</span>';
-                sub.textContent = 'Projected campaign revenue comfortably exceeds media cost & operational overhead.';
+                sub.textContent = 'Revenue comfortably exceeds media & acquisition costs.';
             } else {
                 badge.className = 'profit-badge ruby-glass';
                 badge.innerHTML = '<span>📉 Forecasted Status: NET OPERATIONAL LOSS</span>';
-                sub.textContent = 'High acquisition cost or low conversion efficiency leads to negative net margin.';
+                sub.textContent = 'High acquisition cost leads to negative net margin.';
             }
 
             // Update Telemetry
@@ -2159,6 +1910,11 @@
     }
 
     function applyPreset(name) {
+        if (!name || name === 'reset') {
+            resetFormDefaults();
+            return;
+        }
+
         if (name === 'high-growth') {
             selectBrand('nykaa');
             document.getElementById('campaign_type').value = 'Paid Ads';
@@ -2234,10 +1990,12 @@
         updateEngDisplay(15.0);
         document.getElementById('acquisition_cost').value = 250.0;
         setChannels(['Instagram', 'Google']);
+        const drop = document.getElementById('preset-dropdown');
+        if (drop) drop.value = '';
         triggerLivePreview();
     }
 
-    // Initial Startup Invocation
+    // Startup Invocation
     checkServiceHealth();
     triggerLivePreview();
 </script>
