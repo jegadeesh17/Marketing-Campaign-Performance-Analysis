@@ -17,7 +17,7 @@
 
 ## 1. Executive Summary
 
-Marketing Campaign Analysis is an **end-to-end ML analytics platform** for multi-brand campaign intelligence (Nykaa, Purplle, Tira). It forecasts **campaign revenue** (XGBoost regression) and predicts **profitability** (XGBoost classification with imbalance handling), served through PostgreSQL storage, FastAPI endpoints, and a Streamlit forecasting dashboard.
+Marketing Campaign Analysis is an **end-to-end ML analytics platform** for multi-brand campaign intelligence (Nykaa, Purplle, Tira). It forecasts **campaign revenue** (XGBoost regression) and predicts **profitability** (XGBoost classification with imbalance handling), served through FastAPI endpoints and a browser forecasting UI at `/app`, with PostgreSQL storage (CSV fallback).
 
 **Interview pitch:**
 
@@ -35,10 +35,10 @@ Marketing Campaign Analysis is an **end-to-end ML analytics platform** for multi
 | 2 | Missing value imputation and duplicate removal |
 | 3 | Advanced feature engineering (CTR, CPL, cyclical time, channel flags) |
 | 4 | Revenue regression (XGBoost) |
-| 5 | Profit classification (XGBoost + SMOTETomek) |
+| 5 | Profit classification (XGBoost + scale_pos_weight) |
 | 6 | Leakage-safe train/test isolation |
 | 7 | FastAPI `/forecast_revenue`, `/predict_profitability` |
-| 8 | Streamlit 3-column forecasting UI |
+| 8 | Browser forecasting UI served at `/app` (FastAPI) |
 | 9 | pytest API + inference tests |
 
 ### 2.2 Out of Scope
@@ -56,12 +56,12 @@ Marketing Campaign Analysis is an **end-to-end ML analytics platform** for multi
 | ID | Requirement | Module | Status |
 |----|-------------|--------|--------|
 | FR-01 | Ingest brand CSVs | `src/data_ingestion.py` | ✅ |
-| FR-02 | Clean and impute data | `src/preprocessing.py` | ✅ |
-| FR-03 | Engineer features + targets | `src/feature_engineering.py` | ✅ |
+| FR-02 | Clean and impute data | `src/data_preprocessing.py` | ✅ |
+| FR-03 | Engineer features + targets | `src/data_preprocessing.py` | ✅ |
 | FR-04 | Train regression + classifier | `src/train_models.py` | ✅ |
 | FR-05 | Export evaluation metrics | `scripts/export_evaluation.py` | ✅ |
 | FR-06 | Inference API | `api/main.py` | ✅ |
-| FR-07 | Streamlit dashboard | `app/app.py` | ✅ |
+| FR-07 | Browser forecasting UI | `api/index.html` (served at `/app`) | ✅ |
 
 ---
 
@@ -74,13 +74,13 @@ Nykaa / Purplle / Tira CSVs
 PostgreSQL ◀── data_ingestion.py
         │
         ▼
-preprocessing.py + feature_engineering.py
+data_preprocessing.py (cleaning + features)
         │
         ├── XGBRegressor → revenue forecast
-        └── XGBClassifier (+ SMOTETomek) → profit_flag
+        └── XGBClassifier (scale_pos_weight) → profit_flag
         │
         ▼
-models/*.pkl ──▶ api/main.py + app/app.py
+models/*.joblib ──▶ api/main.py (serves /app)
 ```
 
 ---
@@ -89,7 +89,7 @@ models/*.pkl ──▶ api/main.py + app/app.py
 
 | Brand | Source | Key columns |
 |-------|--------|-------------|
-| Nykaa | `data/` CSV | impressions, clicks, spend, revenue, channel_used |
+| Nykaa | `data/` CSV | impressions, clicks, leads, conversions, acquisition_cost, revenue, channel_used |
 | Purplle | `data/` CSV | same schema family |
 | Tira | `data/` CSV | same schema family |
 
@@ -108,7 +108,7 @@ models/*.pkl ──▶ api/main.py + app/app.py
 | Profitability | XGBoost Classifier | Weighted F1 | 0.9689 |
 | Profitability | XGBoost Classifier | Accuracy | 0.9686 |
 
-**Interview note:** Cite weighted F1 and per-class recall — unprofitable class recall is lower.
+**Interview note:** Cite weighted F1 and per-class recall. The notebook's XGBoost classification report (holdout) shows recall 0.99 for unprofitable (label 0) and 0.96 for profitable (label 1); `reports/evaluation.md` does not store per-class recall.
 
 Regenerate: `python src/train_models.py && python scripts/export_evaluation.py`
 
@@ -122,7 +122,7 @@ Model artifact presence and service status.
 
 ### `POST /forecast_revenue`
 
-**Input:** `CampaignInput` — impressions, clicks, spend, channel flags, date features.  
+**Input:** `CampaignInput` — brand, campaign_type, target_audience, language, customer_segment, month, impressions, clicks, leads, conversions, engagement_score, acquisition_cost, channels.  
 **Output:** Predicted revenue.
 
 ### `POST /predict_profitability`
@@ -135,7 +135,7 @@ Model artifact presence and service status.
 ## 8. Leakage Prevention
 
 - Classification feature set excludes direct financial outcome columns used to define target
-- Strict train/test split before SMOTETomek resampling (training only)
+- Class weight (`scale_pos_weight`) computed from training labels only (`src/train_models.py`)
 - Profit pipeline uses revenue forecast as feature only after regression stage (document in interviews)
 
 ---
@@ -147,7 +147,6 @@ pip install -r requirements.txt
 python src/train_models.py
 pytest -q
 uvicorn api.main:app --port 8000
-streamlit run app/app.py
 ```
 
 CSV fallback path works without PostgreSQL for inference demos.
@@ -166,7 +165,7 @@ CSV fallback path works without PostgreSQL for inference demos.
 | Path | Purpose |
 |------|---------|
 | `src/data_ingestion.py` | Brand CSV → PostgreSQL |
-| `src/preprocessing.py` | Cleaning and imputation |
+| `src/data_preprocessing.py` | Cleaning, imputation and feature engineering |
 | `src/train_models.py` | Train + serialize models |
 | `api/main.py` | FastAPI service |
 | `notebooks/Marketing Campaign Performance Analysis.ipynb` | EDA + training source of truth |

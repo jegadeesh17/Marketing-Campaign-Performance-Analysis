@@ -2,72 +2,331 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+import json
+import logging
 import os
 import sys
+import time
+
+from contextlib import asynccontextmanager
+from typing import Any, AsyncIterator, Literal
 
 import joblib
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.responses import FileResponse, RedirectResponse
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from src.inference import build_campaign_row
+from src.config import get_settings
+from src.inference import build_batch_campaign_rows, build_campaign_row
 
-app = FastAPI(title="Marketing Campaign Intelligence API", version="1.0.0")
+logger = logging.getLogger("api.main")
+_initial_settings = get_settings()
+logger.setLevel(getattr(logging, _initial_settings.log_level.upper(), logging.INFO))
+
+# Ensure backwards compatibility for models pickled in scikit-learn 1.6
+try:
+    import sklearn.compose._column_transformer as _ct
+
+    if not hasattr(_ct, "_RemainderColsList"):
+
+        class _RemainderColsList(list):
+            def __setstate__(self, state):
+                if isinstance(state, dict):
+                    if "data" in state:
+                        self.extend(state["data"])
+                    self.__dict__.update(state)
+                elif isinstance(state, (list, tuple)):
+                    self.extend(state)
+
+        _ct._RemainderColsList = _RemainderColsList
+except Exception:
+    pass
+
+
+START_TIME = time.time()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Load XGBoost models into app.state.models on startup; clear cache on shutdown."""
+    if not hasattr(app.state, "start_time") or app.state.start_time is None:
+        app.state.start_time = START_TIME
+    settings = get_settings()
+    log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
+    logger.setLevel(log_level)
+    models: dict[str, Any] = {}
+    model_dir = (
+        settings.model_dir
+        if os.path.isabs(settings.model_dir)
+        else os.path.join(ROOT, settings.model_dir)
+    )
+    revenue_model_path = os.path.join(model_dir, "revenue_regressor.joblib")
+    profit_model_path = os.path.join(model_dir, "profit_classifier.joblib")
+
+    if os.path.exists(revenue_model_path):
+        models["revenue_regressor"] = joblib.load(revenue_model_path)
+    if os.path.exists(profit_model_path):
+        models["profit_classifier"] = joblib.load(profit_model_path)
+
+    app.state.models = models
+    yield
+    if hasattr(app.state, "models") and isinstance(app.state.models, dict):
+        app.state.models.clear()
+
+
+app = FastAPI(
+    title="Marketing Campaign Intelligence API",
+    version="1.0.0",
+    lifespan=lifespan,
+)
+app.state.models = {}
+app.state.settings = get_settings()
+app.state.start_time = START_TIME
+
+
+@app.middleware("http")
+async def structured_logging_middleware(
+    request: Request, call_next: Any
+) -> Response:
+    """Measure request latency and emit structured JSON access logs without leaking payloads."""
+    start_time = time.perf_counter()
+    status_code = 500
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        return response
+    finally:
+        latency_ms = round((time.perf_counter() - start_time) * 1000.0, 2)
+        log_entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "method": request.method,
+            "path": request.url.path,
+            "status_code": status_code,
+            "latency_ms": latency_ms,
+        }
+        logger.info(json.dumps(log_entry))
+
+BrandType = Literal["nykaa", "purplle", "tira"]
+CampaignType = Literal["Social Media", "Paid Ads", "Influencer", "Email", "SEO"]
+TargetAudienceType = Literal["College Students", "Tier 2 City Customers", "Youth", "Working Women"]
+CustomerSegmentType = Literal["College Students", "Premium Shoppers", "Working Women", "Tier 2 City Customers"]
+LanguageType = Literal["English", "Hindi", "Tamil", "Bengali"]
 
 
 class CampaignInput(BaseModel):
-    brand: str = "nykaa"
-    campaign_type: str = "Paid Ads"
-    target_audience: str = "Youth"
-    language: str = "English"
-    customer_segment: str = "Premium Shoppers"
-    month: int = Field(default=5, ge=1, le=12)
-    impressions: float = 50000
-    clicks: float = 4000
-    leads: float = 1500
-    conversions: float = 500
-    engagement_score: float = 15.0
-    acquisition_cost: float = 250.0
-    channels: list[str] = Field(default_factory=lambda: ["Instagram", "Google"])
+    brand: str = Field(default="nykaa", description="Target e-commerce brand (case-insensitive)")
+    campaign_type: CampaignType = Field(default="Paid Ads", description="Marketing campaign strategy")
+    target_audience: TargetAudienceType = Field(default="Youth", description="Demographic audience target")
+    language: LanguageType = Field(default="English", description="Creative language context")
+    customer_segment: CustomerSegmentType = Field(default="Premium Shoppers", description="Customer purchasing tier")
+    month: int = Field(default=5, ge=1, le=12, description="Execution calendar month (1-12)")
+    impressions: float = Field(default=50000.0, ge=0.0, description="Expected ad impressions")
+    clicks: float = Field(default=4000.0, ge=0.0, description="Expected click volume")
+    leads: float = Field(default=1500.0, ge=0.0, description="Projected inbound leads")
+    conversions: float = Field(default=500.0, ge=0.0, description="Target customer conversions")
+    engagement_score: float = Field(default=15.0, ge=0.0, description="Target engagement score (0-30)")
+    acquisition_cost: float = Field(default=250.0, ge=0.0, description="Cost Per Acquisition in INR")
+    channels: list[str] = Field(
+        default_factory=lambda: ["Instagram", "Google"],
+        description="Delivery channels (YouTube, Instagram, Google, WhatsApp, Email, Facebook)",
+    )
+
+    @field_validator("brand", mode="before")
+    @classmethod
+    def normalize_brand(cls, v: str) -> str:
+        if isinstance(v, str):
+            normalized = v.strip().lower()
+            if normalized not in {"nykaa", "purplle", "tira"}:
+                raise ValueError(f"Invalid brand '{v}'. Supported brands are: ['nykaa', 'purplle', 'tira']")
+            return normalized
+        raise ValueError("Brand must be a valid string")
+
+    @model_validator(mode="after")
+    def validate_logical_invariants(self) -> CampaignInput:
+        if self.clicks > self.impressions:
+            raise ValueError(
+                f"Logical invariant violated: clicks ({self.clicks}) cannot exceed impressions ({self.impressions})"
+            )
+        if self.conversions > self.clicks:
+            raise ValueError(
+                f"Logical invariant violated: conversions ({self.conversions}) cannot exceed clicks ({self.clicks})"
+            )
+        if self.leads > self.clicks:
+            raise ValueError(
+                f"Logical invariant violated: leads ({self.leads}) cannot exceed clicks ({self.clicks})"
+            )
+        return self
+
+
+class BatchCampaignInput(BaseModel):
+    items: list[CampaignInput] = Field(
+        ...,
+        min_length=1,
+        max_length=500,
+        description="List of campaign records for bulk evaluation (1 to 500 items)",
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def check_list_or_dict(cls, data: Any) -> Any:
+        if isinstance(data, list):
+            return {"items": data}
+        return data
+
+
+class RevenuePredictionResponse(BaseModel):
+    forecasted_revenue: float = Field(..., description="Projected gross revenue in INR")
+
+
+class BatchRevenueResponse(BaseModel):
+    predictions: list[float] = Field(..., description="Ordered list of predicted revenues in INR")
+    total_items: int = Field(..., description="Total records evaluated in the batch")
+    latency_ms: float = Field(..., description="Batch inference processing latency in milliseconds")
+
+
+class ProfitabilityPredictionResponse(BaseModel):
+    forecasted_revenue: float = Field(..., description="Projected gross revenue in INR")
+    profitable: bool = Field(..., description="Binary classification flag indicating profitability")
+    status: Literal["PROFITABLE", "LOSS"] = Field(..., description="Human-readable business outcome")
+
+
+class BatchProfitabilityResponse(BaseModel):
+    predictions: list[ProfitabilityPredictionResponse] = Field(
+        ..., description="Ordered list of profitability predictions"
+    )
+    total_items: int = Field(..., description="Total records evaluated in the batch")
+    latency_ms: float = Field(..., description="Batch inference processing latency in milliseconds")
+
+
+class HealthResponse(BaseModel):
+    status: str = Field(default="ok", description="Operational status flag")
+    version: str = Field(default="1.0.0", description="Semantic microservice version")
+    revenue_model: bool = Field(..., description="Indicates if revenue regressor is loaded in memory")
+    profit_model: bool = Field(..., description="Indicates if profit classifier is loaded in memory")
+    uptime_seconds: float = Field(..., description="Microservice continuous runtime in seconds")
+
+
+class ReadinessResponse(BaseModel):
+    status: Literal["ready", "unready"] = Field(..., description="Readiness status for ingress traffic")
+    models_loaded: bool = Field(..., description="True if both inference models are pre-loaded")
+    detail: str | None = Field(default=None, description="Diagnostic error detail if unready")
 
 
 def _load_model(path: str):
     if not os.path.exists(path):
-        raise FileNotFoundError(f"Missing model: {path}. Run python src/train_models.py")
+        settings = get_settings()
+        model_dir = (
+            settings.model_dir
+            if os.path.isabs(settings.model_dir)
+            else os.path.join(ROOT, settings.model_dir)
+        )
+        alt_path = os.path.join(model_dir, os.path.basename(path))
+        if os.path.exists(alt_path):
+            path = alt_path
+        else:
+            raise FileNotFoundError(f"Missing model: {path}. Run python src/train_models.py")
     return joblib.load(path)
 
 
-@app.get("/health")
-def health() -> dict:
-    return {
-        "status": "ok",
-        "revenue_model": os.path.exists(os.path.join(ROOT, "models", "revenue_regressor.joblib")),
-        "profit_model": os.path.exists(os.path.join(ROOT, "models", "profit_classifier.joblib")),
-    }
+INDEX_HTML_PATH = os.path.join(ROOT, "api", "index.html")
 
 
-@app.post("/forecast_revenue")
+@app.get("/", include_in_schema=False)
+def root_redirect() -> RedirectResponse:
+    """Redirect root traffic to the interactive web application."""
+    return RedirectResponse(url="/app", status_code=307)
+
+
+@app.get("/app", include_in_schema=False)
+@app.get("/app/", include_in_schema=False)
+def serve_app() -> FileResponse:
+    """Serve the dark-mode glassmorphic single-page web app."""
+    if not os.path.exists(INDEX_HTML_PATH):
+        raise HTTPException(status_code=404, detail="Single-page application not found")
+    return FileResponse(INDEX_HTML_PATH, media_type="text/html")
+
+
+@app.get("/health", response_model=HealthResponse)
+def health() -> HealthResponse:
+    """Liveness check reporting process uptime, version, and model flags."""
+    models = getattr(app.state, "models", None) or {}
+    revenue_loaded = bool(models.get("revenue_regressor") or models.get("revenue"))
+    profit_loaded = bool(models.get("profit_classifier") or models.get("profit"))
+    start_time = getattr(app.state, "start_time", None) or START_TIME
+    uptime_seconds = round(max(0.0, time.time() - start_time), 2)
+    return HealthResponse(
+        status="ok",
+        version="1.0.0",
+        revenue_model=revenue_loaded,
+        profit_model=profit_loaded,
+        uptime_seconds=uptime_seconds,
+    )
+
+
+@app.get(
+    "/ready",
+    response_model=ReadinessResponse,
+    response_model_exclude_none=True,
+    responses={
+        200: {"model": ReadinessResponse, "description": "Service is ready to handle traffic"},
+        503: {"model": ReadinessResponse, "description": "Service is unready; models not loaded in memory"},
+    },
+)
+def ready(response: Response) -> ReadinessResponse:
+    """Readiness check verifying models are loaded in app.state.models."""
+    models = getattr(app.state, "models", None) or {}
+    revenue_loaded = bool(models.get("revenue_regressor") or models.get("revenue"))
+    profit_loaded = bool(models.get("profit_classifier") or models.get("profit"))
+
+    if not (revenue_loaded and profit_loaded):
+        response.status_code = 503
+        missing: list[str] = []
+        if not revenue_loaded:
+            missing.append("revenue_regressor")
+        if not profit_loaded:
+            missing.append("profit_classifier")
+        return ReadinessResponse(
+            status="unready",
+            models_loaded=False,
+            detail=f"Inference models missing or not loaded in app.state.models: {', '.join(missing)}",
+        )
+
+    return ReadinessResponse(
+        status="ready",
+        models_loaded=True,
+    )
+
+
+@app.post("/forecast_revenue", response_model=RevenuePredictionResponse)
 def forecast_revenue(campaign: CampaignInput) -> dict:
+    models = getattr(app.state, "models", {})
+    model = models.get("revenue_regressor") or models.get("revenue")
+    if model is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Revenue regressor model not loaded in app.state.models",
+        )
     df_reg, _ = build_campaign_row(campaign.model_dump())
-    try:
-        model = _load_model(os.path.join(ROOT, "models", "revenue_regressor.joblib"))
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
     revenue = float(model.predict(df_reg)[0])
     return {"forecasted_revenue": revenue}
 
 
-@app.post("/predict_profitability")
+@app.post("/predict_profitability", response_model=ProfitabilityPredictionResponse)
 def predict_profitability(campaign: CampaignInput) -> dict:
+    models = getattr(app.state, "models", {})
+    reg = models.get("revenue_regressor") or models.get("revenue")
+    clf = models.get("profit_classifier") or models.get("profit")
+    if reg is None or clf is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Models not loaded in app.state.models",
+        )
     df_reg, df_cls = build_campaign_row(campaign.model_dump())
-    try:
-        reg = _load_model(os.path.join(ROOT, "models", "revenue_regressor.joblib"))
-        clf = _load_model(os.path.join(ROOT, "models", "profit_classifier.joblib"))
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
     revenue = float(reg.predict(df_reg)[0])
     df_cls["revenue"] = revenue
     profit_flag = int(clf.predict(df_cls)[0])
@@ -76,3 +335,73 @@ def predict_profitability(campaign: CampaignInput) -> dict:
         "profitable": profit_flag == 1,
         "status": "PROFITABLE" if profit_flag == 1 else "LOSS",
     }
+
+
+@app.post("/forecast_revenue/batch", response_model=BatchRevenueResponse)
+def forecast_revenue_batch(batch: BatchCampaignInput) -> BatchRevenueResponse:
+    start_time = time.perf_counter()
+    models = getattr(app.state, "models", {})
+    model = models.get("revenue_regressor") or models.get("revenue")
+    if model is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Revenue regressor model not loaded in app.state.models",
+        )
+    payloads = [item.model_dump() for item in batch.items]
+    df_reg, _ = build_batch_campaign_rows(payloads)
+    predictions = [float(val) for val in model.predict(df_reg)]
+    latency_ms = round((time.perf_counter() - start_time) * 1000.0, 2)
+    return BatchRevenueResponse(
+        predictions=predictions,
+        total_items=len(predictions),
+        latency_ms=latency_ms,
+    )
+
+
+@app.post("/predict_profitability/batch", response_model=BatchProfitabilityResponse)
+def predict_profitability_batch(batch: BatchCampaignInput) -> BatchProfitabilityResponse:
+    start_time = time.perf_counter()
+    models = getattr(app.state, "models", {})
+    reg = models.get("revenue_regressor") or models.get("revenue")
+    clf = models.get("profit_classifier") or models.get("profit")
+    if reg is None or clf is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Models not loaded in app.state.models",
+        )
+    payloads = [item.model_dump() for item in batch.items]
+    df_reg, df_cls = build_batch_campaign_rows(payloads)
+    pred_revenues = [float(val) for val in reg.predict(df_reg)]
+    df_cls["revenue"] = pred_revenues
+    pred_flags = clf.predict(df_cls)
+
+    predictions: list[ProfitabilityPredictionResponse] = []
+    for rev, flag in zip(pred_revenues, pred_flags):
+        is_profitable = int(flag) == 1
+        predictions.append(
+            ProfitabilityPredictionResponse(
+                forecasted_revenue=rev,
+                profitable=is_profitable,
+                status="PROFITABLE" if is_profitable else "LOSS",
+            )
+        )
+    latency_ms = round((time.perf_counter() - start_time) * 1000.0, 2)
+    return BatchProfitabilityResponse(
+        predictions=predictions,
+        total_items=len(predictions),
+        latency_ms=latency_ms,
+    )
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    settings = get_settings()
+    effective_port = settings.port if settings.port != 8000 else settings.api_port
+    uvicorn.run(
+        "api.main:app",
+        host=settings.api_host,
+        port=effective_port,
+        reload=(settings.app_env == "development"),
+    )
+

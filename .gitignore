@@ -22,11 +22,13 @@ venv/
 env/
 ENV/
 
-# Environment variables
+# Environment variables and secrets
 .env
 .env.local
 .env.*
 !.env.example
+*.pem
+*.key
 # Logs
 logs-*.txt
 
@@ -35,3 +37,7 @@ logs-*.txt
 *.pdf
 *.doc
 *.wpf
+
+# UI review and tool artifacts
+.ui-review/
+.impeccable/

@@ -4,7 +4,7 @@
 
 Marketing campaigns generate massive streams of performance indicators — impressions, clicks, conversions, and spend — across multiple brands and channels. This project builds an end-to-end machine learning and analytics platform to clean multi-brand datasets, engineer advanced features, train predictive models, and deploy a real-time forecasting dashboard.
 
-The system forecasts campaign revenue (XGBoost regression, R² ≈ 0.72 on holdout) and predicts profitability (XGBoost classifier with class-weight balancing). **Interview framing:** cite weighted F1 and per-class recall from `reports/evaluation.md`, not headline accuracy alone.
+The system forecasts campaign revenue (XGBoost regression, R² ≈ 0.72 on holdout) and predicts profitability (XGBoost classifier with class-weight balancing). **Interview framing:** cite weighted F1 (`reports/evaluation.md`) and per-class recall (the notebook's classification report), not headline accuracy alone.
 
 **Repository:** [github.com/jegadeesh17/Marketing-Campaign-Performance-Analysis](https://github.com/jegadeesh17/Marketing-Campaign-Performance-Analysis)  
 **Full specification:** [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md)
@@ -17,7 +17,9 @@ The system forecasts campaign revenue (XGBoost regression, R² ≈ 0.72 on holdo
 * **Advanced Feature Engineering:** Cyclical time encoding, CTR/conversion/CPL ratio generation, and multi-label channel parsing.
 * **Revenue Regression:** XGBoost Regressor pipeline forecasting exact campaign revenue (R² ≈ 0.72).
 * **Profit Classification:** XGBoost Classifier with `scale_pos_weight` for imbalanced profit/loss classes.
-* **Interactive Streamlit Dashboard:** Real-time revenue and profit forecasts through a 3-column floating island UI.
+* **Interactive Glassmorphic Web App:** Real-time revenue and profit forecasts through a dark-mode glassmorphic interface (`/app`) with glowing accents, KPI cards, and live health status.
+* **High-Throughput Batch Predictions:** Vectorized batch endpoints (`/forecast_revenue/batch` & `/predict_profitability/batch`) processing up to 500 records per request with Pydantic v2 invariant validation.
+* **Production Observability & Probes:** Operational liveness (`/health`) and readiness (`/ready`) probes, structured JSON logging middleware, and automated smoke verification script.
 * **Leakage-Safe Pipeline:** Strict train/test isolation and target leakage prevention throughout preprocessing.
 * **Modular ML Architecture:** Separate ingestion, preprocessing, and training scripts for clean pipeline separation.
 
@@ -46,14 +48,20 @@ The system forecasts campaign revenue (XGBoost regression, R² ≈ 0.72 on holdo
 ```bash
 MarketingCampaignAnalysis/
 │
-├── app/                          # Streamlit application files
-│   └── app.py                    # Main Streamlit dashboard
+├── api/                          # FastAPI microservice & glassmorphic web app
+│   ├── index.html                # Dark-mode glassmorphic single-page web app
+│   └── main.py                   # Lifespan singletons, REST routes & logging middleware
 ├── data/                         # Project datasets
-├── docs/                         # Documentation and visualizations
+├── docs/                         # Documentation, living specs & EDA artifacts
 ├── models/                       # Saved trained models
 ├── notebooks/                    # Jupyter notebooks (Source of Truth)
-├── src/                          # Core Python logic and scripts
-├── requirements.txt              # Python dependencies
+├── scripts/                      # Operational utilities & smoke verification
+│   └── smoke_test.py             # Live and offline --mock verification script
+├── src/                          # Core Python logic, inference & configuration
+├── tests/                        # Comprehensive test suite (131+ automated tests)
+├── Dockerfile                    # Multi-stage OCI container definition
+├── docker-compose.yml            # Container orchestration specification
+├── requirements.txt              # Production Python dependencies
 └── README.md
 ```
 
@@ -109,16 +117,16 @@ regressor = XGBRegressor(random_state=42)
 regressor.fit(X_train, y_revenue_train)
 ```
 
-#### Profit Classification (XGBoost + SMOTETomek)
+#### Profit Classification (XGBoost + class weighting)
 ```python
-from imblearn.combine import SMOTETomek
 from xgboost import XGBClassifier
 
-smt = SMOTETomek(random_state=42)
-X_res, y_res = smt.fit_resample(X_train, y_profit_train)
+# Class weight from training labels only (no resampling)
+scale_pos_weight = negative_cases / max(1, positive_cases)
 
-classifier = XGBClassifier(random_state=42)
-classifier.fit(X_res, y_res)
+classifier = XGBClassifier(n_estimators=500, max_depth=15, learning_rate=0.05,
+                           random_state=42, n_jobs=-1, scale_pos_weight=scale_pos_weight)
+classifier.fit(X_train, y_profit_train)
 ```
 
 ---
@@ -134,42 +142,55 @@ See `reports/evaluation.md` (auto-generated after training). Latest holdout resu
 | Profit Classification Accuracy   | 0.9686  |
 | Profit Classification Weighted F1| 0.9689  |
 
-Unprofitable class (label 0) recall is lower than profitable class — discuss trade-offs in interviews.
+The notebook's XGBoost classification report (holdout) shows recall 0.99 for unprofitable (label 0) and 0.96 for profitable (label 1). `reports/evaluation.md` does not store per-class recall.
 
 ### **REST API**
 
 | Endpoint | Method | Description |
 | -------- | ------ | ----------- |
-| `/health` | GET | Service and model artifact status |
-| `/forecast_revenue` | POST | Revenue forecast from campaign features |
-| `/predict_profitability` | POST | Profit/loss prediction using forecasted revenue |
+| `/health` | GET | Operational liveness probe with process uptime and model status |
+| `/ready` | GET | Kubernetes/Cloud Run readiness probe inspecting memory model state |
+| `/app` | GET | Dark-mode glassmorphic single-page web application |
+| `/forecast_revenue` | POST | Single campaign revenue forecast (INR) |
+| `/predict_profitability` | POST | Single campaign profitability classification |
+| `/forecast_revenue/batch` | POST | High-throughput batch revenue forecasting (up to 500 records) |
+| `/predict_profitability/batch` | POST | High-throughput batch profitability classification |
 
 ---
 
 ### **Interactive Application Deployment**
 
-The project features an interactive **Streamlit Web Application** with a clean 3-column floating island UI, enabling marketing managers to input campaign parameters and receive real-time revenue and profitability forecasts.
+The project features an interactive dark-mode **Glassmorphic Web Application** served natively by FastAPI at `/app`, enabling performance marketers and stakeholders to evaluate campaign parameters, inspect live probe statuses, and receive instant predictions via client-side REST calls.
 
+#### **Run Locally (Uvicorn)**
 ```powershell
-streamlit run app/app.py
-uvicorn api.main:app --reload --port 8000
+uvicorn api.main:app --host 0.0.0.0 --port 8000
 ```
+Open [http://127.0.0.1:8000/app](http://127.0.0.1:8000/app) in your browser.
 
-Models are saved to `models/` after training (not committed). See `reports/evaluation.md` and `docs/DEMO.md`.
+#### **Run with Docker Compose**
+```bash
+docker compose up --build
+```
+Access at [http://localhost:8000/app](http://localhost:8000/app).
+
+Models are saved to `models/` after training. The two committed artifacts (`revenue_regressor.joblib`, `profit_classifier.joblib`) are tracked with Git LFS (see `.gitattributes`); other model files are git-ignored. See `reports/evaluation.md` and `docs/DEMO.md`.
 
 ---
 
 ### **Technology Stack**
 
-| Category             | Tools                          |
-| -------------------- | ------------------------------ |
-| Programming          | Python                         |
-| Data Processing      | Pandas, NumPy                  |
-| Database             | PostgreSQL, SQLAlchemy         |
-| Machine Learning     | Scikit-learn, XGBoost          |
-| Imbalanced Learning  | imbalanced-learn (SMOTETomek)  |
-| Visualization        | Plotly                         |
-| Web Framework        | Streamlit                      |
+| Category             | Tools                                               |
+| -------------------- | --------------------------------------------------- |
+| Programming          | Python                                              |
+| Data Processing      | Pandas, NumPy                                       |
+| Database             | PostgreSQL, SQLAlchemy                              |
+| Machine Learning     | Scikit-learn, XGBoost                               |
+| Imbalanced Learning  | XGBoost `scale_pos_weight` (class weighting)        |
+| Web & Microservice   | FastAPI, Uvicorn, Vanilla HTML5/CSS3 (Glassmorphic)  |
+| Data Validation      | Pydantic v2, Pydantic-Settings                      |
+| Container & CI/CD    | Docker (Multi-stage), Docker Compose, GitHub Actions|
+| Visualization        | Plotly                                              |
 
 ---
 
@@ -212,20 +233,27 @@ pip install -r requirements.txt
 jupyter notebook "notebooks/Marketing Campaign Performance Analysis.ipynb"
 ```
 
-### **5. Run Training & Tests**
+### **5. Run Tests & Smoke Verification**
 
 ```bash
-python src/train_models.py
-pytest tests/ -q
+# Fast automated test suite (no tests are marked slow yet, so this runs all tests)
+python -m pytest -q -m "not slow"
+
+# Full automated test suite
+python -m pytest -q
+
+# End-to-end operational smoke verification (in-process mock or live URL)
+python scripts/smoke_test.py --mock
 ```
 
 CSV fallback works without PostgreSQL. For DB ingestion: `python src/data_ingestion.py`
 
-### **6. Launch Dashboard**
+### **6. Launch Web Application**
 
 ```bash
-streamlit run app/app.py
+uvicorn api.main:app --port 8000
 ```
+Open [http://localhost:8000/app](http://localhost:8000/app) in your browser.
 
 ---
 

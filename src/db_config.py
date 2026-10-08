@@ -1,20 +1,28 @@
-import os
+"""Database connection and engine configuration using centralized settings."""
+
+from urllib.parse import quote_plus
 from sqlalchemy import create_engine
-from dotenv import load_dotenv
+from src.config import get_settings
 
-# Load environment variables
-load_dotenv()
 
-def get_db_url(dbname="marketing_campaign"):
-    from urllib.parse import quote_plus
-    db_user = os.getenv("DB_USER", "postgres")
-    db_password = os.getenv("DB_PASSWORD")
+def get_db_url(dbname: str | None = None) -> str:
+    """Construct PostgreSQL database URL using centralized Settings.
+
+    Args:
+        dbname: Optional target database name override. If None, uses settings.db_name.
+    """
+    settings = get_settings()
+    db_user = settings.db_user
+    db_user_encoded = quote_plus(db_user) if db_user else ""
+    db_password = settings.db_password
     db_password_encoded = f":{quote_plus(db_password)}" if db_password else ""
-    db_host = os.getenv("DB_HOST", "localhost")
-    db_port = os.getenv("DB_PORT", "5432")
-    db_name = os.getenv("DB_NAME", dbname)
-    
-    return f"postgresql://{db_user}{db_password_encoded}@{db_host}:{db_port}/{db_name}"
+    db_host = settings.db_host
+    db_port = settings.db_port
+    effective_dbname = dbname if dbname is not None else settings.db_name
 
-def get_engine(dbname="marketing_campaign"):
+    return f"postgresql://{db_user_encoded}{db_password_encoded}@{db_host}:{db_port}/{effective_dbname}"
+
+
+def get_engine(dbname: str | None = None):
+    """Create and return a SQLAlchemy engine instance for the specified database."""
     return create_engine(get_db_url(dbname))
