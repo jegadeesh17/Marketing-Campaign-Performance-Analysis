@@ -11,5 +11,6 @@ pytest==8.3.4
 matplotlib
 seaborn
 pyyaml
-sqlalchemy
+sqlalchemy>=2.1
+psycopg[binary]
 httpx
