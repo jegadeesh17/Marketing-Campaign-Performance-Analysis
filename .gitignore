@@ -37,3 +37,7 @@ logs-*.txt
 *.pdf
 *.doc
 *.wpf
+
+# UI review and tool artifacts
+.ui-review/
+.impeccable/

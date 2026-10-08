@@ -8,6 +8,7 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Crect%20width%3D%2732%27%20height%3D%2732%27%20rx%3D%274%27%20fill%3D%27%2309090b%27%2F%3E%3Cpath%20d%3D%27M6%2022L12%2014L18%2018L26%209%27%20stroke%3D%27%23ffffff%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20fill%3D%27none%27%2F%3E%3Ccircle%20cx%3D%2726%27%20cy%3D%279%27%20r%3D%272%27%20fill%3D%27%23ffffff%27%2F%3E%3C%2Fsvg%3E">
     <meta name="theme-color" content="#ffffff">
 
+    <!-- impeccable-disable overused-font -- deliberate neutral sans for high-density marketing intelligence workstation -->
     <!-- Fonts: Geist Sans for UI + Geist Mono for tabular metrics -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -423,7 +424,88 @@
             cursor: pointer;
         }
 
-        /* Progressive disclosure: audience and channels */
+        /* Seasonality cues on month slider */
+        .seasonality-tags-track {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6875rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+            padding: 0 2px;
+        }
+
+        .season-mark {
+            cursor: default;
+            transition: color 0.15s ease;
+        }
+
+        .season-mark.festive {
+            color: var(--brand-tira-text);
+            font-weight: 500;
+        }
+
+        .season-mark.peak {
+            color: var(--brand-nykaa-text);
+            font-weight: 600;
+        }
+
+        .badge-festive-season {
+            background: #fffbeb !important;
+            color: var(--brand-tira-text) !important;
+            border: 1px solid #fde68a !important;
+        }
+
+        .badge-peak-season {
+            background: #fdf2f8 !important;
+            color: var(--brand-nykaa-text) !important;
+            border: 1px solid #fbcfe8 !important;
+            font-weight: 600 !important;
+        }
+
+        /* Funnel progressive input flow */
+        .funnel-inputs-section {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: var(--bg-surface-subtle);
+            border: 1px solid var(--border-hairline);
+            border-radius: var(--radius-control);
+            padding: var(--space-2);
+        }
+
+        .funnel-flow-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-1);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 2px 0;
+        }
+
+        .funnel-flow-indicator .flow-arrow {
+            color: var(--text-dim);
+            font-size: 0.8125rem;
+        }
+
+        .funnel-flow-indicator .flow-step-rate {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1d4ed8;
+            background: #eff6ff;
+            padding: 1px 6px;
+            border-radius: 4px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .cpa-field {
+            margin-top: var(--space-1);
+            padding-top: var(--space-1);
+            border-top: 1px dashed var(--border-hairline);
+        }
+
+        /* Progressive disclosure: audience and demographics */
         .more-fields {
             border-top: 1px solid var(--border-hairline);
             padding-top: var(--space-2);
@@ -583,6 +665,14 @@
         @keyframes pulse-sync {
             from { opacity: 0.3; transform: scale(0.85); }
             to { opacity: 1; transform: scale(1.15); }
+        }
+
+        .sync-pill.error .sync-dot {
+            background: #ef4444;
+        }
+
+        .sync-pill.error {
+            color: #b91c1c;
         }
 
         .stale-note {
@@ -836,10 +926,30 @@
             border-radius: var(--radius-control);
         }
 
+        .diag-panes-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .diag-panes-wrapper.split-mode {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: var(--space-3);
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .diag-panes-wrapper.split-mode {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .diag-pane {
             display: flex;
             flex-direction: column;
             gap: var(--space-2);
+            min-width: 0;
         }
 
         .analytics-card-badge {
@@ -1155,6 +1265,69 @@
             .preset-select {
                 max-width: 150px;
             }
+        /* ---------- Toast Notifications ---------- */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+            max-width: 400px;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-1);
+            padding: 12px var(--space-2);
+            border-radius: var(--radius-control);
+            background: var(--ink);
+            color: #ffffff;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+            font-size: var(--fs-body);
+            line-height: 1.4;
+            animation: toast-enter 0.2s var(--ease-out);
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .toast.toast-error {
+            background: #18181b;
+            border-left-color: #ef4444;
+            color: #fecaca;
+        }
+
+        .toast.toast-success {
+            background: #18181b;
+            border-left-color: #10b981;
+            color: #a7f3d0;
+        }
+
+        .toast-msg {
+            flex: 1;
+            font-size: var(--fs-meta);
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            padding: 0 2px;
+        }
+
+        .toast-close:hover {
+            color: #ffffff;
+        }
+
+        @keyframes toast-enter {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -1235,42 +1408,114 @@
                         </div>
                         <div class="form-field">
                             <label for="month">
-                                <span>Month</span>
-                                <span class="badge" id="month-display">May</span>
+                                <span>Execution Month</span>
+                                <span class="badge" id="month-display">May · Summer Beauty Sale</span>
                             </label>
                             <input type="range" id="month" name="month" min="1" max="12" value="5" step="1" oninput="updateMonthDisplay(this.value)">
+                            <div class="seasonality-tags-track" aria-hidden="true">
+                                <span class="season-mark" title="Jan: Republic Day">Jan</span>
+                                <span class="season-mark" title="Feb: Valentine's Glow">Feb</span>
+                                <span class="season-mark" title="May: Summer Beauty">May</span>
+                                <span class="season-mark" title="Aug: Independence">Aug</span>
+                                <span class="season-mark festive" title="Oct: Navratri / Dussehra">Oct ★</span>
+                                <span class="season-mark peak" title="Nov: Diwali & Pink Friday">Nov ★★★</span>
+                                <span class="season-mark festive" title="Dec: Year-End Sale">Dec ★</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Funnel volumes and cost -->
+                    <!-- Delivery channels: prominent multi-channel mix -->
                     <div class="form-section">
-                        <div class="field-row-2">
+                        <div class="form-field">
+                            <label for="channels-container">
+                                <span>Delivery Channels</span>
+                                <span class="badge" id="channels-count-badge">2 channels active</span>
+                            </label>
+                            <div class="channel-tags-row" role="group" aria-label="Delivery channels" id="channels-container">
+                                <label class="channel-chip checked">
+                                    <input type="checkbox" name="channels" value="Instagram" checked onchange="toggleChip(this)"> Instagram
+                                </label>
+                                <label class="channel-chip checked">
+                                    <input type="checkbox" name="channels" value="Google" checked onchange="toggleChip(this)"> Google
+                                </label>
+                                <label class="channel-chip">
+                                    <input type="checkbox" name="channels" value="YouTube" onchange="toggleChip(this)"> YouTube
+                                </label>
+                                <label class="channel-chip">
+                                    <input type="checkbox" name="channels" value="WhatsApp" onchange="toggleChip(this)"> WhatsApp
+                                </label>
+                                <label class="channel-chip">
+                                    <input type="checkbox" name="channels" value="Email" onchange="toggleChip(this)"> Email
+                                </label>
+                                <label class="channel-chip">
+                                    <input type="checkbox" name="channels" value="Facebook" onchange="toggleChip(this)"> Facebook
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progressive Funnel Stages & CPA -->
+                    <div class="form-section funnel-inputs-section" aria-label="Conversion Funnel Metrics">
+                        <div class="funnel-input-stage">
                             <div class="form-field">
-                                <label for="impressions">Impressions</label>
+                                <label for="impressions">
+                                    <span>1. Impressions</span>
+                                    <span class="badge">Top of Funnel</span>
+                                </label>
                                 <input type="number" id="impressions" name="impressions" value="50000" min="0" step="1000" required oninput="triggerLivePreview()">
                             </div>
+                        </div>
+                        <div class="funnel-flow-indicator" aria-hidden="true">
+                            <span class="flow-arrow">↓</span>
+                            <span class="flow-step-rate" id="step-ctr-badge">8.00% CTR</span>
+                        </div>
+                        <div class="funnel-input-stage">
                             <div class="form-field">
-                                <label for="clicks">Clicks</label>
+                                <label for="clicks">
+                                    <span>2. Clicks</span>
+                                    <span class="badge">Traffic</span>
+                                </label>
                                 <input type="number" id="clicks" name="clicks" value="4000" min="0" step="100" required oninput="triggerLivePreview()">
                             </div>
+                        </div>
+                        <div class="funnel-flow-indicator" aria-hidden="true">
+                            <span class="flow-arrow">↓</span>
+                            <span class="flow-step-rate" id="step-lead-badge">37.50% Lead Conv.</span>
+                        </div>
+                        <div class="funnel-input-stage">
                             <div class="form-field">
-                                <label for="leads">Leads</label>
+                                <label for="leads">
+                                    <span>3. Leads</span>
+                                    <span class="badge">Prospects</span>
+                                </label>
                                 <input type="number" id="leads" name="leads" value="1500" min="0" step="50" required oninput="triggerLivePreview()">
                             </div>
+                        </div>
+                        <div class="funnel-flow-indicator" aria-hidden="true">
+                            <span class="flow-arrow">↓</span>
+                            <span class="flow-step-rate" id="step-conv-badge">33.33% Sales Conv.</span>
+                        </div>
+                        <div class="funnel-input-stage">
                             <div class="form-field">
-                                <label for="conversions">Conversions</label>
+                                <label for="conversions">
+                                    <span>4. Conversions</span>
+                                    <span class="badge">Acquisitions</span>
+                                </label>
                                 <input type="number" id="conversions" name="conversions" value="500" min="0" step="25" required oninput="triggerLivePreview()">
                             </div>
                         </div>
-                        <div class="form-field">
-                            <label for="acquisition_cost">Cost per acquisition (₹)</label>
+                        <div class="form-field cpa-field">
+                            <label for="acquisition_cost">
+                                <span>Cost per acquisition (CPA ₹)</span>
+                                <span class="badge">Unit Cost</span>
+                            </label>
                             <input type="number" id="acquisition_cost" name="acquisition_cost" value="250.0" min="0" step="10" required oninput="triggerLivePreview()">
                         </div>
                     </div>
 
-                    <!-- Secondary inputs, collapsed by default -->
+                    <!-- Secondary audience parameters, collapsed by default -->
                     <details class="more-fields" id="more-fields">
-                        <summary>Audience &amp; channels <span class="more-summary" id="more-summary">Youth · Premium Shoppers · English · 2 channels</span></summary>
+                        <summary>Audience Demographics &amp; Segment <span class="more-summary" id="more-summary">Youth · Premium Shoppers · English</span></summary>
                         <div class="more-fields-body">
                             <div class="field-row-2">
                                 <div class="form-field">
@@ -1306,29 +1551,6 @@
                                         <span class="badge num" id="eng-display">15.0</span>
                                     </label>
                                     <input type="number" id="engagement_score" name="engagement_score" value="15.0" min="0" max="30" step="0.5" required oninput="updateEngDisplay(this.value)">
-                                </div>
-                            </div>
-                            <div class="form-field">
-                                <span class="field-label" id="channels-label">Delivery channels</span>
-                                <div class="channel-tags-row" role="group" aria-labelledby="channels-label">
-                                    <label class="channel-chip checked">
-                                        <input type="checkbox" name="channels" value="Instagram" checked onchange="toggleChip(this)"> Instagram
-                                    </label>
-                                    <label class="channel-chip checked">
-                                        <input type="checkbox" name="channels" value="Google" checked onchange="toggleChip(this)"> Google
-                                    </label>
-                                    <label class="channel-chip">
-                                        <input type="checkbox" name="channels" value="YouTube" onchange="toggleChip(this)"> YouTube
-                                    </label>
-                                    <label class="channel-chip">
-                                        <input type="checkbox" name="channels" value="WhatsApp" onchange="toggleChip(this)"> WhatsApp
-                                    </label>
-                                    <label class="channel-chip">
-                                        <input type="checkbox" name="channels" value="Email" onchange="toggleChip(this)"> Email
-                                    </label>
-                                    <label class="channel-chip">
-                                        <input type="checkbox" name="channels" value="Facebook" onchange="toggleChip(this)"> Facebook
-                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -1388,105 +1610,108 @@
                         </div>
                         <div class="ratio-item">
                             <dt>Cost per lead</dt>
-                            <dd class="num" id="res-cpl">₹0.17</dd>
+                            <dd class="num" id="res-cpl">₹83.33</dd>
                         </div>
                     </dl>
                 </section>
 
-                <!-- Diagnostics: one view at a time -->
+                <!-- Diagnostics: segmented or split view -->
                 <section class="analytics-card" id="analytics-card" aria-label="Diagnostics">
                     <div class="analytics-card-header">
                         <h2 class="analytics-card-title">Diagnostics</h2>
                         <div class="seg-group" role="group" aria-label="Diagnostics view">
                             <button type="button" class="seg-btn" id="diag-tab-funnel" aria-pressed="true" onclick="switchDiagnostics('funnel')">Funnel</button>
                             <button type="button" class="seg-btn" id="diag-tab-curve" aria-pressed="false" onclick="switchDiagnostics('curve')">Break-even</button>
+                            <button type="button" class="seg-btn" id="diag-tab-split" aria-pressed="false" onclick="switchDiagnostics('split')">Split view</button>
                         </div>
                     </div>
 
-                    <!-- Pane 1: conversion funnel -->
-                    <div class="diag-pane" id="analytics-funnel-card">
-                        <span class="analytics-card-badge" id="funnel-brand-tag">Nykaa funnel</span>
-                        <div class="funnel-container" id="funnel-stages-container">
-                            <div class="funnel-stage">
-                                <div class="funnel-stage-header">
-                                    <span class="funnel-stage-name">Impressions</span>
-                                    <div>
-                                        <span class="funnel-stage-value" id="funnel-val-imp">50,000</span>
-                                        <span class="funnel-stage-pct">100.0%</span>
+                    <div class="diag-panes-wrapper" id="diag-panes-wrapper">
+                        <!-- Pane 1: conversion funnel -->
+                        <div class="diag-pane" id="analytics-funnel-card">
+                            <span class="analytics-card-badge" id="funnel-brand-tag">Nykaa funnel</span>
+                            <div class="funnel-container" id="funnel-stages-container">
+                                <div class="funnel-stage">
+                                    <div class="funnel-stage-header">
+                                        <span class="funnel-stage-name">Impressions</span>
+                                        <div>
+                                            <span class="funnel-stage-value" id="funnel-val-imp">50,000</span>
+                                            <span class="funnel-stage-pct">100.0%</span>
+                                        </div>
+                                    </div>
+                                    <div class="funnel-bar-track">
+                                        <div class="funnel-bar-fill" id="funnel-bar-imp"></div>
                                     </div>
                                 </div>
-                                <div class="funnel-bar-track">
-                                    <div class="funnel-bar-fill" id="funnel-bar-imp"></div>
-                                </div>
-                            </div>
 
-                            <div class="funnel-step" id="funnel-ctr-step">8.0% continue</div>
+                                <div class="funnel-step" id="funnel-ctr-step">8.0% continue</div>
 
-                            <div class="funnel-stage">
-                                <div class="funnel-stage-header">
-                                    <span class="funnel-stage-name">Clicks</span>
-                                    <div>
-                                        <span class="funnel-stage-value" id="funnel-val-clicks">4,000</span>
-                                        <span class="funnel-stage-pct" id="funnel-pct-clicks">8.0%</span>
+                                <div class="funnel-stage">
+                                    <div class="funnel-stage-header">
+                                        <span class="funnel-stage-name">Clicks</span>
+                                        <div>
+                                            <span class="funnel-stage-value" id="funnel-val-clicks">4,000</span>
+                                            <span class="funnel-stage-pct" id="funnel-pct-clicks">8.0%</span>
+                                        </div>
+                                    </div>
+                                    <div class="funnel-bar-track">
+                                        <div class="funnel-bar-fill" id="funnel-bar-clicks" style="transform: scaleX(0.08);"></div>
                                     </div>
                                 </div>
-                                <div class="funnel-bar-track">
-                                    <div class="funnel-bar-fill" id="funnel-bar-clicks" style="transform: scaleX(0.08);"></div>
-                                </div>
-                            </div>
 
-                            <div class="funnel-step" id="funnel-lead-step">37.5% continue</div>
+                                <div class="funnel-step" id="funnel-lead-step">37.5% continue</div>
 
-                            <div class="funnel-stage">
-                                <div class="funnel-stage-header">
-                                    <span class="funnel-stage-name">Leads</span>
-                                    <div>
-                                        <span class="funnel-stage-value" id="funnel-val-leads">1,500</span>
-                                        <span class="funnel-stage-pct" id="funnel-pct-leads">3.0%</span>
+                                <div class="funnel-stage">
+                                    <div class="funnel-stage-header">
+                                        <span class="funnel-stage-name">Leads</span>
+                                        <div>
+                                            <span class="funnel-stage-value" id="funnel-val-leads">1,500</span>
+                                            <span class="funnel-stage-pct" id="funnel-pct-leads">3.0%</span>
+                                        </div>
+                                    </div>
+                                    <div class="funnel-bar-track">
+                                        <div class="funnel-bar-fill" id="funnel-bar-leads" style="transform: scaleX(0.03);"></div>
                                     </div>
                                 </div>
-                                <div class="funnel-bar-track">
-                                    <div class="funnel-bar-fill" id="funnel-bar-leads" style="transform: scaleX(0.03);"></div>
-                                </div>
-                            </div>
 
-                            <div class="funnel-step" id="funnel-conv-step">33.3% continue</div>
+                                <div class="funnel-step" id="funnel-conv-step">33.3% continue</div>
 
-                            <div class="funnel-stage">
-                                <div class="funnel-stage-header">
-                                    <span class="funnel-stage-name">Conversions</span>
-                                    <div>
-                                        <span class="funnel-stage-value" id="funnel-val-conv">500</span>
-                                        <span class="funnel-stage-pct" id="funnel-pct-conv">1.0%</span>
+                                <div class="funnel-stage">
+                                    <div class="funnel-stage-header">
+                                        <span class="funnel-stage-name">Conversions</span>
+                                        <div>
+                                            <span class="funnel-stage-value" id="funnel-val-conv">500</span>
+                                            <span class="funnel-stage-pct" id="funnel-pct-conv">1.0%</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="funnel-bar-track">
-                                    <div class="funnel-bar-fill" id="funnel-bar-conv" style="transform: scaleX(0.01);"></div>
+                                    <div class="funnel-bar-track">
+                                        <div class="funnel-bar-fill" id="funnel-bar-conv" style="transform: scaleX(0.01);"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Pane 2: spend and scale sensitivity -->
-                    <div class="diag-pane" id="analytics-sensitivity-card" hidden>
-                        <span class="analytics-card-badge" id="sensitivity-badge">Revenue and cost as spend scales up or down</span>
-                        <div class="sensitivity-container">
-                            <div id="sensitivity-chart-wrapper">
-                                <svg id="sensitivity-svg" class="sensitivity-svg" viewBox="0 0 520 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Projected revenue and acquisition cost at different spend scales"></svg>
-                                <div id="curve-tooltip" class="curve-tooltip"></div>
-                            </div>
-                            <div class="sensitivity-legend">
-                                <div class="legend-item">
-                                    <span class="legend-line revenue"></span>
-                                    <span>Projected revenue (₹)</span>
+                        <!-- Pane 2: spend and scale sensitivity -->
+                        <div class="diag-pane" id="analytics-sensitivity-card" hidden>
+                            <span class="analytics-card-badge" id="sensitivity-badge">Revenue and cost as spend scales up or down</span>
+                            <div class="sensitivity-container">
+                                <div id="sensitivity-chart-wrapper">
+                                    <svg id="sensitivity-svg" class="sensitivity-svg" viewBox="0 0 520 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Projected revenue and acquisition cost at different spend scales"></svg>
+                                    <div id="curve-tooltip" class="curve-tooltip"></div>
                                 </div>
-                                <div class="legend-item">
-                                    <span class="legend-line cost"></span>
-                                    <span>Acquisition cost (₹)</span>
-                                </div>
-                                <div class="legend-item">
-                                    <span class="legend-dot current"></span>
-                                    <span id="legend-current-status">Current simulation</span>
+                                <div class="sensitivity-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-line revenue"></span>
+                                        <span>Projected revenue (₹)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-line cost"></span>
+                                        <span>Acquisition cost (₹)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-dot current"></span>
+                                        <span id="legend-current-status">Current simulation</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1575,6 +1800,21 @@
 </div>
 
 <script>
+    const MONTH_META = {
+        1: { name: "Jan", season: "Republic Day Sale" },
+        2: { name: "Feb", season: "Valentine's Glow" },
+        3: { name: "Mar", season: "Spring Refresh" },
+        4: { name: "Apr", season: "Summer Prep" },
+        5: { name: "May", season: "Summer Beauty Sale" },
+        6: { name: "Jun", season: "Mid-Year Sale" },
+        7: { name: "Jul", season: "Monsoon Beauty" },
+        8: { name: "Aug", season: "Independence Sale" },
+        9: { name: "Sep", season: "Festive Buildup" },
+        10: { name: "Oct", season: "Dussehra & Navratri ★" },
+        11: { name: "Nov", season: "Diwali & Pink Friday ★★★ (Peak)" },
+        12: { name: "Dec", season: "Year-End Mega Sale ★" }
+    };
+
     const MONTH_NAMES = [
         "", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
@@ -1643,7 +1883,18 @@
 
     function updateMonthDisplay(val) {
         const monthNum = parseInt(val, 10);
-        document.getElementById('month-display').textContent = MONTH_NAMES[monthNum] || `Month ${monthNum}`;
+        const meta = MONTH_META[monthNum] || { name: `Month ${monthNum}`, season: "" };
+        const displayEl = document.getElementById('month-display');
+        if (displayEl) {
+            displayEl.textContent = `${meta.name} · ${meta.season}`;
+            if (monthNum === 11) {
+                displayEl.className = 'badge badge-peak-season';
+            } else if (monthNum === 10 || monthNum === 12) {
+                displayEl.className = 'badge badge-festive-season';
+            } else {
+                displayEl.className = 'badge';
+            }
+        }
         triggerLivePreview();
     }
 
@@ -1664,22 +1915,47 @@
 
     function updateMoreSummary() {
         const el = document.getElementById('more-summary');
-        if (!el) return;
+        const chBadge = document.getElementById('channels-count-badge');
         const audience = document.getElementById('target_audience').value;
         const segment = document.getElementById('customer_segment').value;
         const language = document.getElementById('language').value;
         const count = document.querySelectorAll('input[name="channels"]:checked').length;
-        el.textContent = `${audience} · ${segment} · ${language} · ${count} ${count === 1 ? 'channel' : 'channels'}`;
+        if (el) el.textContent = `${audience} · ${segment} · ${language}`;
+        if (chBadge) chBadge.textContent = `${count} ${count === 1 ? 'channel' : 'channels'} active`;
     }
 
     function switchDiagnostics(name) {
-        const showCurve = name === 'curve';
-        document.getElementById('analytics-funnel-card').hidden = showCurve;
-        document.getElementById('analytics-sensitivity-card').hidden = !showCurve;
-        document.getElementById('diag-tab-funnel').setAttribute('aria-pressed', String(!showCurve));
-        document.getElementById('diag-tab-curve').setAttribute('aria-pressed', String(showCurve));
-        // The chart sizes itself to its container, so draw it once it is visible
-        if (showCurve) updateSensitivityCurve(currentForecastedRevenue, currentIsProfitable);
+        const funnelCard = document.getElementById('analytics-funnel-card');
+        const curveCard = document.getElementById('analytics-sensitivity-card');
+        const wrapper = document.getElementById('diag-panes-wrapper');
+        const tabFunnel = document.getElementById('diag-tab-funnel');
+        const tabCurve = document.getElementById('diag-tab-curve');
+        const tabSplit = document.getElementById('diag-tab-split');
+
+        if (name === 'split') {
+            if (wrapper) wrapper.classList.add('split-mode');
+            if (funnelCard) funnelCard.hidden = false;
+            if (curveCard) curveCard.hidden = false;
+            if (tabFunnel) tabFunnel.setAttribute('aria-pressed', 'false');
+            if (tabCurve) tabCurve.setAttribute('aria-pressed', 'false');
+            if (tabSplit) tabSplit.setAttribute('aria-pressed', 'true');
+            updateSensitivityCurve(currentForecastedRevenue, currentIsProfitable);
+        } else if (name === 'curve') {
+            if (wrapper) wrapper.classList.remove('split-mode');
+            if (funnelCard) funnelCard.hidden = true;
+            if (curveCard) curveCard.hidden = false;
+            if (tabFunnel) tabFunnel.setAttribute('aria-pressed', 'false');
+            if (tabCurve) tabCurve.setAttribute('aria-pressed', 'true');
+            if (tabSplit) tabSplit.setAttribute('aria-pressed', 'false');
+            updateSensitivityCurve(currentForecastedRevenue, currentIsProfitable);
+        } else {
+            if (wrapper) wrapper.classList.remove('split-mode');
+            if (funnelCard) funnelCard.hidden = false;
+            if (curveCard) curveCard.hidden = true;
+            if (tabFunnel) tabFunnel.setAttribute('aria-pressed', 'true');
+            if (tabCurve) tabCurve.setAttribute('aria-pressed', 'false');
+            if (tabSplit) tabSplit.setAttribute('aria-pressed', 'false');
+        }
     }
 
     function clearInputErrors() {
@@ -1989,8 +2265,19 @@
         const acquisitionCost = parseFloat(document.getElementById('acquisition_cost').value) || 0;
 
         const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0.0;
+        const leadConv = clicks > 0 ? (leads / clicks) * 100 : 0.0;
+        const salesConv = leads > 0 ? (conversions / leads) * 100 : 0.0;
         const cr = clicks > 0 ? (conversions / clicks) * 100 : 0.0;
-        const cpl = leads > 0 ? (acquisitionCost / leads) : 0.0;
+        // Total media expenditure = conversions * CPA; Cost Per Lead (CPL) = Total media spend / leads
+        const cpl = leads > 0 ? ((conversions * acquisitionCost) / leads) : 0.0;
+
+        // Update live progressive step badges on inputs
+        const ctrBadge = document.getElementById('step-ctr-badge');
+        if (ctrBadge) ctrBadge.textContent = ctr.toFixed(2) + '% CTR';
+        const leadBadge = document.getElementById('step-lead-badge');
+        if (leadBadge) leadBadge.textContent = leadConv.toFixed(1) + '% Lead Conv.';
+        const convBadge = document.getElementById('step-conv-badge');
+        if (convBadge) convBadge.textContent = salesConv.toFixed(1) + '% Sales Conv.';
 
         if (isValid) {
             document.getElementById('res-ctr').textContent = ctr.toFixed(2) + '%';
@@ -2018,7 +2305,10 @@
         clearTimeout(autoForecastTimer);
         const syncPill = document.getElementById('sync-pill');
         const syncText = document.getElementById('sync-status-text');
-        if (syncPill) syncPill.classList.add('syncing');
+        if (syncPill) {
+            syncPill.classList.remove('error');
+            syncPill.classList.add('syncing');
+        }
         if (syncText) syncText.textContent = 'Updating…';
 
         autoForecastTimer = setTimeout(() => {
@@ -2067,6 +2357,37 @@
         return JSON.stringify(collectPayload());
     }
 
+    function showToast(message, type = 'error', duration = 4500) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+            <div class="toast-msg">${escapeHtml(message)}</div>
+            <button type="button" class="toast-close" aria-label="Dismiss notification">&times;</button>
+        `;
+        const closeBtn = toast.querySelector('.toast-close');
+        if (closeBtn) {
+            closeBtn.onclick = () => toast.remove();
+        }
+        container.appendChild(toast);
+        if (duration > 0) {
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(8px)';
+                toast.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                setTimeout(() => toast.remove(), 200);
+            }, duration);
+        }
+    }
+
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
     async function runForecast(isAuto = false) {
         if (!validateInvariants()) return;
 
@@ -2079,7 +2400,10 @@
             submitBtn.disabled = true;
             spinner.style.display = 'inline-block';
         }
-        if (syncPill) syncPill.classList.add('syncing');
+        if (syncPill) {
+            syncPill.classList.remove('error');
+            syncPill.classList.add('syncing');
+        }
         if (syncText) syncText.textContent = 'Updating…';
 
         const startTime = performance.now();
@@ -2102,7 +2426,14 @@
             if (!revRes.ok || !profRes.ok) {
                 const errData = await (revRes.ok ? profRes.json() : revRes.json());
                 const detail = errData.detail ? (typeof errData.detail === 'string' ? errData.detail : JSON.stringify(errData.detail)) : 'Prediction failed';
-                if (!isAuto) alert('API Error: ' + detail);
+                if (!isAuto) {
+                    showToast('API Error: ' + detail, 'error');
+                }
+                if (syncPill) {
+                    syncPill.classList.remove('syncing');
+                    syncPill.classList.add('error');
+                }
+                if (syncText) syncText.textContent = 'Forecast failed';
                 return;
             }
 
@@ -2157,12 +2488,21 @@
             // Redraw sensitivity curve with new forecast
             updateSensitivityCurve(currentForecastedRevenue, currentIsProfitable);
         } catch (err) {
-            if (!isAuto) alert('Network or server connection failed: ' + err.message);
+            if (!isAuto) {
+                showToast('Network or server connection failed: ' + err.message, 'error');
+            }
+            if (syncPill) {
+                syncPill.classList.remove('syncing');
+                syncPill.classList.add('error');
+            }
+            if (syncText) syncText.textContent = 'Sync error';
         } finally {
             submitBtn.disabled = false;
             spinner.style.display = 'none';
-            if (syncPill) syncPill.classList.remove('syncing');
-            if (syncText) syncText.textContent = 'Synced';
+            if (syncPill && !syncPill.classList.contains('error')) {
+                syncPill.classList.remove('syncing');
+                if (syncText) syncText.textContent = 'Synced';
+            }
         }
     }
 
@@ -2375,6 +2715,8 @@
     checkServiceHealth();
     triggerLivePreview();
 </script>
+
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
 
 </body>
 </html>

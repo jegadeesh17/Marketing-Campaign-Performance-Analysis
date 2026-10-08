@@ -24,12 +24,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Strict Pydantic v2 Invariant Boundary Validation in `CampaignInput` enforcing logical constraints (`clicks <= impressions`, `conversions <= clicks`, `leads <= clicks`, `month in 1..12`, non-negative metrics, brand normalization) with HTTP 422 rejections (`M1-TASK-01`).
 
 ### Changed
+- Reorganized campaign workstation parameters into a progressive top-to-bottom conversion cascade with live step conversion indicators.
+- Promoted multi-channel delivery selectors out of progressive disclosure into a first-class form card.
+- Added Indian beauty retail seasonality markers and festive sale indicators to the execution month slider.
+- Added a responsive Diagnostics Split View mode to inspect conversion drop-off and break-even sensitivity side-by-side on desktop viewports.
 - Enhanced operational liveness probe (`GET /health`) with process uptime tracking and version metadata (`M3-TASK-01`).
 - Aligned demo showcase narrative in `docs/DEMO.md` with glassmorphic `/app` architecture, probes, batch inference curl commands, and single-port deployment steps (`M3-TASK-03`).
 - Completely decommissioned Streamlit framework and dependencies, replacing it with the FastAPI-served glassmorphic web application (`M2-TASK-01`, `M2-TASK-02`, ADR-0007).
 - Refactored model serving in `api/main.py` from synchronous per-request disk reads to in-memory model singletons loaded during FastAPI async lifespan startup (`M1-TASK-02`).
 
 ### Fixed
+- Corrected live preview Cost Per Lead (CPL) calculation in `api/index.html` from `acquisitionCost / leads` to `(conversions * acquisitionCost) / leads`, aligning preview with domain unit economics.
+- Replaced disruptive browser `alert()` popups with an accessible, non-blocking toast notification system and inline sync status indicators.
+- Fixed WCAG AA color contrast on funnel step badges (`#1d4ed8` on `#eff6ff`) to meet accessibility standards.
 - Resolved clean-runner dependency gaps by pinning `pyyaml`, `sqlalchemy`, and `httpx` in `requirements.txt`.
 - Silenced pytest-asyncio deprecation warnings in `pytest.ini` with `asyncio_default_fixture_loop_scope = function`.
 
