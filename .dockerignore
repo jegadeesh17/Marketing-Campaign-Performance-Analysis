@@ -40,8 +40,9 @@ tests/
 # Legacy app directory
 app/
 
-# Large Datasets (sample CSVs are committed and retained)
+# Large Datasets and Untracked Model Artifacts
 data/*_campaign_data_with_nulls.csv
+models/revenue_regressor_tuned.joblib
 
 # OS Metadata
 .DS_Store

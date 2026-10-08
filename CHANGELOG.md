@@ -33,3 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resolved clean-runner dependency gaps by pinning `pyyaml`, `sqlalchemy`, and `httpx` in `requirements.txt`.
 - Silenced pytest-asyncio deprecation warnings in `pytest.ini` with `asyncio_default_fixture_loop_scope = function`.
 
+### Removed
+- Decommissioned legacy Streamlit interface (`app/app.py`), resolving code duplication and removing dead dependencies.
+- Excluded unreferenced model variants (`revenue_regressor_tuned.joblib`) from Docker builds via `.dockerignore`.
+
