@@ -7,7 +7,7 @@ Living map of repository architecture, conventions, test baseline, and productio
 
 ## 1. Summary
 
-Marketing Campaign Performance Analysis is an end-to-end machine learning analytics and forecasting platform for multi-brand campaign performance (Nykaa, Purplle, Tira). The system ingests raw campaign metrics into PostgreSQL (with fallback to local CSV samples), performs leakage-safe data cleaning and feature engineering (CTR, conversion rate, CPL, cyclical month encoding, multi-channel flags), and trains two XGBoost pipelines: an XGBoost Regressor forecasting campaign revenue and an XGBoost Classifier predicting campaign profitability. The models are served through a FastAPI REST API ([`api/main.py`](../api/main.py)) and an interactive 3-column Streamlit dashboard ([`app/app.py`](../app/app.py)).
+Marketing Campaign Performance Analysis is an end-to-end machine learning analytics and forecasting platform for multi-brand campaign performance (Nykaa, Purplle, Tira). The system ingests raw campaign metrics into PostgreSQL (with fallback to local CSV samples), performs leakage-safe data cleaning and feature engineering (CTR, conversion rate, CPL, cyclical month encoding, multi-channel flags), and trains two XGBoost pipelines: an XGBoost Regressor forecasting campaign revenue and an XGBoost Classifier predicting campaign profitability. The models are served through a FastAPI REST API ([`api/main.py`](../api/main.py)) and an interactive 3-column Streamlit dashboard (`app/app.py`, removed on this branch).
 
 ---
 
@@ -106,7 +106,7 @@ MarketingCampaignAnalysis/
 
 ### 4.1 Naming Conventions
 - **Code files and modules:** Strict `snake_case.py` (e.g., [`src/data_preprocessing.py`](../src/data_preprocessing.py), [`src/inference.py`](../src/inference.py), [`tests/test_api.py`](../tests/test_api.py)).
-- **Classes and Pydantic Models:** `PascalCase` (e.g., `CampaignInput` in [`api/main.py`](../api/main.py#L21), `_RemainderColsList` in [`app/app.py`](../app/app.py#L9)).
+- **Classes and Pydantic Models:** `PascalCase` (e.g., `CampaignInput` in [`api/main.py`](../api/main.py#L21), `_RemainderColsList` in `app/app.py` (removed on this branch)).
 - **Functions and Variables:** `snake_case` (e.g., `build_campaign_row()` in [`src/inference.py`](../src/inference.py#L13), `load_and_clean_data()` in [`src/data_preprocessing.py`](../src/data_preprocessing.py#L39), `train_pipelines()` in [`src/train_models.py`](../src/train_models.py#L16)).
 - **Constants:** `UPPER_SNAKE_CASE` (e.g., `CHANNELS` in [`src/inference.py`](../src/inference.py#L10), `DATA_DIR` in [`src/data_preprocessing.py`](../src/data_preprocessing.py#L6), `ROOT` in [`api/main.py`](../api/main.py#L12)).
 
@@ -193,7 +193,7 @@ The planned production hardening change focuses on FastAPI serving, in-memory li
 | `POST /predict_profitability` accepts `CampaignInput` payload, passes predicted revenue to classifier, returns `forecasted_revenue`, `profitable` (bool), `status` ("PROFITABLE" or "LOSS") | [`api/main.py`](../api/main.py#L63-L78) | [`tests/test_api.py::test_predict_profitability`](../tests/test_api.py#L40-L45) |
 | `CampaignInput` schema defaults and validation (brand, impressions, clicks, leads, conversions, channels, month in 1..12) | [`api/main.py`](../api/main.py#L21-L35) | Implicitly via `test_forecast_revenue`, `test_predict_profitability` |
 | `build_campaign_row(payload: dict)` returns `(df_reg, df_cls)` with derived metrics (`ctr`, `conversion_rate`, `cpl`), `month_sin`, `month_cos`, binary `channel_*` flags | [`src/inference.py`](../src/inference.py#L13-L52) | [`tests/test_inference.py`](../tests/test_inference.py) (7 dedicated unit tests) |
-| Streamlit dashboard model loading and inference (`models/revenue_regressor.joblib` and `models/profit_classifier.joblib`) | [`app/app.py`](../app/app.py#L52-L60) | Untested by pytest (manual verification) |
+| Streamlit dashboard model loading and inference (`models/revenue_regressor.joblib` and `models/profit_classifier.joblib`) | `app/app.py` (removed on this branch) | Untested by pytest (manual verification) |
 
 ---
 
@@ -223,7 +223,7 @@ Configured via `.env` file (see template in [`.env.example`](../.env.example)):
 3. **Single-Item Payload Limitation:**
    [`src/inference.py`](../src/inference.py#L13) assumes a single dictionary payload and constructs 1-row DataFrames. Adding batch prediction endpoints requires supporting either a list of payloads or a vectorized dataframe builder without breaking the single-record signature expected by `app/app.py` and existing tests.
 4. **Scikit-learn Deserialization Compatibility:**
-   Serialized pipelines contain custom transformers and `scikit-learn` internal classes (e.g., `_RemainderColsList` addressed in [`app/app.py`](../app/app.py#L8-L11)). Docker images must pin compatible scikit-learn/joblib versions to avoid unpickling errors.
+   Serialized pipelines contain custom transformers and `scikit-learn` internal classes (e.g., `_RemainderColsList` addressed in `app/app.py` (removed on this branch)). Docker images must pin compatible scikit-learn/joblib versions to avoid unpickling errors.
 5. **Missing Containerization & CI/CD Infrastructure:**
    No `Dockerfile`, `docker-compose.yml`, `.dockerignore`, or `.github/workflows/` directory currently exists in the repository. Adding these must preserve local execution patterns while standardizing containerized deployment.
 

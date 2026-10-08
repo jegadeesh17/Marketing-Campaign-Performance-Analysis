@@ -4,7 +4,7 @@
 
 Marketing campaigns generate massive streams of performance indicators — impressions, clicks, conversions, and spend — across multiple brands and channels. This project builds an end-to-end machine learning and analytics platform to clean multi-brand datasets, engineer advanced features, train predictive models, and deploy a real-time forecasting dashboard.
 
-The system forecasts campaign revenue (XGBoost regression, R² ≈ 0.72 on holdout) and predicts profitability (XGBoost classifier with class-weight balancing). **Interview framing:** cite weighted F1 and per-class recall from `reports/evaluation.md`, not headline accuracy alone.
+The system forecasts campaign revenue (XGBoost regression, R² ≈ 0.72 on holdout) and predicts profitability (XGBoost classifier with class-weight balancing). **Interview framing:** cite weighted F1 (`reports/evaluation.md`) and per-class recall (the notebook's classification report), not headline accuracy alone.
 
 **Repository:** [github.com/jegadeesh17/Marketing-Campaign-Performance-Analysis](https://github.com/jegadeesh17/Marketing-Campaign-Performance-Analysis)  
 **Full specification:** [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md)
@@ -117,16 +117,16 @@ regressor = XGBRegressor(random_state=42)
 regressor.fit(X_train, y_revenue_train)
 ```
 
-#### Profit Classification (XGBoost + SMOTETomek)
+#### Profit Classification (XGBoost + class weighting)
 ```python
-from imblearn.combine import SMOTETomek
 from xgboost import XGBClassifier
 
-smt = SMOTETomek(random_state=42)
-X_res, y_res = smt.fit_resample(X_train, y_profit_train)
+# Class weight from training labels only (no resampling)
+scale_pos_weight = negative_cases / max(1, positive_cases)
 
-classifier = XGBClassifier(random_state=42)
-classifier.fit(X_res, y_res)
+classifier = XGBClassifier(n_estimators=500, max_depth=15, learning_rate=0.05,
+                           random_state=42, n_jobs=-1, scale_pos_weight=scale_pos_weight)
+classifier.fit(X_train, y_profit_train)
 ```
 
 ---
@@ -142,7 +142,7 @@ See `reports/evaluation.md` (auto-generated after training). Latest holdout resu
 | Profit Classification Accuracy   | 0.9686  |
 | Profit Classification Weighted F1| 0.9689  |
 
-Unprofitable class (label 0) recall is lower than profitable class — discuss trade-offs in interviews.
+The notebook's XGBoost classification report (holdout) shows recall 0.99 for unprofitable (label 0) and 0.96 for profitable (label 1). `reports/evaluation.md` does not store per-class recall.
 
 ### **REST API**
 
@@ -174,7 +174,7 @@ docker compose up --build
 ```
 Access at [http://localhost:8000/app](http://localhost:8000/app).
 
-Models are saved to `models/` after training (not committed). See `reports/evaluation.md` and `docs/DEMO.md`.
+Models are saved to `models/` after training. The two committed artifacts (`revenue_regressor.joblib`, `profit_classifier.joblib`) are tracked with Git LFS (see `.gitattributes`); other model files are git-ignored. See `reports/evaluation.md` and `docs/DEMO.md`.
 
 ---
 
@@ -186,7 +186,7 @@ Models are saved to `models/` after training (not committed). See `reports/evalu
 | Data Processing      | Pandas, NumPy                                       |
 | Database             | PostgreSQL, SQLAlchemy                              |
 | Machine Learning     | Scikit-learn, XGBoost                               |
-| Imbalanced Learning  | imbalanced-learn (SMOTETomek)                       |
+| Imbalanced Learning  | XGBoost `scale_pos_weight` (class weighting)        |
 | Web & Microservice   | FastAPI, Uvicorn, Vanilla HTML5/CSS3 (Glassmorphic)  |
 | Data Validation      | Pydantic v2, Pydantic-Settings                      |
 | Container & CI/CD    | Docker (Multi-stage), Docker Compose, GitHub Actions|
@@ -236,7 +236,7 @@ jupyter notebook "notebooks/Marketing Campaign Performance Analysis.ipynb"
 ### **5. Run Tests & Smoke Verification**
 
 ```bash
-# Fast automated test suite
+# Fast automated test suite (no tests are marked slow yet, so this runs all tests)
 python -m pytest -q -m "not slow"
 
 # Full automated test suite
