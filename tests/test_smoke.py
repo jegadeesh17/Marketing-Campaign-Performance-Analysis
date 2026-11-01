@@ -106,7 +106,7 @@ def test_smoke_cli_invalid_argument():
 
 
 def test_demo_documentation_alignment():
-    """Verify docs/DEMO.md matches acceptance criteria for M3-TASK-03.
+    """Verify docs/DEMO.md matches the acceptance criteria.
 
     - Covers single and batch prediction curl examples
     - Dark-mode glassmorphic web app (/app) walkthrough

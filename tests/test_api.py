@@ -878,7 +878,7 @@ def test_health_response_schema_missing_fields_rejection():
 
 
 # ============================================================================
-# M3-TASK-02: Structured JSON Logging & Latency Middleware Tests (AC-OBS-01)
+# Structured JSON Logging & Latency Middleware Tests (AC-OBS-01)
 # ============================================================================
 
 
