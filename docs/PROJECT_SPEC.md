@@ -136,7 +136,7 @@ Model artifact presence and service status.
 
 - Classification feature set excludes direct financial outcome columns used to define target
 - Class weight (`scale_pos_weight`) computed from training labels only (`src/train_models.py`)
-- Profit pipeline uses revenue forecast as feature only after regression stage (document in interviews)
+- Profit pipeline uses revenue forecast as feature only after regression stage
 
 ---
 

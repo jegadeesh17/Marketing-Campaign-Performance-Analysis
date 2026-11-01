@@ -2,7 +2,6 @@
 Technical architecture, component layout, API schemas, container topology, and execution contracts for the Marketing Campaign Performance Analysis platform.
 
 *Date: 2026-10-05*  
-*Related Documents: [Mental Model](PROJECT_MENTAL_MODEL.md), [Specification](SPEC.md), [Decisions](DECISIONS.md), [Codebase Map](CODEBASE_MAP.md)*
 
 ---
 
@@ -289,8 +288,6 @@ MarketingCampaignAnalysis/
 │   └── tira_campaign_data_with_nulls.csv      # Imputation validation dataset
 ├── docs/
 │   ├── SPEC.md                                # Production hardening specification
-│   ├── PROJECT_MENTAL_MODEL.md                # Project context, milestones, and principles
-│   ├── CODEBASE_MAP.md                        # Living architecture and baseline map
 │   ├── ARCHITECTURE.md                        # Technical foundation and interface architecture (this document)
 │   ├── DECISIONS.md                           # Architecture Decision Records (ADRs)
 │   ├── DEMO.md                                # 5-minute showcase demonstration walkthrough
@@ -356,7 +353,7 @@ Runtime behavior is managed through environment variables loaded via Pydantic `B
 | Git | 2.30.0 | `git --version` |
 
 ### Accounts and credentials
-| Service | Environment Variable | First Milestone | Where to Get It | Cost | Test Strategy Without Key |
+| Service | Environment Variable | Needed By | Where to Get It | Cost | Test Strategy Without Key |
 |---------|----------------------|-----------------|-----------------|------|---------------------------|
 | None | None | N/A | N/A | Free | All automated tests run fully offline with local model mocks or bundled `.joblib` artifacts. No paid keys or cloud credentials required. |
 

@@ -1,7 +1,6 @@
 # Architecture Decision Records
 Permanent record of foundational architectural decisions, trade-offs, and governance policies for Marketing Campaign Performance Analysis.
 
-*Related Documents: [Architecture](ARCHITECTURE.md), [Specification](SPEC.md), [Mental Model](PROJECT_MENTAL_MODEL.md)*
 
 ---
 
