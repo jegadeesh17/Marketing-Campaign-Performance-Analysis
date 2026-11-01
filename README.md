@@ -1,286 +1,126 @@
 # Multi-Brand Marketing Campaign Performance Analysis
----
-### **Project Overview**
 
-Marketing campaigns generate massive streams of performance indicators — impressions, clicks, conversions, and spend — across multiple brands and channels. This project builds an end-to-end machine learning and analytics platform to clean multi-brand datasets, engineer advanced features, train predictive models, and deploy a real-time forecasting dashboard.
+An end-to-end machine learning and analytics platform for multi-brand marketing campaigns: it cleans raw campaign data from three brands, engineers features, trains a revenue regressor and a profit classifier, and serves forecasts through a FastAPI service with a dark-mode web app.
 
-The system forecasts campaign revenue (XGBoost regression, R² ≈ 0.72 on holdout) and predicts profitability (XGBoost classifier with class-weight balancing). **Interview framing:** cite weighted F1 (`reports/evaluation.md`) and per-class recall (the notebook's classification report), not headline accuracy alone.
+On holdout data the revenue model reaches R² 0.7189 and the profit classifier a weighted F1 of 0.9689 (see [Model performance](#model-performance)).
 
-**Repository:** [github.com/jegadeesh17/Marketing-Campaign-Performance-Analysis](https://github.com/jegadeesh17/Marketing-Campaign-Performance-Analysis)  
-**Full specification:** [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md)
+## Features
 
----
+- **Multi-brand ingestion:** loads raw campaign CSVs from Nykaa, Purplle and Tira into PostgreSQL, with a CSV fallback that works without a database.
+- **Feature engineering:** cyclical month encoding, CTR, conversion rate and cost-per-lead ratios, and multi-label channel parsing.
+- **Revenue regression:** an XGBoost regressor that forecasts campaign revenue.
+- **Profit classification:** an XGBoost classifier with `scale_pos_weight` for the imbalanced profit and loss classes.
+- **Web app:** forecasts and live health status in a dark-mode single-page app served at `/app`.
+- **Batch endpoints:** up to 500 records per request, validated with Pydantic v2 invariants such as `clicks <= impressions`.
+- **Operations:** liveness (`/health`) and readiness (`/ready`) probes, structured JSON request logging and a smoke-test script.
+- **Leakage-safe pipeline:** strict train/test isolation, with class weights computed from training labels only.
 
-### **Key Features**
+## Quick start
 
-* **Multi-Brand Data Ingestion:** Loads raw campaign CSVs from Nykaa, Purplle, and Tira into a central PostgreSQL database.
-* **Advanced Feature Engineering:** Cyclical time encoding, CTR/conversion/CPL ratio generation, and multi-label channel parsing.
-* **Revenue Regression:** XGBoost Regressor pipeline forecasting exact campaign revenue (R² ≈ 0.72).
-* **Profit Classification:** XGBoost Classifier with `scale_pos_weight` for imbalanced profit/loss classes.
-* **Interactive Glassmorphic Web App:** Real-time revenue and profit forecasts through a dark-mode glassmorphic interface (`/app`) with glowing accents, KPI cards, and live health status.
-* **High-Throughput Batch Predictions:** Vectorized batch endpoints (`/forecast_revenue/batch` & `/predict_profitability/batch`) processing up to 500 records per request with Pydantic v2 invariant validation.
-* **Production Observability & Probes:** Operational liveness (`/health`) and readiness (`/ready`) probes, structured JSON logging middleware, and automated smoke verification script.
-* **Leakage-Safe Pipeline:** Strict train/test isolation and target leakage prevention throughout preprocessing.
-* **Modular ML Architecture:** Separate ingestion, preprocessing, and training scripts for clean pipeline separation.
-
----
-
-### **Dataset**
-
-* **Source:** Multi-brand marketing campaign records (Nykaa, Purplle, Tira)
-* **In repo:** `*_campaign_data_sample.csv` per brand
-* **Full data:** Place `nykaa_campaign_data.csv`, `purplle_campaign_data.csv`, `tira_campaign_data.csv` in `data/` — see [data/DATA_SETUP.md](data/DATA_SETUP.md)
-* **Coverage:** Multi-channel performance data with impressions, clicks, spend, revenue
-* **Format:** Raw CSVs ingested into PostgreSQL
-
-#### **Key Features**
-
-* Impressions, clicks, and conversions
-* Campaign spend and revenue
-* Channel types (YouTube, Instagram, Email, etc.)
-* Date and campaign month
-* Brand and campaign identifiers
-
----
-
-### **Project Structure**
-
-```bash
-MarketingCampaignAnalysis/
-│
-├── api/                          # FastAPI microservice & glassmorphic web app
-│   ├── index.html                # Dark-mode glassmorphic single-page web app
-│   └── main.py                   # Lifespan singletons, REST routes & logging middleware
-├── data/                         # Project datasets
-├── docs/                         # Documentation, living specs & EDA artifacts
-├── models/                       # Saved trained models
-├── notebooks/                    # Jupyter notebooks (Source of Truth)
-├── scripts/                      # Operational utilities & smoke verification
-│   └── smoke_test.py             # Live and offline --mock verification script
-├── src/                          # Core Python logic, inference & configuration
-├── tests/                        # Comprehensive test suite (131+ automated tests)
-├── Dockerfile                    # Multi-stage OCI container definition
-├── docker-compose.yml            # Container orchestration specification
-├── requirements.txt              # Production Python dependencies
-└── README.md
-```
-
----
-
-### **How It Works**
-
-### **1. Data Ingestion & Preprocessing**
-
-* Loads raw multi-brand CSVs using SQLAlchemy into PostgreSQL
-* Handles missing values via mode imputation (categorical) and median imputation (numerical)
-* Removes duplicates and standardizes column formats
-
-| Step                | Operation                                    |
-| ------------------- | -------------------------------------------- |
-| Mode Imputation     | Fills categorical nulls with most-frequent   |
-| Median Imputation   | Fills numerical nulls resistant to outliers  |
-| Duplicate Removal   | Drops repeated records                       |
-| Type Standardization| Enforces consistent dtypes across brands     |
-
-#### **Exploratory Data Analysis (EDA)**
-
-The project includes rich visual analysis to uncover trends in campaign performance:
-* **ROI Distributions:** Histograms and KDE plots showing the spread of return on investment.
-* **Correlation Heatmaps:** Uncovering relationships between impressions, clicks, conversions, and revenue.
-* **ROI by Campaign Type:** Boxplots identifying typical performance and massive "viral" outliers for each channel.
-* **Revenue vs. Acquisition Cost:** Scatterplots visualizing the efficiency of ad spend across campaigns.
-* **Total Revenue by Brand:** Bar charts summarizing top-line performance.
-
----
-
-### **2. Advanced Feature Engineering**
-
-The system creates intelligent analytical features to improve model performance:
-
-| Feature              | Purpose                                          |
-| -------------------- | ------------------------------------------------ |
-| `ctr`                | Click-Through Rate — measures audience engagement|
-| `conversion_rate`    | Conversions per click — measures campaign quality|
-| `cpl`                | Cost Per Lead — measures spend efficiency        |
-| `month_sin/cos`      | Cyclical time encoding — preserves seasonality   |
-| `channel_*` flags    | Binary features for YouTube, Instagram, Email    |
-
----
-
-### **3. Machine Learning Pipelines**
-
-#### Revenue Regression (XGBoost)
-```python
-from xgboost import XGBRegressor
-
-regressor = XGBRegressor(random_state=42)
-regressor.fit(X_train, y_revenue_train)
-```
-
-#### Profit Classification (XGBoost + class weighting)
-```python
-from xgboost import XGBClassifier
-
-# Class weight from training labels only (no resampling)
-scale_pos_weight = negative_cases / max(1, positive_cases)
-
-classifier = XGBClassifier(n_estimators=500, max_depth=15, learning_rate=0.05,
-                           random_state=42, n_jobs=-1, scale_pos_weight=scale_pos_weight)
-classifier.fit(X_train, y_profit_train)
-```
-
----
-
-### **Model Performance**
-
-See `reports/evaluation.md` (auto-generated after training). Latest holdout results:
-
-| Metric                           | Score   |
-| -------------------------------- | ------- |
-| Revenue Regression R²            | 0.7189  |
-| Revenue Regression RMSE          | 252,360 |
-| Profit Classification Accuracy   | 0.9686  |
-| Profit Classification Weighted F1| 0.9689  |
-
-The notebook's XGBoost classification report (holdout) shows recall 0.99 for unprofitable (label 0) and 0.96 for profitable (label 1). `reports/evaluation.md` does not store per-class recall.
-
-### **REST API**
-
-| Endpoint | Method | Description |
-| -------- | ------ | ----------- |
-| `/health` | GET | Operational liveness probe with process uptime and model status |
-| `/ready` | GET | Kubernetes/Cloud Run readiness probe inspecting memory model state |
-| `/app` | GET | Dark-mode glassmorphic single-page web application |
-| `/forecast_revenue` | POST | Single campaign revenue forecast (INR) |
-| `/predict_profitability` | POST | Single campaign profitability classification |
-| `/forecast_revenue/batch` | POST | High-throughput batch revenue forecasting (up to 500 records) |
-| `/predict_profitability/batch` | POST | High-throughput batch profitability classification |
-
----
-
-### **Interactive Application Deployment**
-
-The project features an interactive dark-mode **Glassmorphic Web Application** served natively by FastAPI at `/app`, enabling performance marketers and stakeholders to evaluate campaign parameters, inspect live probe statuses, and receive instant predictions via client-side REST calls.
-
-#### **Run Locally (Uvicorn)**
-```powershell
-uvicorn api.main:app --host 0.0.0.0 --port 8000
-```
-Open [http://127.0.0.1:8000/app](http://127.0.0.1:8000/app) in your browser.
-
-#### **Run with Docker Compose**
-```bash
-docker compose up --build
-```
-Access at [http://localhost:8000/app](http://localhost:8000/app).
-
-Models are saved to `models/` after training. The two committed artifacts (`revenue_regressor.joblib`, `profit_classifier.joblib`) are tracked with Git LFS (see `.gitattributes`); other model files are git-ignored. See `reports/evaluation.md` and `docs/DEMO.md`.
-
----
-
-### **Technology Stack**
-
-| Category             | Tools                                               |
-| -------------------- | --------------------------------------------------- |
-| Programming          | Python                                              |
-| Data Processing      | Pandas, NumPy                                       |
-| Database             | PostgreSQL, SQLAlchemy                              |
-| Machine Learning     | Scikit-learn, XGBoost                               |
-| Imbalanced Learning  | XGBoost `scale_pos_weight` (class weighting)        |
-| Web & Microservice   | FastAPI, Uvicorn, Vanilla HTML5/CSS3 (Glassmorphic)  |
-| Data Validation      | Pydantic v2, Pydantic-Settings                      |
-| Container & CI/CD    | Docker (Multi-stage), Docker Compose, GitHub Actions|
-| Visualization        | Plotly                                              |
-
----
-
-### **Getting Started**
-
-### **1. Clone Repository**
+Requires Python 3.11.
 
 ```bash
 git clone https://github.com/jegadeesh17/Marketing-Campaign-Performance-Analysis.git
-
-cd MarketingCampaignAnalysis
-```
-
----
-
-### **2. Configure Database**
-
-Ensure PostgreSQL is running with the `marketing_campaign` database. Update `.env` with your credentials:
-
-```env
-DB_HOST=localhost
-DB_NAME=marketing_campaign
-DB_USER=your_user
-DB_PASSWORD=your_password
-```
-
----
-
-### **3. Install Dependencies**
-
-```bash
+cd Marketing-Campaign-Performance-Analysis
+python -m venv .venv
+source .venv/Scripts/activate       # Windows Git Bash; use .venv/bin/activate elsewhere
 pip install -r requirements.txt
+uvicorn api.main:app --port 8000
 ```
 
----
+Open http://localhost:8000/app. To run in a container instead: `docker compose up --build`.
 
-### **4. Launch Notebook**
+The two trained models (`revenue_regressor.joblib`, `profit_classifier.joblib`) are tracked with Git LFS (see `.gitattributes`); other model files are git-ignored. The repository contains `*_campaign_data_sample.csv` files for each brand. For the full data, place `nykaa_campaign_data.csv`, `purplle_campaign_data.csv` and `tira_campaign_data.csv` in `data/` ([data/DATA_SETUP.md](data/DATA_SETUP.md)).
+
+## Usage
+
+Train and explore in the notebook, which is the source of truth for the pipeline:
 
 ```bash
 jupyter notebook "notebooks/Marketing Campaign Performance Analysis.ipynb"
 ```
 
-### **5. Run Tests & Smoke Verification**
+To load the data into PostgreSQL (needs the `DB_*` variables below): `python src/data_ingestion.py`.
+
+Call the API:
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/health` | GET | Liveness probe with process uptime and model status |
+| `/ready` | GET | Readiness probe; 200 once the models are loaded, 503 before |
+| `/app` | GET | The single-page web app |
+| `/forecast_revenue` | POST | Revenue forecast for one campaign (INR) |
+| `/predict_profitability` | POST | Profitability classification for one campaign |
+| `/forecast_revenue/batch` | POST | Batch revenue forecast, up to 500 records |
+| `/predict_profitability/batch` | POST | Batch profitability classification |
+
+## Model performance
+
+Latest holdout results, from `reports/evaluation.md` (regenerated after training):
+
+| Metric | Score |
+|---|---|
+| Revenue regression R² | 0.7189 |
+| Revenue regression RMSE | 252,360 |
+| Profit classification accuracy | 0.9686 |
+| Profit classification weighted F1 | 0.9689 |
+
+The notebook's holdout classification report shows recall 0.99 for unprofitable campaigns (label 0) and 0.96 for profitable ones (label 1). `reports/evaluation.md` does not store per-class recall, so read both before judging the classifier by accuracy alone.
+
+## Running tests
 
 ```bash
-# Fast automated test suite (no tests are marked slow yet, so this runs all tests)
-python -m pytest -q -m "not slow"
-
-# Full automated test suite
-python -m pytest -q
-
-# End-to-end operational smoke verification (in-process mock or live URL)
-python scripts/smoke_test.py --mock
+python -m pytest -q                  # full suite
+python -m pytest -q -m "not slow"    # fast suite (no tests are marked slow yet)
+python scripts/smoke_test.py --mock  # end-to-end smoke check, in process
 ```
 
-CSV fallback works without PostgreSQL. For DB ingestion: `python src/data_ingestion.py`
+## Configuration
 
-### **6. Launch Web Application**
+Copy `.env.example` to `.env` and edit the values.
 
-```bash
-uvicorn api.main:app --port 8000
+| Variable | Purpose |
+|---|---|
+| `APP_ENV` | Deployment environment: development, staging or production |
+| `API_HOST` | Interface the Uvicorn server binds to (default `0.0.0.0`) |
+| `API_PORT` | Port for the FastAPI service (default 8000) |
+| `PORT` | Port for Cloud Run container deployment (default 8000) |
+| `LOG_LEVEL` | Logging level: DEBUG, INFO, WARNING or ERROR |
+| `MODEL_DIR` | Directory containing the `.joblib` model files (default `models`) |
+| `DB_HOST` | PostgreSQL host for the optional campaign warehouse |
+| `DB_PORT` | PostgreSQL port (default 5432) |
+| `DB_NAME` | PostgreSQL database name (default `marketing_campaign`) |
+| `DB_USER` | PostgreSQL username (default `postgres`) |
+| `DB_PASSWORD` | PostgreSQL password |
+
+## Project structure
+
 ```
-Open [http://localhost:8000/app](http://localhost:8000/app) in your browser.
+api/        FastAPI service and the single-page web app
+data/       sample campaign CSVs and data setup notes
+docs/       specifications, architecture, decisions and demo script
+models/     trained model files
+notebooks/  the analysis and training notebook
+reports/    generated evaluation report and metrics
+scripts/    exploratory-analysis export, evaluation export and smoke test
+src/        configuration, ingestion, preprocessing, training and inference
+tests/      pytest suite
+```
 
----
+## Documentation
 
-### **Example Use Case**
+- [docs/README.md](docs/README.md): index of the documents
+- [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md): technical specification of the whole project
+- [docs/SPEC.md](docs/SPEC.md): specification of the production-hardening work
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): components, API contracts and deployment topology
+- [docs/DECISIONS.md](docs/DECISIONS.md): architecture decision records
+- [docs/DEMO.md](docs/DEMO.md): five-minute demo script
+- [CHANGELOG.md](CHANGELOG.md): history of changes
 
-A marketing analytics team can use this platform to:
+## How this was built
 
-1. Forecast expected revenue for a proposed campaign before launch
-2. Identify campaigns at risk of being unprofitable
-3. Optimize channel mix based on CTR and conversion rate trends
-4. Allocate budgets across brands based on model-driven profitability predictions
+Designed and built by jegadeesh17 with [SoftwareEngineeringAgents](https://github.com/jegadeesh17/SoftwareEngineeringAgents), a multi-agent workflow for Claude Code. I reviewed and tested all code.
 
----
+## License
 
-### **Future Improvements**
-
-* SHAP-based model explainability dashboard
-* Automated campaign performance alerting system
-
----
-
-### **Contributors**
-
-* **Jegadeesh D** — Data ingestion, feature engineering, XGBoost modeling, imbalanced learning, and Streamlit dashboard development
-
----
-
-### **License**
-
-MIT License
+[MIT](LICENSE)

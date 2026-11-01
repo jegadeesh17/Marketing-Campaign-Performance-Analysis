@@ -1,6 +1,6 @@
 # Marketing Campaign Intelligence — 5-Minute Showcase Demo Script
 
-A complete 5-minute technical demonstration script for stakeholders, growth leads, and engineering interviews. Demonstrates operational readiness, lifespan in-memory model serving, high-throughput batch inference, boundary invariant safety, and the unified dark-mode glassmorphic single-page web app.
+A complete 5-minute technical demonstration script for stakeholders, growth leads, and engineers. Demonstrates operational readiness, lifespan in-memory model serving, high-throughput batch inference, boundary invariant safety, and the unified dark-mode glassmorphic single-page web app.
 
 ---
 

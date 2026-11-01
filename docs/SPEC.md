@@ -2,7 +2,6 @@
 A comprehensive specification for production hardening, lifespan model serving, batch inference, glassmorphic UI enhancements, and operational readiness for the Marketing Campaign Performance Analysis platform.
 
 *Date: 2026-10-05*  
-*Related Documents: [Mental Model](PROJECT_MENTAL_MODEL.md), [Codebase Map](CODEBASE_MAP.md)*
 
 ---
 
